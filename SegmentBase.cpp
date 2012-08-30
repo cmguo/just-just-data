@@ -3,6 +3,7 @@
 #include "ppbox/data/Common.h"
 #include "ppbox/data/SegmentBase.h"
 
+#include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
 using namespace framework::logger;
 

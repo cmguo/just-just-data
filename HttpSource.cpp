@@ -9,6 +9,7 @@
 #include <framework/string/Url.h>
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
+#include <framework/logger/StringRecord.h>
 using namespace framework::logger;
 
 namespace ppbox
@@ -57,7 +58,7 @@ namespace ppbox
             }
             std::ostringstream oss;
             head.get_content(oss);
-            LOG_STR(Trace, oss.str().c_str());
+            LOG_STR(Trace, ("http_request_head", oss.str()));
             http_.bind_host(addr_, ec);
             http_.open(request_, ec);
             http_.request().head().get_content(std::cout);
@@ -90,7 +91,7 @@ namespace ppbox
             }
             std::ostringstream oss;
             head.get_content(oss);
-            LOG_STR(Trace, oss.str().c_str());
+            LOG_STR(Trace, ("http_request_head", oss.str()));
             http_.bind_host(addr_, ec);
             http_.async_open(request_, resp);
         }
@@ -103,7 +104,7 @@ namespace ppbox
                 util::protocol::HttpResponseHead head = http_.response().head();
                 std::ostringstream oss;
                 head.get_content(oss);
-                LOG_STR(Trace, oss.str().c_str());
+                LOG_STR(Trace, ("http_response_head", oss.str()));
                 flag_ = false;
             }
             return result;

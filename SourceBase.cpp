@@ -22,15 +22,6 @@ namespace ppbox
             return;
         }
 
-        SourceBase::SourceBase(
-            boost::asio::io_service & io_svc)
-            : util::stream::Source(io_svc)
-        {}
-
-        SourceBase::~SourceBase()
-        {
-        }
-
         SourceBase * SourceBase::create(
             boost::asio::io_service & io_svc,
             std::string const & proto)
@@ -40,6 +31,22 @@ namespace ppbox
                 return NULL;
             }
             return iter->second(io_svc);
+        }
+
+        void SourceBase::destory(
+            SourceBase* & source)
+        {
+            delete source;
+            source = NULL;
+        }
+
+        SourceBase::SourceBase(
+            boost::asio::io_service & io_svc)
+            : util::stream::Source(io_svc)
+        {}
+
+        SourceBase::~SourceBase()
+        {
         }
 
     } // data

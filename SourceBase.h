@@ -40,7 +40,7 @@ namespace ppbox
                 std::string const & proto);
 
             static void destory(
-                SourceBase * SourceBase);
+                SourceBase* & source);
 
         public:
             SourceBase(
@@ -49,10 +49,10 @@ namespace ppbox
             virtual ~SourceBase();
 
             virtual boost::system::error_code open(
-                framework::string::Url const & url,
+                framework::string::Url const & url, 
                 boost::uint64_t beg, 
                 boost::uint64_t end, 
-                boost::system::error_code & ec)= 0;
+                boost::system::error_code & ec) = 0;
 
             virtual void async_open(
                 framework::string::Url const & url,

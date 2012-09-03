@@ -20,15 +20,6 @@ namespace ppbox
             return g_map;
         }
 
-        SegmentBase::SegmentBase(
-            boost::asio::io_service & io_svc)
-        {
-        }
-
-        SegmentBase::~SegmentBase()
-        {
-        }
-
         void SegmentBase::register_segment(
             std::string const & name,
             register_type func)
@@ -51,6 +42,21 @@ namespace ppbox
                 segment->set_url(url);
                 return segment;
             }
+        }
+
+        void SegmentBase::destory(SegmentBase* & segment)
+        {
+            delete segment;
+            segment = NULL;
+        }
+
+        SegmentBase::SegmentBase(
+            boost::asio::io_service & io_svc)
+        {
+        }
+
+        SegmentBase::~SegmentBase()
+        {
         }
 
         void SegmentBase::set_url(

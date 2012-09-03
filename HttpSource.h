@@ -13,6 +13,12 @@ namespace ppbox
     namespace data
     {
 
+        class HttpSource;
+        PPBOX_REGISTER_SOURCE(ppvod, HttpSource);
+        PPBOX_REGISTER_SOURCE(pplive, HttpSource);
+        PPBOX_REGISTER_SOURCE(ppvod2, HttpSource);
+        PPBOX_REGISTER_SOURCE(pplive2, HttpSource);
+
         class HttpSource
             : public SourceBase
         {
@@ -65,7 +71,6 @@ namespace ppbox
 
         private:
             // implement util::stream::Source
-
             virtual std::size_t private_read_some(
                 util::stream::StreamMutableBuffers const & buffers,
                 boost::system::error_code & ec);

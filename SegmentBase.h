@@ -25,17 +25,19 @@ namespace ppbox
             SegmentInfo()
                 : head_size(0)
                 , size(0)
+                , offset(0)
                 , time(0)
             {
             }
 
             boost::uint64_t head_size;
             boost::uint64_t size;
+            boost::uint64_t offset;
             boost::uint64_t time;
         };
 
         struct DurationInfo
-        {   
+        {
             DurationInfo()
                 : redundancy(0)
                 , begin(0)
@@ -87,9 +89,11 @@ namespace ppbox
                 std::string const & name,
                 register_type func);
 
+            static void destory(SegmentBase* & segment);
+
         public:
             virtual void set_url(
-                framework::string::Url const &url);
+                framework::string::Url const & url);
 
             virtual void async_open(
                 OpenMode mode,

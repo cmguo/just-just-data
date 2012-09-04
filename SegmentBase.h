@@ -25,14 +25,14 @@ namespace ppbox
             SegmentInfo()
                 : head_size(0)
                 , size(0)
-                , offset(0)
+                , ofs(0)
                 , time(0)
             {
             }
 
             boost::uint64_t head_size;
             boost::uint64_t size;
-            boost::uint64_t offset;
+            boost::uint64_t ofs;
             boost::uint64_t time;
         };
 
@@ -51,7 +51,19 @@ namespace ppbox
             boost::uint32_t end;
             boost::uint32_t total;
             boost::uint32_t interval;
-        }; 
+        };
+
+        struct VideoInfo
+        {
+            std::string name;
+            std::string type;
+            boost::uint32_t bitrate;
+            boost::uint32_t duration;
+            boost::uint32_t width;
+            boost::uint32_t height;
+            boost::uint64_t filesize;
+            framework::string::Url url;
+        };
 
 
         class SegmentBase
@@ -105,6 +117,10 @@ namespace ppbox
 
             virtual boost::system::error_code get_duration(
                 DurationInfo & info,
+                boost::system::error_code & ec) = 0;
+
+            virtual boost::system::error_code get_video(
+                VideoInfo & info,
                 boost::system::error_code & ec) = 0;
 
         public:

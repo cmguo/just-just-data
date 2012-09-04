@@ -1,11 +1,13 @@
 // SegmentSource
 
+#ifndef   _PPBOX_SEGMENT_SEGMENT_SOURCE_H_
+#define   _PPBOX_SEGMENT_SEGMENT_SOURCE_H_
+
 #include "ppbox/data/SourceBase.h"
 #include "ppbox/data/DataStatistic.h"
 #include "ppbox/data/strategy/SourceStrategy.h"
 
 #include <ppbox/cdn/Cdn.h>
-
 #include <framework/string/Url.h>
 
 namespace ppbox
@@ -93,7 +95,11 @@ namespace ppbox
 
             void set_time_out(boost::uint32_t time);
 
-            void set_strategy(std::string const & type);
+            void set_strategy(SourceStrategy * strategy);
+
+            std::vector<SegmentInfoEx> const & segments(void) const;
+
+            VideoInfo const & video_info(void) const;
 
         private:
             // implement util::stream::Source
@@ -116,6 +122,8 @@ namespace ppbox
                 boost::system::error_code& ec);
 
             void update_segments(void);
+
+            void update_video_info(void);
 
             boost::system::error_code open_segment(
                 bool is_next_segment, 
@@ -142,6 +150,7 @@ namespace ppbox
 
             SourceStrategy * source_strategy_;
             std::vector<SegmentInfoEx> segments_;
+            VideoInfo video_info_;
             bool source_closed_;
             bool has_seek_;
             boost::uint32_t time_out_;
@@ -155,3 +164,6 @@ namespace ppbox
         };
     }
 }
+
+#endif // END _PPBOX_SEGMENT_SEGMENT_SOURCE_H_
+

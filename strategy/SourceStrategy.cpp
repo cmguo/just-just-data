@@ -24,14 +24,15 @@ namespace ppbox
 
         SourceStrategy * SourceStrategy::create(
             std::string const & type, 
-            std::vector<SegmentInfoEx> const & segments)
+            std::vector<SegmentInfoEx> const & segments,
+            VideoInfo const & video_info)
         {
             std::map<std::string, SourceStrategy::register_type >::iterator iter = 
                 strategy_map().find(type);
             if (strategy_map().end() == iter) {
                 return NULL;
             }
-            return iter->second(segments);
+            return iter->second(segments, video_info);
         }
 
         void SourceStrategy::destory(SourceStrategy* & strategy)
@@ -41,8 +42,10 @@ namespace ppbox
         }
 
         SourceStrategy::SourceStrategy(
-            std::vector<SegmentInfoEx> const & segments)
+            std::vector<SegmentInfoEx> const & segments,
+            VideoInfo const & video_info)
             : segments_(segments)
+            , video_info_(video_info)
             , pos_(0)
         {
         }
@@ -117,6 +120,15 @@ namespace ppbox
                 ec = framework::system::logic_error::out_of_range;
             }
             return ec;
+        }
+
+        std::size_t SourceStrategy::size(void)
+        {
+            std::size_t length = 0;
+            for (boost::uint32_t i = 0; i < segments_.size(); ++i) {
+                length += segments_[i].size;
+            }
+            return length;
         }
 
     }

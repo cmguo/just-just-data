@@ -39,7 +39,8 @@ namespace ppbox
         public:
 
             typedef boost::function<SourceStrategy * (
-                std::vector<SegmentInfoEx> const &)
+                std::vector<SegmentInfoEx> const &,
+                VideoInfo const & video_info)
             > register_type;
 
             static void regist_strategy(
@@ -48,13 +49,15 @@ namespace ppbox
 
             static SourceStrategy *create(
                 std::string const & type, 
-                std::vector<SegmentInfoEx> const & segments);
+                std::vector<SegmentInfoEx> const & segments,
+                VideoInfo const & video_info);
 
             static void destory(SourceStrategy* & strategy);
 
         public:
             SourceStrategy(
-                std::vector<SegmentInfoEx> const & segments);
+                std::vector<SegmentInfoEx> const & segments, 
+                VideoInfo const & video_info);
 
             ~SourceStrategy();
 
@@ -73,9 +76,12 @@ namespace ppbox
                 SegmentInfoEx & info, 
                 boost::system::error_code & ec);
 
+            virtual std::size_t size(void);
+
         protected:
-            boost::uint32_t pos_;
             std::vector<SegmentInfoEx> const & segments_;
+            VideoInfo const & video_info_;
+            boost::uint32_t pos_;
 
         private:
             static std::map<std::string, SourceStrategy::register_type> & strategy_map();

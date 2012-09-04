@@ -10,8 +10,9 @@ namespace ppbox
     namespace data
     {
         HeadSourceStrategy::HeadSourceStrategy(
-            std::vector<SegmentInfoEx> const & segments)
-            : SourceStrategy(segments)
+            std::vector<SegmentInfoEx> const & segments,
+            VideoInfo const & video_info)
+            : SourceStrategy(segments, video_info)
         {
         }
 
@@ -79,6 +80,15 @@ namespace ppbox
                 ec = framework::system::logic_error::out_of_range;
             }
             return ec;
+        }
+
+        std::size_t HeadSourceStrategy::size(void)
+        {
+            std::size_t length = 0;
+            for (boost::uint32_t i = 0; i < segments_.size(); ++i) {
+                length += segments_[i].head_size;
+            }
+            return length;
         }
 
     }

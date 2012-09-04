@@ -15,7 +15,8 @@ namespace ppbox
         {
         public:
             HeadSourceStrategy(
-                std::vector<SegmentInfoEx> const & segments);
+                std::vector<SegmentInfoEx> const & segments,
+                VideoInfo const & video_info);
 
             ~HeadSourceStrategy();
 
@@ -33,6 +34,9 @@ namespace ppbox
                 size_t offset, 
                 SegmentInfoEx & info, 
                 boost::system::error_code & ec);
+
+            virtual std::size_t size(void);
+
         };
 
         PPBOX_REGISTER_STRATEGY(head, HeadSourceStrategy);

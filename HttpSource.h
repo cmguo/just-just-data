@@ -4,7 +4,7 @@
 #define _PPBOX_DATA_HTTPSOURCE_H_
 
 #include "ppbox/data/SourceBase.h"
-#include "ppbox/data/SegmentBase.h"
+#include "ppbox/data/MediaBase.h"
 
 #include <util/protocol/http/HttpClient.h>
 

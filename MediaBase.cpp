@@ -1,26 +1,26 @@
-//SegmentBase.cpp
+//MediaBase.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/SegmentBase.h"
+#include "ppbox/data/MediaBase.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
 using namespace framework::logger;
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("SegmentBase", 0);
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("MediaBase", 0);
 
 namespace ppbox
 {
     namespace data
     {
 
-        std::map<std::string, SegmentBase::register_type> & SegmentBase::segment_map()
+        std::map<std::string, MediaBase::register_type> & MediaBase::segment_map()
         {
-            static std::map<std::string, SegmentBase::register_type> g_map;
+            static std::map<std::string, MediaBase::register_type> g_map;
             return g_map;
         }
 
-        void SegmentBase::register_segment(
+        void MediaBase::register_media(
             std::string const & name,
             register_type func)
         {
@@ -28,7 +28,7 @@ namespace ppbox
             return;
         }
 
-        SegmentBase * SegmentBase::create(
+        MediaBase * MediaBase::create(
             boost::asio::io_service & io_svc,
             framework::string::Url const & url)
         {
@@ -38,28 +38,28 @@ namespace ppbox
                 return NULL;
             } else {
                 register_type func = iter->second;
-                SegmentBase * segment = func(io_svc);
+                MediaBase * segment = func(io_svc);
                 segment->set_url(url);
                 return segment;
             }
         }
 
-        void SegmentBase::destory(SegmentBase* & segment)
+        void MediaBase::destory(MediaBase* & segment)
         {
             delete segment;
             segment = NULL;
         }
 
-        SegmentBase::SegmentBase(
+        MediaBase::MediaBase(
             boost::asio::io_service & io_svc)
         {
         }
 
-        SegmentBase::~SegmentBase()
+        MediaBase::~MediaBase()
         {
         }
 
-        void SegmentBase::set_url(
+        void MediaBase::set_url(
             framework::string::Url const &url)
         {
             url_ = url;

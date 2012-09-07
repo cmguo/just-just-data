@@ -25,7 +25,7 @@ namespace ppbox
         SourceStrategy * SourceStrategy::create(
             std::string const & type, 
             std::vector<SegmentInfoEx> const & segments,
-            VideoInfo const & video_info)
+            MediaInfo const & video_info)
         {
             std::map<std::string, SourceStrategy::register_type >::iterator iter = 
                 strategy_map().find(type);

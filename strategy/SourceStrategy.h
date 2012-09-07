@@ -5,7 +5,7 @@
 
 #include <ppbox/common/Call.h>
 #include <ppbox/common/Create.h>
-#include <ppbox/data/SegmentBase.h>
+#include <ppbox/data/MediaBase.h>
 
 namespace ppbox
 {
@@ -40,7 +40,7 @@ namespace ppbox
 
             typedef boost::function<SourceStrategy * (
                 std::vector<SegmentInfoEx> const &,
-                VideoInfo const & video_info)
+                MediaInfo const & video_info)
             > register_type;
 
             static void regist_strategy(
@@ -50,14 +50,14 @@ namespace ppbox
             static SourceStrategy *create(
                 std::string const & type, 
                 std::vector<SegmentInfoEx> const & segments,
-                VideoInfo const & video_info);
+                MediaInfo const & video_info);
 
             static void destory(SourceStrategy* & strategy);
 
         public:
             SourceStrategy(
                 std::vector<SegmentInfoEx> const & segments, 
-                VideoInfo const & video_info);
+                MediaInfo const & video_info);
 
             virtual ~SourceStrategy();
 
@@ -80,7 +80,7 @@ namespace ppbox
 
         protected:
             std::vector<SegmentInfoEx> const & segments_;
-            VideoInfo const & video_info_;
+            MediaInfo const & video_info_;
             boost::uint32_t pos_;
 
         private:

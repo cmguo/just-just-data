@@ -99,7 +99,7 @@ namespace ppbox
 
             std::vector<SegmentInfoEx> const & segments(void) const;
 
-            VideoInfo const & video_info(void) const;
+            MediaInfo const & video_info(void) const;
 
         private:
             // implement util::stream::Source
@@ -144,13 +144,13 @@ namespace ppbox
             SourceBase * source(void);
 
         private:
-            SegmentBase * segment_;
+            MediaBase * segment_;
             SourceBase * source_;
             framework::string::Url playlink_;
 
             SourceStrategy * source_strategy_;
             std::vector<SegmentInfoEx> segments_;
-            VideoInfo video_info_;
+            MediaInfo video_info_;
             bool source_closed_;
             bool has_seek_;
             boost::uint32_t time_out_;

@@ -1,7 +1,7 @@
-// HeadSourceStrategy.h
+// CdnHeadStrategy.h
 
-#ifndef     _PPBOX_DATA_HEAD_SOURCE_STRATEGY_
-#define     _PPBOX_DATA_HEAD_SOURCE_STRATEGY_
+#ifndef     _PPBOX_DATA_CDN_HAED_STRATEGY_
+#define     _PPBOX_DATA_CDN_HAED_STRATEGY_
 
 #include <ppbox/data/strategy/SourceStrategy.h>
 
@@ -10,15 +10,15 @@ namespace ppbox
     namespace data
     {
 
-        class HeadSourceStrategy
+        class CdnHeadStrategy
             : public SourceStrategy
         {
         public:
-            HeadSourceStrategy(
+            CdnHeadStrategy(
                 std::vector<SegmentInfoEx> const & segments,
                 VideoInfo const & video_info);
 
-            virtual ~HeadSourceStrategy();
+            virtual ~CdnHeadStrategy();
 
             virtual bool next_segment(
                 bool is_next,
@@ -37,11 +37,14 @@ namespace ppbox
 
             virtual std::size_t size(void);
 
+        private:
+            SegmentInfoEx info_;
+
         };
 
-        PPBOX_REGISTER_STRATEGY(head, HeadSourceStrategy);
+        PPBOX_REGISTER_STRATEGY(cdnh, CdnHeadStrategy);
 
     }
 }
 
-#endif // End _PPBOX_DATA_HEAD_SOURCE_STRATEGY_
+#endif // End _PPBOX_DATA_CDN_HAED_STRATEGY_

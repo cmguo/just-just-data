@@ -18,7 +18,7 @@ namespace ppbox
                 std::vector<SegmentInfoEx> const & segments,
                 VideoInfo const & video_info);
 
-            ~BodySourceStrategy();
+            virtual ~BodySourceStrategy();
 
             virtual bool next_segment(
                 bool is_next,

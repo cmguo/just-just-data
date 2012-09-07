@@ -59,7 +59,7 @@ namespace ppbox
                 std::vector<SegmentInfoEx> const & segments, 
                 VideoInfo const & video_info);
 
-            ~SourceStrategy();
+            virtual ~SourceStrategy();
 
             virtual bool next_segment(
                 bool is_next,

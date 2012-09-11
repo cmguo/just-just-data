@@ -34,6 +34,7 @@ namespace ppbox
             boost::uint32_t duration;
             boost::uint32_t is_live;
             boost::uint32_t delay;
+            framework::string::Url cdn_url;
         }; 
 
         struct SegmentInfo

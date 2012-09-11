@@ -9,22 +9,22 @@ namespace ppbox
     {
         CdnTailStrategy::CdnTailStrategy(
             std::vector<SegmentInfoEx> const & segments,
-            VideoInfo const & video_info)
+            MediaInfo const & video_info)
             : SourceStrategy(segments, video_info)
         {
             assert(!segments.empty());
-            boost::uint64_t head_size = segments[0].ofs;
+            boost::uint64_t head_size = segments[0].offset;
             boost::uint64_t body_size = 0;
             for (boost::uint32_t i = 0; i < segments.size(); ++i) {
                 body_size += (segments[i].size - segments[i].head_size);
             }
 
             info_.begin = head_size + body_size;
-            info_.end = video_info.filesize;
-            info_.url = video_info.url;
+            info_.end = video_info.file_size;
+            info_.url = video_info.cdn_url;
             info_.size = info_.end - info_.begin;
             info_.try_times = 0;
-            info_.offset = 0;
+            info_.position = 0;
         }
 
         CdnTailStrategy::~CdnTailStrategy()
@@ -53,7 +53,7 @@ namespace ppbox
                 ec = framework::system::logic_error::out_of_range;
             } else {
                 info = info_;
-                info.offset = offset;
+                info.position = offset;
             }
             return ec;
         }
@@ -69,7 +69,7 @@ namespace ppbox
                 ec = framework::system::logic_error::out_of_range;
             } else {
                 info = info_;
-                info.offset = offset;
+                info.position = offset;
             }
             return ec;
         }

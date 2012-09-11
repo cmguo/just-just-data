@@ -11,7 +11,7 @@ namespace ppbox
     {
         BodySourceStrategy::BodySourceStrategy(
             std::vector<SegmentInfoEx> const & segments,
-            VideoInfo const & video_info)
+            MediaInfo const & video_info)
             : SourceStrategy(segments, video_info)
         {
         }
@@ -29,6 +29,7 @@ namespace ppbox
                 info.begin = info.head_size;
                 info.end = info.size;
                 info.size = info.end - info.begin;
+                info.position = 0;
             }
             return res;
         }
@@ -44,7 +45,7 @@ namespace ppbox
                     info = segments_[i];
                     info.begin = info.head_size;
                     info.end = info.size;
-                    info.offset = offset;
+                    info.position = offset;
                     info.size = info.end - info.begin;
                     find = true;
                     pos_ = i;
@@ -72,7 +73,7 @@ namespace ppbox
                 } else {
                     info.begin = info.head_size;
                     info.end = info.size;
-                    info.offset = offset;
+                    info.position = offset;
                     info.size = info.end - info.begin;
                     pos_ = segment_index;
                 }

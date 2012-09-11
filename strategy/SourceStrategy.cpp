@@ -43,7 +43,7 @@ namespace ppbox
 
         SourceStrategy::SourceStrategy(
             std::vector<SegmentInfoEx> const & segments,
-            VideoInfo const & video_info)
+            MediaInfo const & video_info)
             : segments_(segments)
             , video_info_(video_info)
             , pos_(0)
@@ -66,7 +66,7 @@ namespace ppbox
                 info.try_times = 0;
                 info.begin = 0;
                 info.end = boost::uint64_t(-1);
-                info.offset = 0;
+                info.position = 0;
                 res = true;
             } else {
                 pos_--;
@@ -115,6 +115,7 @@ namespace ppbox
                     info.begin = offset;
                     info.end = info.size;
                     info.size = info.end - info.begin;
+                    info.position = offset;
                 }
             } else {
                 ec = framework::system::logic_error::out_of_range;

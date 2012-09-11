@@ -17,7 +17,7 @@ namespace ppbox
         {
             SegmentInfoEx()
                 : try_times(0)
-                , offset(0)
+                , position(0)
                 , begin(0)
                 , end(0)
 
@@ -25,7 +25,7 @@ namespace ppbox
             }
 
             boost::uint32_t try_times;
-            boost::uint64_t offset;
+            boost::uint64_t position;
             boost::uint64_t begin;
             boost::uint64_t end;
             framework::string::Url url;

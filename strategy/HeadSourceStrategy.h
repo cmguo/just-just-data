@@ -16,7 +16,7 @@ namespace ppbox
         public:
             HeadSourceStrategy(
                 std::vector<SegmentInfoEx> const & segments,
-                VideoInfo const & video_info);
+                MediaInfo const & video_info);
 
             virtual ~HeadSourceStrategy();
 

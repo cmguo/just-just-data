@@ -97,7 +97,7 @@ namespace ppbox
 
             std::vector<SegmentInfoEx> const & segments(void) const;
 
-            MediaInfo const & video_info(void) const;
+            MediaInfo const & mediainfo(void) const;
 
         private:
             // implement util::stream::Source

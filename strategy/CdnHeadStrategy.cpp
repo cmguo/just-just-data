@@ -9,16 +9,16 @@ namespace ppbox
     {
         CdnHeadStrategy::CdnHeadStrategy(
             std::vector<SegmentInfoEx> const & segments,
-            VideoInfo const & video_info)
+            MediaInfo const & video_info)
             : SourceStrategy(segments, video_info)
         {
             assert(!segments.empty());
             info_.begin = 0;
-            info_.end = segments[0].ofs;
-            info_.url = video_info.url;
+            info_.end = segments[0].offset;
+            info_.url = video_info.cdn_url;
             info_.size = info_.end - info_.begin;
             info_.try_times = 0;
-            info_.offset = 0; // 已经下载的数据大小
+            info_.position = 0; // 已经下载的数据大小
         }
 
         CdnHeadStrategy::~CdnHeadStrategy()
@@ -47,7 +47,7 @@ namespace ppbox
                 ec = framework::system::logic_error::out_of_range;
             } else {
                 info = info_;
-                info.offset = offset;
+                info.position = offset;
             }
             return ec;
         }
@@ -63,7 +63,7 @@ namespace ppbox
                 ec = framework::system::logic_error::out_of_range;
             } else {
                 info = info_;
-                info.offset = offset;
+                info.position = offset;
             }
             return ec;
         }

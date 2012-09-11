@@ -6,6 +6,8 @@
 #include "ppbox/data/HttpSource.h"
 #include "ppbox/data/strategy/HeadSourceStrategy.h"
 #include "ppbox/data/strategy/BodySourceStrategy.h"
+#include <ppbox/cdn/PptvVod1.h>
+#include <ppbox/cdn/PptvVod2.h>
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
@@ -38,7 +40,7 @@ namespace ppbox
                 SourceBase::destory(source_);
             }
             if (segment_) {
-                SegmentBase::destory(segment_);
+                MediaBase::destory(segment_);
             }
         }
 
@@ -70,11 +72,10 @@ namespace ppbox
             assert(segment_ == NULL);
             resp_ = resp;
             playlink_ = url;
-            segment_ = SegmentBase::create(get_io_service(), url);
+            segment_ = MediaBase::create(get_io_service(), url);
             assert(segment_ != NULL);
             state_ = SegmentSource::State::segment_opening;
             segment_->async_open(
-                SegmentBase::fast,
                 boost::bind(&SegmentSource::hand_async_open, this, _1));
         }
 
@@ -118,7 +119,7 @@ namespace ppbox
             ec = source_error_;
             while (1) {
                 if (ec) {
-                } else if (cur_segment_.offset >= cur_segment_.size) {
+                } else if (cur_segment_.position >= cur_segment_.size) {
                     ec = boost::asio::error::eof;
                 } else if (source_closed_ && open_segment(false, ec)) {
                 } else if (source()->is_open(ec)) {
@@ -132,7 +133,7 @@ namespace ppbox
                             << " bytes_transferred: " << bytes_transferred);
                     }
                     increase_download_byte(bytes_transferred);
-                    cur_segment_.offset += bytes_transferred;
+                    cur_segment_.position += bytes_transferred;
                     if (ec && !source()->continuable(ec)) {
                         //LOG_S(framework::logger::Logger::kLevelAlarm, 
                         //    "[prepare_read] read_some: " << ec.message() << 
@@ -141,8 +142,8 @@ namespace ppbox
                                 " - failed " << cur_segment_.try_times << " times");
                         if (ec == boost::asio::error::eof) {
                             //LOG_S(framework::logger::Logger::kLevelDebug, 
-                            //    "[prepare_read] read eof, offset: " << cur_segment_.offset);
-                            LOG_WARN("[prepare_read] read eof, offset: " << cur_segment_.offset);
+                            //    "[prepare_read] read eof, offset: " << cur_segment_.position);
+                            LOG_WARN("[prepare_read] read eof, offset: " << cur_segment_.position);
                         }
                     }
                 } else {
@@ -197,7 +198,7 @@ namespace ppbox
                     return false;
                 }
             } else if (ec == boost::asio::error::eof) {
-                if (cur_segment_.offset >= cur_segment_.size) {
+                if (cur_segment_.position >= cur_segment_.size) {
                     return true;
                 } else if (cur_segment_.try_times < max_try_) {
                     ec = boost::asio::error::connection_aborted;
@@ -239,14 +240,14 @@ namespace ppbox
             assert(source());
             //LOG_S(Logger::kLevelDebug, 
             //    "[open_request] url: " << cur_segment_.url.to_string() 
-            //    << " range: " << cur_segment_.begin + cur_segment_.offset
+            //    << " range: " << cur_segment_.begin + cur_segment_.position
             //    << " : " << cur_segment_.end);
             LOG_WARN("[open_request] url: " << cur_segment_.url.to_string() 
-                << " range: " << cur_segment_.begin + cur_segment_.offset
+                << " range: " << cur_segment_.begin + cur_segment_.position
                 << " : " << cur_segment_.end);
             source()->open(
                 cur_segment_.url, 
-                cur_segment_.begin + cur_segment_.offset, 
+                cur_segment_.begin + cur_segment_.position, 
                 cur_segment_.end, 
                 ec);
             cur_segment_.try_times++;
@@ -264,10 +265,10 @@ namespace ppbox
                 //LOG_S(framework::logger::Logger::kLevelAlarm,
                 //    "[close_request] url: " << cur_segment_.url.to_string() 
                 //    << ", begin: " << cur_segment_.begin << ", end: " << cur_segment_.end 
-                //    << ", offset: " << cur_segment_.offset);
+                //    << ", offset: " << cur_segment_.position);
                 LOG_WARN("[close_request] url: " << cur_segment_.url.to_string() 
                     << ", begin: " << cur_segment_.begin << ", end: " << cur_segment_.end 
-                    << ", offset: " << cur_segment_.offset);
+                    << ", offset: " << cur_segment_.position);
                 source()->close(0, ec);
                 source_closed_ = true;
             }
@@ -300,7 +301,7 @@ namespace ppbox
         {
             assert(segment_);
             boost::system::error_code ec;
-            segment_->get_video(video_info_, ec);
+            segment_->get_info(video_info_, ec);
             assert(!ec);
         }
 
@@ -358,7 +359,7 @@ namespace ppbox
             return segments_;
         }
 
-        VideoInfo const & SegmentSource::video_info(void) const
+        MediaInfo const & SegmentSource::mediainfo(void) const
         {
             return video_info_;
         }

@@ -11,7 +11,7 @@ namespace ppbox
     {
         HeadSourceStrategy::HeadSourceStrategy(
             std::vector<SegmentInfoEx> const & segments,
-            VideoInfo const & video_info)
+            MediaInfo const & video_info)
             : SourceStrategy(segments, video_info)
         {
         }
@@ -44,7 +44,7 @@ namespace ppbox
                     info = segments_[i];
                     info.begin = 0;
                     info.end = info.head_size;
-                    info.offset = offset;
+                    info.position = offset;
                     info.size = info.end - info.begin;
                     pos_ = i;
                     find = true;

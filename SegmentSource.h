@@ -55,11 +55,9 @@ namespace ppbox
                 boost::system::error_code & ec);
 
             virtual boost::system::error_code cancel(
-                size_t segment, 
                 boost::system::error_code & ec);
 
             virtual boost::system::error_code close(
-                size_t segment, 
                 boost::system::error_code & ec);
 
             virtual boost::uint64_t total(

@@ -1,7 +1,7 @@
 // MediaBase.h
 
-#ifndef _PPBOX_DATA_SEGMENT_BASE_H_
-#define _PPBOX_DATA_SEGMENT_BASE_H_
+#ifndef _PPBOX_DATA_MEDIA_BASE_H_
+#define _PPBOX_DATA_MEDIA_BASE_H_
 
 #include "ppbox/common/Call.h"
 #include "ppbox/common/Create.h"
@@ -77,7 +77,7 @@ namespace ppbox
                 framework::string::Url const & playlink);
 
             static void register_media(
-                std::string const & name,
+                std::string const & proto,
                 register_type func);
 
             static void destory(MediaBase* & segment);
@@ -124,10 +124,10 @@ namespace ppbox
             framework::string::Url url_;
 
         private:
-            static std::map<std::string, register_type> & segment_map();
-        };//MediaBase
+            static std::map<std::string, register_type> & media_map();
+        };
 
-    }//data
-}//ppbox
+    } // namespace data
+} // namespace ppbox
 
-#endif//_PPBOX_DATA_SEGMENT_BASE_H_
+#endif//_PPBOX_DATA_MEDIA_BASE_H_

@@ -14,7 +14,7 @@ namespace ppbox
     namespace data
     {
 
-        std::map<std::string, MediaBase::register_type> & MediaBase::segment_map()
+        std::map<std::string, MediaBase::register_type> & MediaBase::media_map()
         {
             static std::map<std::string, MediaBase::register_type> g_map;
             return g_map;
@@ -24,7 +24,7 @@ namespace ppbox
             std::string const & name,
             register_type func)
         {
-            segment_map().insert(std::make_pair(name, func));
+            media_map().insert(std::make_pair(name, func));
             return;
         }
 
@@ -33,8 +33,8 @@ namespace ppbox
             framework::string::Url const & url)
         {
             std::map<std::string, register_type>::iterator iter = 
-                segment_map().find(url.protocol());
-            if (segment_map().end() == iter) {
+                media_map().find(url.protocol());
+            if (media_map().end() == iter) {
                 return NULL;
             } else {
                 register_type func = iter->second;

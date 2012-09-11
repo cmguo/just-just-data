@@ -24,12 +24,6 @@ namespace ppbox
             : SourceBase(io_svc)
             , http_(io_svc)
         {
-            addr_.svc("80");
-            util::protocol::HttpRequestHead & head = request_.head();
-            head["Accept"] = "{*.*}";
-#ifdef MULTI_SEQ
-            head.connection = util::protocol::http_field::Connection::keep_alive;
-#endif
         }
 
         HttpSource::~HttpSource() {}
@@ -42,15 +36,11 @@ namespace ppbox
         {
             flag_ = true;
 
-            framework::string::Url url_tmp ;
-            url_tmp.host(url.host());
-            url_tmp.svc(url.svc());
-            url_tmp.path(url.path());
-            url_tmp.param("key", url.param("key"));
-
-            addr_ = url_tmp.host_svc();
-            util::protocol::HttpRequestHead & head = request_.head();
-            head.path = url_tmp.path_all();
+            util::protocol::HttpRequest request;
+            util::protocol::HttpRequestHead & head = request.head();
+            head.path = url.path_all();
+            head["Accept"] = "{*.*}";
+            head.connection = util::protocol::http_field::Connection::keep_alive;
             if (beg != 0 || end != (boost::uint64_t)-1) {
                 head.range.reset(util::protocol::http_field::Range((boost::int64_t)beg, (boost::int64_t)end));
             } else {
@@ -59,9 +49,8 @@ namespace ppbox
             std::ostringstream oss;
             head.get_content(oss);
             LOG_STR(Trace, ("http_request_head", oss.str()));
-            http_.bind_host(addr_, ec);
-            http_.open(request_, ec);
-            http_.request().head().get_content(std::cout);
+
+            http_.open(request, ec);
 
             return ec;
         }
@@ -74,16 +63,12 @@ namespace ppbox
         {
             flag_ = true;
 
-            framework::string::Url url_tmp("http") ;
-            url_tmp.host(url.host());
-            url_tmp.svc(url.svc());
-            url_tmp.path(url.path());
-            url_tmp.param("key", url.param("key"));
-
-            addr_ = url_tmp.host_svc();
             boost::system::error_code ec;
-            util::protocol::HttpRequestHead & head = request_.head();
-            head.path = url_tmp.path_all();
+            util::protocol::HttpRequest request;
+            util::protocol::HttpRequestHead & head = request.head();
+            head.path = url.path_all();
+            head["Accept"] = "{*.*}";
+            head.connection = util::protocol::http_field::Connection::keep_alive;
             if (beg != 0 || end != (boost::uint64_t)-1) {
                 head.range.reset(util::protocol::http_field::Range((boost::int64_t)beg, (boost::int64_t)end));
             } else {
@@ -92,8 +77,8 @@ namespace ppbox
             std::ostringstream oss;
             head.get_content(oss);
             LOG_STR(Trace, ("http_request_head", oss.str()));
-            http_.bind_host(addr_, ec);
-            http_.async_open(request_, resp);
+
+            http_.async_open(request, resp);
         }
 
         bool HttpSource::is_open(
@@ -111,14 +96,12 @@ namespace ppbox
         }
 
         boost::system::error_code HttpSource::cancel(
-            size_t segment, 
             boost::system::error_code & ec)
         {
             return http_.cancel_forever(ec);
         }
 
         boost::system::error_code HttpSource::close(
-            size_t segment, 
             boost::system::error_code & ec)
         {
             return http_.close(ec);

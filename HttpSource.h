@@ -13,12 +13,6 @@ namespace ppbox
     namespace data
     {
 
-        class HttpSource;
-        PPBOX_REGISTER_SOURCE(ppvod, HttpSource);
-        PPBOX_REGISTER_SOURCE(pplive, HttpSource);
-        PPBOX_REGISTER_SOURCE(ppvod2, HttpSource);
-        PPBOX_REGISTER_SOURCE(pplive2, HttpSource);
-
         class HttpSource
             : public SourceBase
         {
@@ -40,16 +34,14 @@ namespace ppbox
                 boost::uint64_t beg, 
                 boost::uint64_t end, 
                 response_type const & resp);
-           
+
             bool is_open(
                 boost::system::error_code & ec);
 
             boost::system::error_code cancel(
-                size_t segment, 
                 boost::system::error_code & ec);
 
             boost::system::error_code close(
-                size_t segment, 
                 boost::system::error_code & ec);
 
             boost::uint64_t total(
@@ -81,10 +73,10 @@ namespace ppbox
 
         protected:
             bool flag_;
-            framework::network::NetName addr_;
-            util::protocol::HttpRequest request_;
             util::protocol::HttpClient http_;
         };
+
+        PPBOX_REGISTER_SOURCE(http, HttpSource);
 
     } // namespace data
 } // namespace ppbox

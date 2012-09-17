@@ -1,4 +1,4 @@
-//SourceBase.cpp
+// SourceBase.cpp
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/SourceBase.h"
@@ -63,8 +63,7 @@ namespace ppbox
             get_io_service().post(boost::bind(resp, ec));
         }
 
-        boost::system::error_code cancel(
-            size_t segment, 
+        boost::system::error_code SourceBase::cancel(
             boost::system::error_code & ec)
         {
             ec = framework::system::logic_error::not_supported;
@@ -106,5 +105,5 @@ namespace ppbox
             return false;
         }
 
-    } // data
-} // ppbox
+    } // namespace data
+} // namespace ppbox

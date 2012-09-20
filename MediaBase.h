@@ -121,8 +121,17 @@ namespace ppbox
                 size_t segment, 
                 SegmentInfo & info) const = 0;
 
+        public:
+            boost::asio::io_service & get_io_service()
+            {
+                return io_svc_;
+            }
+
         protected:
             framework::string::Url url_;
+
+        private:
+            boost::asio::io_service & io_svc_;
 
         private:
             static std::map<std::string, register_type> & media_map();

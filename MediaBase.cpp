@@ -44,7 +44,8 @@ namespace ppbox
             }
         }
 
-        void MediaBase::destory(MediaBase* & segment)
+        void MediaBase::destory(
+            MediaBase* & segment)
         {
             delete segment;
             segment = NULL;
@@ -52,6 +53,7 @@ namespace ppbox
 
         MediaBase::MediaBase(
             boost::asio::io_service & io_svc)
+            : io_svc_(io_svc)
         {
         }
 

@@ -4,8 +4,6 @@
 #include "ppbox/data/SourceError.h"
 #include "ppbox/data/SegmentSource.h"
 #include "ppbox/data/HttpSource.h"
-#include "ppbox/data/strategy/HeadSourceStrategy.h"
-#include "ppbox/data/strategy/BodySourceStrategy.h"
 #include <ppbox/cdn/PptvVod1.h>
 #include <ppbox/cdn/PptvVod2.h>
 
@@ -25,7 +23,7 @@ namespace ppbox
 
         SegmentSource::SegmentSource(boost::asio::io_service & io_srv)
             : SourceBase(io_srv)
-            , segment_(NULL)
+            , media_(NULL)
             , source_(NULL)
             , source_closed_(true)
             , has_seek_(false)
@@ -39,8 +37,8 @@ namespace ppbox
             if (source_) {
                 SourceBase::destory(source_);
             }
-            if (segment_) {
-                MediaBase::destory(segment_);
+            if (media_) {
+                MediaBase::destory(media_);
             }
         }
 
@@ -69,13 +67,13 @@ namespace ppbox
             boost::uint64_t end, 
             response_type const & resp)
         {
-            assert(segment_ == NULL);
+            assert(media_ == NULL);
             resp_ = resp;
             playlink_ = url;
-            segment_ = MediaBase::create(get_io_service(), url);
-            assert(segment_ != NULL);
+            media_ = MediaBase::create(get_io_service(), url);
+            assert(media_ != NULL);
             state_ = SegmentSource::State::segment_opening;
-            segment_->async_open(
+            media_->async_open(
                 boost::bind(&SegmentSource::hand_async_open, this, _1));
         }
 
@@ -86,11 +84,6 @@ namespace ppbox
             } else {
                 source_ = SourceBase::create(get_io_service(), playlink_.protocol());
                 assert(source_);
-                update_segments();
-                update_video_info();
-                //source_strategy_ = SourceStrategy::create("full", segments_);
-                //assert(source_strategy_);
-                //reset();
                 state_ = SegmentSource::State::segment_opened;
             }
             resp_(ec);
@@ -220,11 +213,11 @@ namespace ppbox
             bool is_next_segment, 
             error_code & ec)
         {
-            assert(segment_ != NULL);
-            assert(source_strategy_ != NULL);
+            assert(media_ != NULL);
+            assert(strategy_ != NULL);
             ec.clear();
             close_segment(ec); // TODO: 错误码是否需要处理
-            if (!is_next_segment || source_strategy_->next_segment(
+            if (!is_next_segment || strategy_->next_segment(
                 true, 
                 cur_segment_)) {
                     open_request(ec);
@@ -269,7 +262,7 @@ namespace ppbox
                 LOG_WARN("[close_request] url: " << cur_segment_.url.to_string() 
                     << ", begin: " << cur_segment_.begin << ", end: " << cur_segment_.end 
                     << ", offset: " << cur_segment_.position);
-                source()->close(0, ec);
+                source()->close(ec);
                 source_closed_ = true;
             }
             return ec;
@@ -283,32 +276,10 @@ namespace ppbox
             return ec;
         }
 
-        void SegmentSource::update_segments(void)
-        {
-            assert(segment_);
-            segments_.clear();
-            boost::uint32_t size = segment_->segment_count();
-            for (boost::uint32_t i = 0; i < size; ++i) {
-                SegmentInfoEx infoEx;
-                segment_->segment_info(i, infoEx);
-                boost::system::error_code lec;
-                segment_->segment_url(i, infoEx.url, lec);
-                segments_.push_back(infoEx);
-            }
-        }
-
-        void SegmentSource::update_video_info(void)
-        {
-            assert(segment_);
-            boost::system::error_code ec;
-            segment_->get_info(video_info_, ec);
-            assert(!ec);
-        }
-
         void SegmentSource::reset(void)
         {
             boost::system::error_code ec;
-            source_strategy_->on_seek(0, cur_segment_, ec);
+            strategy_->seek(0, cur_segment_, ec);
             has_seek_ = true;
         }
 
@@ -317,12 +288,17 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             assert(state_ >= SegmentSource::State::segment_opened);
-            assert(source_strategy_);
-            if (!source_strategy_->on_seek(offset, cur_segment_, ec)) {
+            assert(strategy_);
+            if (!strategy_->seek(offset, cur_segment_, ec)) {
                 has_seek_ = true;
             }
             return ec;
         }
+
+        //error_code SegmentSource::seek(
+        //    boost::uint64_t offset, 
+        //    boost::uint64_t size,
+        //    boost::system::error_code & ec);
 
         error_code SegmentSource::seek(
             boost::uint32_t segment_index, 
@@ -330,7 +306,7 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             assert(state_ >= SegmentSource::State::segment_opened);
-            if (!source_strategy_->on_seek(
+            if (!strategy_->seek(
                 segment_index, 
                 offset, 
                 cur_segment_, 
@@ -349,58 +325,48 @@ namespace ppbox
         }
 
         void SegmentSource::set_strategy(
-            SourceStrategy * strategy)
+            Strategy * strategy)
         {
-            source_strategy_ = strategy;
-        }
-
-        std::vector<SegmentInfoEx> const & SegmentSource::segments(void) const
-        {
-            return segments_;
-        }
-
-        MediaInfo const & SegmentSource::mediainfo(void) const
-        {
-            return video_info_;
+            strategy_ = strategy;
         }
 
         error_code SegmentSource::cancel(
-            size_t segment, 
             boost::system::error_code & ec)
         {
             // 接口限制单线程调用
             ec.clear();
             if (state_ == SegmentSource::State::segment_opening) {
-                segment_->cancel();
+                media()->cancel();
             } else if (state_ == SegmentSource::State::source_opening) {
-                source()->cancel(segment, ec);
+                // source()->cancel(ec);
             }
             return ec;
         }
 
         error_code SegmentSource::close(
-            size_t segment, 
             boost::system::error_code & ec)
         {
             ec.clear();
             if (state_ == SegmentSource::State::source_opened) {
-                source()->close(segment, ec);
+                source()->close(ec);
             }
             if (state_ >= SegmentSource::State::segment_opened) {
-                segment_->close();
+                media()->close();
             }
+            //media()->close();
+            //if (source_is)
+            //source()->close();
             return ec;
         }
 
         boost::uint64_t SegmentSource::total(
             error_code & ec)
         {
-            ec.clear();
-            boost::uint64_t size = 0;
-            for (boost::uint32_t i = 0; i < segments_.size(); ++i) {
-                size += segments_[i].size;
+            if (strategy_) {
+                return strategy_->size();
+            } else {
+                return 0;
             }
-            return size;
         }
 
         error_code SegmentSource::set_non_block(
@@ -437,7 +403,12 @@ namespace ppbox
             return true;
         }
 
-        SourceBase * SegmentSource::source(void)
+        MediaBase * SegmentSource::media(void) const
+        {
+            return media_;
+        }
+
+        SourceBase * SegmentSource::source(void) const
         {
             return source_;
         }

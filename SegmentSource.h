@@ -5,7 +5,7 @@
 
 #include "ppbox/data/SourceBase.h"
 #include "ppbox/data/DataStatistic.h"
-#include "ppbox/data/strategy/SourceStrategy.h"
+#include "ppbox/data/strategy/Strategy.h"
 
 #include <ppbox/cdn/Cdn.h>
 #include <framework/string/Url.h>
@@ -93,11 +93,11 @@ namespace ppbox
 
             void set_time_out(boost::uint32_t time);
 
-            void set_strategy(SourceStrategy * strategy);
+            void set_strategy(Strategy * strategy);
 
-            std::vector<SegmentInfoEx> const & segments(void) const;
+            MediaBase * media(void) const;
 
-            MediaInfo const & mediainfo(void) const;
+            SourceBase * source(void) const;
 
         private:
             // implement util::stream::Source
@@ -139,16 +139,12 @@ namespace ppbox
             boost::system::error_code hand_seek(
                 boost::system::error_code & ec);
 
-            SourceBase * source(void);
-
         private:
-            MediaBase * segment_;
+            MediaBase * media_;
             SourceBase * source_;
             framework::string::Url playlink_;
 
-            SourceStrategy * source_strategy_;
-            std::vector<SegmentInfoEx> segments_;
-            MediaInfo video_info_;
+            Strategy * strategy_;
             bool source_closed_;
             bool has_seek_;
             boost::uint32_t time_out_;

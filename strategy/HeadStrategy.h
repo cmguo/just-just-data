@@ -1,35 +1,33 @@
-// HeadSourceStrategy.h
+// HeadStrategy.h
 
-#ifndef     _PPBOX_DATA_HEAD_SOURCE_STRATEGY_
-#define     _PPBOX_DATA_HEAD_SOURCE_STRATEGY_
+#ifndef     _PPBOX_DATA_HEAD_STRATEGY_
+#define     _PPBOX_DATA_HEAD_STRATEGY_
 
-#include <ppbox/data/strategy/SourceStrategy.h>
+#include <ppbox/data/strategy/Strategy.h>
 
 namespace ppbox
 {
     namespace data
     {
 
-        class HeadSourceStrategy
-            : public SourceStrategy
+        class HeadStrategy
+            : public Strategy
         {
         public:
-            HeadSourceStrategy(
-                std::vector<SegmentInfoEx> const & segments,
-                MediaInfo const & video_info);
+            HeadStrategy(MediaBase & media);
 
-            virtual ~HeadSourceStrategy();
+            virtual ~HeadStrategy();
 
             virtual bool next_segment(
                 bool is_next,
                 SegmentInfoEx & info);
 
-            virtual boost::system::error_code on_seek(
+            virtual boost::system::error_code seek(
                 size_t offset,
                 SegmentInfoEx & info, 
                 boost::system::error_code & ec);
 
-            virtual boost::system::error_code on_seek(
+            virtual boost::system::error_code seek(
                 boost::uint32_t segment_index,
                 size_t offset, 
                 SegmentInfoEx & info, 
@@ -39,9 +37,9 @@ namespace ppbox
 
         };
 
-        PPBOX_REGISTER_STRATEGY(head, HeadSourceStrategy);
+        PPBOX_REGISTER_STRATEGY(head, HeadStrategy);
 
     }
 }
 
-#endif // End _PPBOX_DATA_HEAD_SOURCE_STRATEGY_
+#endif // End _PPBOX_DATA_HEAD_STRATEGY_

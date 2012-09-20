@@ -1,7 +1,7 @@
-// HeadSourceStrategy.cpp
+// BodyStrategy.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/strategy/BodySourceStrategy.h"
+#include "ppbox/data/strategy/BodyStrategy.h"
 
 using namespace boost::system;
 
@@ -9,73 +9,77 @@ namespace ppbox
 {
     namespace data
     {
-        BodySourceStrategy::BodySourceStrategy(
-            std::vector<SegmentInfoEx> const & segments,
-            MediaInfo const & video_info)
-            : SourceStrategy(segments, video_info)
+        BodyStrategy::BodyStrategy(MediaBase & media)
+            : Strategy(media)
         {
         }
 
-        BodySourceStrategy::~BodySourceStrategy()
+        BodyStrategy::~BodyStrategy()
         {
         }
 
-        bool BodySourceStrategy::next_segment(
+        bool BodyStrategy::next_segment(
             bool is_next, 
             SegmentInfoEx & info)
         {
-            bool res = SourceStrategy::next_segment(is_next, info);
-            if (res) {
+            bool res = false;
+            is_next ? pos_++ : pos_;
+            if (pos_ < media_.segment_count()) {
+                media_.segment_info(pos_, info);
+                info.try_times = 0;
                 info.begin = info.head_size;
                 info.end = info.size;
-                info.size = info.end - info.begin;
                 info.position = 0;
+                error_code ec;
+                media_.segment_url(pos_, info.url, ec);
+                // TODO: ´íÎóÂë´¦Àí
+                res = true;
+            } else {
+                pos_--;
+                res = false;
             }
             return res;
         }
 
-        error_code BodySourceStrategy::on_seek(
+        error_code BodyStrategy::seek(
             size_t offset,
             SegmentInfoEx & info, 
             boost::system::error_code & ec)
         {
-            bool find = false;
-            for (boost::uint32_t i = 0; i < segments_.size(); ++i) {
-                if (offset <= (segments_[i].size-segments_[i].head_size)) {
-                    info = segments_[i];
-                    info.begin = info.head_size;
+            ec = framework::system::logic_error::out_of_range;
+            for (boost::uint32_t i = 0; i < media_.segment_count(); ++i) {
+                media_.segment_info(i, info);
+                if (offset < (info.size - info.head_size)) {
+                    info.begin = offset + info.head_size;
                     info.end = info.size;
-                    info.position = offset;
+                    info.position = offset + info.head_size;
                     info.size = info.end - info.begin;
-                    find = true;
                     pos_ = i;
+                    ec.clear();
                     break;
                 } else {
-                    offset -= (segments_[i].size-segments_[i].head_size);
+                    offset -= (info.size - info.head_size);
                 }
-            }
-            if (!find) {
-                ec = framework::system::logic_error::out_of_range;
             }
             return ec;
         }
 
-        error_code BodySourceStrategy::on_seek(
+        error_code BodyStrategy::seek(
             boost::uint32_t segment_index,
             size_t offset, 
             SegmentInfoEx & info, 
             boost::system::error_code & ec)
         {
-            if (segment_index < segments_.size()) {
-                info = segments_[segment_index];
+            if (segment_index < media_.segment_count()) {
+                media_.segment_info(segment_index, info);
                 if (offset > (info.size - info.head_size)) {
                     ec = framework::system::logic_error::out_of_range;
                 } else {
-                    info.begin = info.head_size;
-                    info.end = info.size;
-                    info.position = offset;
-                    info.size = info.end - info.begin;
                     pos_ = segment_index;
+                    info.begin = offset + info.head_size;
+                    info.end = info.size;
+                    info.size = info.end - info.begin;
+                    info.position = offset + info.head_size;
                 }
             } else {
                 ec = framework::system::logic_error::out_of_range;
@@ -83,11 +87,13 @@ namespace ppbox
             return ec;
         }
 
-        std::size_t BodySourceStrategy::size(void)
+        std::size_t BodyStrategy::size(void)
         {
             std::size_t length = 0;
-            for (boost::uint32_t i = 0; i < segments_.size(); ++i) {
-                length += (segments_[i].size - segments_[i].head_size);
+            SegmentInfo tmp;
+            for (boost::uint32_t i = 0; i < media_.segment_count(); ++i) {
+                media_.segment_info(i, tmp);
+                length += (tmp.size - tmp.head_size);
             }
             return length;
         }

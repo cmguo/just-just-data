@@ -1,37 +1,40 @@
-// CdnTailStrategy.cpp
+// BigTailStrategy.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/strategy/CdnTailStrategy.h"
+#include "ppbox/data/strategy/BigTailStrategy.h"
 
 namespace ppbox
 {
     namespace data
     {
-        CdnTailStrategy::CdnTailStrategy(
-            std::vector<SegmentInfoEx> const & segments,
-            MediaInfo const & video_info)
-            : SourceStrategy(segments, video_info)
+        BigTailStrategy::BigTailStrategy(MediaBase & media)
+            : Strategy(media)
         {
-            assert(!segments.empty());
-            boost::uint64_t head_size = segments[0].offset;
+            assert(media_.segment_count() > 0);
+            SegmentInfo tmp;
+            media_.segment_info(0, tmp);
+            boost::uint64_t head_size = tmp.offset;
             boost::uint64_t body_size = 0;
-            for (boost::uint32_t i = 0; i < segments.size(); ++i) {
-                body_size += (segments[i].size - segments[i].head_size);
+            for (boost::uint32_t i = 0; i < media_.segment_count(); ++i) {
+                media_.segment_info(i, tmp);
+                body_size += (tmp.size - tmp.head_size);
             }
-
             info_.begin = head_size + body_size;
-            info_.end = video_info.file_size;
-            info_.url = video_info.cdn_url;
+            boost::system::error_code ec;
+            MediaInfo media_info;
+            media_.get_info(media_info, ec);
+            info_.end = media_info.file_size;
+            info_.url = media_info.cdn_url;
             info_.size = info_.end - info_.begin;
             info_.try_times = 0;
             info_.position = 0;
         }
 
-        CdnTailStrategy::~CdnTailStrategy()
+        BigTailStrategy::~BigTailStrategy()
         {
         }
 
-        bool CdnTailStrategy::next_segment(
+        bool BigTailStrategy::next_segment(
             bool is_next,
             SegmentInfoEx & info)
         {
@@ -43,7 +46,7 @@ namespace ppbox
             return res;
         }
 
-        boost::system::error_code CdnTailStrategy::on_seek(
+        boost::system::error_code BigTailStrategy::seek(
             size_t offset,
             SegmentInfoEx & info, 
             boost::system::error_code & ec)
@@ -58,7 +61,7 @@ namespace ppbox
             return ec;
         }
 
-        boost::system::error_code CdnTailStrategy::on_seek(
+        boost::system::error_code BigTailStrategy::seek(
             boost::uint32_t segment_index,
             size_t offset, 
             SegmentInfoEx & info, 
@@ -74,9 +77,9 @@ namespace ppbox
             return ec;
         }
 
-        std::size_t CdnTailStrategy::size(void)
+        std::size_t BigTailStrategy::size(void)
         {
-            return info_.size;
+            return (std::size_t)info_.size;
         }
     }
 }

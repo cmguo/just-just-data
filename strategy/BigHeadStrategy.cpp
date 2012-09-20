@@ -1,31 +1,34 @@
-// CdnHeadStrategy.cpp
+//  BigHeadStrategy.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/strategy/CdnHeadStrategy.h"
+#include "ppbox/data/strategy/BigHeadStrategy.h"
 
 namespace ppbox
 {
     namespace data
     {
-        CdnHeadStrategy::CdnHeadStrategy(
-            std::vector<SegmentInfoEx> const & segments,
-            MediaInfo const & video_info)
-            : SourceStrategy(segments, video_info)
+        BigHeadStrategy::BigHeadStrategy(MediaBase & media)
+            : Strategy(media)
         {
-            assert(!segments.empty());
+            assert(media_.segment_count() > 0);
+            SegmentInfo sinfo;
+            media_.segment_info(0, sinfo);
             info_.begin = 0;
-            info_.end = segments[0].offset;
-            info_.url = video_info.cdn_url;
+            info_.end = sinfo.offset;
+            MediaInfo minfo;
+            boost::system::error_code ec;
+            media_.get_info(minfo, ec);
+            info_.url = minfo.cdn_url;
             info_.size = info_.end - info_.begin;
             info_.try_times = 0;
             info_.position = 0; // 已经下载的数据大小
         }
 
-        CdnHeadStrategy::~CdnHeadStrategy()
+        BigHeadStrategy::~BigHeadStrategy()
         {
         }
 
-        bool CdnHeadStrategy::next_segment(
+        bool BigHeadStrategy::next_segment(
             bool is_next,
             SegmentInfoEx & info)
         {
@@ -37,7 +40,7 @@ namespace ppbox
             return res;
         }
 
-        boost::system::error_code CdnHeadStrategy::on_seek(
+        boost::system::error_code BigHeadStrategy::seek(
             size_t offset,
             SegmentInfoEx & info, 
             boost::system::error_code & ec)
@@ -52,7 +55,7 @@ namespace ppbox
             return ec;
         }
 
-        boost::system::error_code CdnHeadStrategy::on_seek(
+        boost::system::error_code BigHeadStrategy::seek(
             boost::uint32_t segment_index,
             size_t offset, 
             SegmentInfoEx & info, 
@@ -68,9 +71,9 @@ namespace ppbox
             return ec;
         }
 
-        std::size_t CdnHeadStrategy::size(void)
+        std::size_t BigHeadStrategy::size(void)
         {
-            return info_.size;
+            return (std::size_t)info_.size;
         }
     }
 }

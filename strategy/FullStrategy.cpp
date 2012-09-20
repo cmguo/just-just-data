@@ -1,7 +1,7 @@
-// SourceStrategy.cpp
+// FullStrategy.cpp
 
 #include "ppbox/data/Common.h"
-#include <ppbox/data/strategy/SourceStrategy.h>
+#include "ppbox/data/strategy/FullStrategy.h"
 
 using namespace boost::system;
 
@@ -9,64 +9,31 @@ namespace ppbox
 {
     namespace data
     {
-        std::map< std::string, SourceStrategy::register_type > & SourceStrategy::strategy_map()
-        {
-            static std::map< std::string, SourceStrategy::register_type > get_map;
-            return get_map;
-        }
 
-        void SourceStrategy::regist_strategy(
-            std::string const & type, 
-            SourceStrategy::register_type func)
-        {
-            strategy_map().insert(std::make_pair(type, func));
-        }
-
-        SourceStrategy * SourceStrategy::create(
-            std::string const & type, 
-            std::vector<SegmentInfoEx> const & segments,
-            MediaInfo const & video_info)
-        {
-            std::map<std::string, SourceStrategy::register_type >::iterator iter = 
-                strategy_map().find(type);
-            if (strategy_map().end() == iter) {
-                return NULL;
-            }
-            return iter->second(segments, video_info);
-        }
-
-        void SourceStrategy::destory(SourceStrategy* & strategy)
-        {
-            delete strategy;
-            strategy = NULL;
-        }
-
-        SourceStrategy::SourceStrategy(
-            std::vector<SegmentInfoEx> const & segments,
-            MediaInfo const & video_info)
-            : segments_(segments)
-            , video_info_(video_info)
-            , pos_(0)
+        FullStrategy::FullStrategy(MediaBase & media)
+            : Strategy(media)
         {
         }
 
-        SourceStrategy::~SourceStrategy()
+        FullStrategy::~FullStrategy()
         {
         }
 
-        bool SourceStrategy::next_segment(
+        bool FullStrategy::next_segment(
             bool is_next,
             SegmentInfoEx & info)
         {
-            assert(!segments_.empty());
             bool res = false;
             is_next ? pos_++ : pos_;
-            if (pos_ < segments_.size()) {
-                info = segments_[pos_];
+            if (pos_ < media_.segment_count()) {
+                media_.segment_info(pos_, info);
                 info.try_times = 0;
                 info.begin = 0;
                 info.end = boost::uint64_t(-1);
                 info.position = 0;
+                error_code ec;
+                media_.segment_url(pos_, info.url, ec);
+                // TODO: ´íÎóÂë´¦Àí
                 res = true;
             } else {
                 pos_--;
@@ -75,39 +42,37 @@ namespace ppbox
             return res;
         }
 
-        error_code SourceStrategy::on_seek(
+        error_code FullStrategy::seek(
             size_t offset,
             SegmentInfoEx & info, 
             error_code & ec)
         {
-            bool find = false;
-            for (boost::uint32_t i = 0; i < segments_.size(); ++i) {
-                if (offset <= segments_[i].size) {
-                    info = segments_[i];
+            ec = framework::system::logic_error::out_of_range;
+            for (boost::uint32_t i = 0; i < media_.segment_count(); ++i) {
+                media_.segment_info(i, info);
+                if (offset < info.size) {
                     info.begin = offset;
                     info.end = info.size;
+                    info.position = offset;
                     info.size = info.end - info.begin;
-                    find = true;
                     pos_ = i;
+                    ec.clear();
                     break;
                 } else {
-                    offset -= segments_[i].size;
+                    offset -= info.size;
                 }
-            }
-            if (!find) {
-                ec = framework::system::logic_error::out_of_range;
             }
             return ec;
         }
 
-        error_code SourceStrategy::on_seek(
+        error_code FullStrategy::seek(
             boost::uint32_t segment_index,
             size_t offset, 
             SegmentInfoEx & info, 
             error_code & ec)
         {
-            if (segment_index < segments_.size()) {
-                info = segments_[segment_index];
+            if (segment_index < media_.segment_count()) {
+                media_.segment_info(segment_index, info);
                 if (offset > info.size) {
                     ec = framework::system::logic_error::out_of_range;
                 } else {
@@ -123,11 +88,13 @@ namespace ppbox
             return ec;
         }
 
-        std::size_t SourceStrategy::size(void)
+        std::size_t FullStrategy::size(void)
         {
             std::size_t length = 0;
-            for (boost::uint32_t i = 0; i < segments_.size(); ++i) {
-                length += segments_[i].size;
+            SegmentInfo tmp;
+            for (boost::uint32_t i = 0; i < media_.segment_count(); ++i) {
+                media_.segment_info(i, tmp);
+                length += tmp.size;
             }
             return length;
         }

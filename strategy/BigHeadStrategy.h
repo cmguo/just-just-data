@@ -1,35 +1,33 @@
-// CdnHeadStrategy.h
+// BigHeadStrategy.h
 
-#ifndef     _PPBOX_DATA_CDN_HAED_STRATEGY_
-#define     _PPBOX_DATA_CDN_HAED_STRATEGY_
+#ifndef     _PPBOX_DATA_BIG_HAED_STRATEGY_
+#define     _PPBOX_DATA_BIG_HAED_STRATEGY_
 
-#include <ppbox/data/strategy/SourceStrategy.h>
+#include <ppbox/data/strategy/Strategy.h>
 
 namespace ppbox
 {
     namespace data
     {
 
-        class CdnHeadStrategy
-            : public SourceStrategy
+        class BigHeadStrategy
+            : public Strategy
         {
         public:
-            CdnHeadStrategy(
-                std::vector<SegmentInfoEx> const & segments,
-                MediaInfo const & video_info);
+            BigHeadStrategy(MediaBase & media);
 
-            virtual ~CdnHeadStrategy();
+            virtual ~BigHeadStrategy();
 
             virtual bool next_segment(
                 bool is_next,
                 SegmentInfoEx & info);
 
-            virtual boost::system::error_code on_seek(
+            virtual boost::system::error_code seek(
                 size_t offset,
                 SegmentInfoEx & info, 
                 boost::system::error_code & ec);
 
-            virtual boost::system::error_code on_seek(
+            virtual boost::system::error_code seek(
                 boost::uint32_t segment_index,
                 size_t offset, 
                 SegmentInfoEx & info, 
@@ -42,9 +40,9 @@ namespace ppbox
 
         };
 
-        PPBOX_REGISTER_STRATEGY(cdnh, CdnHeadStrategy);
+        PPBOX_REGISTER_STRATEGY(bigh, BigHeadStrategy);
 
     }
 }
 
-#endif // End _PPBOX_DATA_CDN_HAED_STRATEGY_
+#endif // End _PPBOX_DATA_BIG_HAED_STRATEGY_

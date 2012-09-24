@@ -16,19 +16,29 @@ namespace ppbox
             : SegmentInfo
         {
             SegmentInfoEx()
-                : try_times(0)
-                , position(0)
+                : index(0)
                 , begin(0)
                 , end(0)
-
+                , big_offset(0)
+                , small_offset(0)
             {
             }
 
-            boost::uint32_t try_times;
-            boost::uint64_t position;
+            boost::uint32_t index;
             boost::uint64_t begin;
             boost::uint64_t end;
-            framework::string::Url url;
+            // 相对于所有的偏移量
+            boost::uint64_t big_offset;
+            // 是相对当前段的偏移量
+            boost::uint64_t small_offset;
+
+            bool operator<(
+                SegmentInfoEx const & l)
+            {
+                return (index < l.index || 
+                    (index == l.index && begin < l.begin));
+            }
+
         };
 
 #define PPBOX_REGISTER_STRATEGY(n, c) \
@@ -62,20 +72,25 @@ namespace ppbox
 
             virtual bool next_segment(
                 bool is_next,
-                SegmentInfoEx & info);
+                SegmentInfoEx & info) = 0;
 
-            virtual boost::system::error_code seek(
+            virtual boost::system::error_code byte_seek(
                 size_t offset,
                 SegmentInfoEx & info, 
-                boost::system::error_code & ec);
+                boost::system::error_code & ec) = 0;
 
-            virtual boost::system::error_code seek(
-                boost::uint32_t segment_index,
-                size_t offset, 
+            virtual boost::system::error_code time_seek(
+                boost::uint32_t time_ms, 
                 SegmentInfoEx & info, 
-                boost::system::error_code & ec);
+                boost::system::error_code & ec) = 0;
 
-            virtual std::size_t size(void);
+            //virtual boost::system::error_code seek(
+            //    boost::uint32_t segment_index,
+            //    size_t offset, 
+            //    SegmentInfoEx & info, 
+            //    boost::system::error_code & ec) = 0;
+
+            virtual std::size_t size(void) = 0;
 
         protected:
             MediaBase & media_;

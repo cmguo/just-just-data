@@ -3,6 +3,8 @@
 #include "ppbox/data/Common.h"
 #include "ppbox/data/strategy/BigTailStrategy.h"
 
+using namespace boost::system;
+
 namespace ppbox
 {
     namespace data
@@ -24,10 +26,9 @@ namespace ppbox
             MediaInfo media_info;
             media_.get_info(media_info, ec);
             info_.end = media_info.file_size;
-            info_.url = media_info.cdn_url;
             info_.size = info_.end - info_.begin;
-            info_.try_times = 0;
-            info_.position = 0;
+            info_.small_offset = info_.begin;
+            info_.big_offset = info_.begin;
         }
 
         BigTailStrategy::~BigTailStrategy()
@@ -46,8 +47,8 @@ namespace ppbox
             return res;
         }
 
-        boost::system::error_code BigTailStrategy::seek(
-            size_t offset,
+        error_code BigTailStrategy::byte_seek(
+            size_t offset, 
             SegmentInfoEx & info, 
             boost::system::error_code & ec)
         {
@@ -56,24 +57,18 @@ namespace ppbox
                 ec = framework::system::logic_error::out_of_range;
             } else {
                 info = info_;
-                info.position = offset;
+                info.small_offset = offset;
+                info.big_offset = offset;
             }
             return ec;
         }
 
-        boost::system::error_code BigTailStrategy::seek(
-            boost::uint32_t segment_index,
-            size_t offset, 
+        error_code BigTailStrategy::time_seek(
+            boost::uint32_t time_ms, 
             SegmentInfoEx & info, 
             boost::system::error_code & ec)
         {
-            ec.clear();
-            if (info_.size == 0 || segment_index > 0 || offset > info_.size) {
-                ec = framework::system::logic_error::out_of_range;
-            } else {
-                info = info_;
-                info.position = offset;
-            }
+            ec = framework::system::logic_error::not_supported;
             return ec;
         }
 

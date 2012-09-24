@@ -26,35 +26,34 @@ namespace ppbox
             is_next ? pos_++ : pos_;
             if (pos_ < media_.segment_count()) {
                 media_.segment_info(pos_, info);
-                info.try_times = 0;
+                info.index = pos_;
                 info.begin = info.head_size;
                 info.end = info.size;
-                info.position = 0;
-                error_code ec;
-                media_.segment_url(pos_, info.url, ec);
-                // TODO: ´íÎóÂë´¦Àí
+                info.small_offset = 0;
                 res = true;
             } else {
                 pos_--;
-                res = false;
             }
             return res;
         }
 
-        error_code BodyStrategy::seek(
+        error_code BodyStrategy::byte_seek(
             size_t offset,
             SegmentInfoEx & info, 
             boost::system::error_code & ec)
         {
             ec = framework::system::logic_error::out_of_range;
+            std::size_t offset_t = offset;
             for (boost::uint32_t i = 0; i < media_.segment_count(); ++i) {
                 media_.segment_info(i, info);
                 if (offset < (info.size - info.head_size)) {
                     info.begin = offset + info.head_size;
                     info.end = info.size;
-                    info.position = offset + info.head_size;
+                    info.small_offset = offset + info.head_size;
+                    info.big_offset = offset_t;
                     info.size = info.end - info.begin;
                     pos_ = i;
+                    info.index = 0;
                     ec.clear();
                     break;
                 } else {
@@ -64,26 +63,12 @@ namespace ppbox
             return ec;
         }
 
-        error_code BodyStrategy::seek(
-            boost::uint32_t segment_index,
-            size_t offset, 
+        error_code BodyStrategy::time_seek(
+            boost::uint32_t time_t,
             SegmentInfoEx & info, 
             boost::system::error_code & ec)
         {
-            if (segment_index < media_.segment_count()) {
-                media_.segment_info(segment_index, info);
-                if (offset > (info.size - info.head_size)) {
-                    ec = framework::system::logic_error::out_of_range;
-                } else {
-                    pos_ = segment_index;
-                    info.begin = offset + info.head_size;
-                    info.end = info.size;
-                    info.size = info.end - info.begin;
-                    info.position = offset + info.head_size;
-                }
-            } else {
-                ec = framework::system::logic_error::out_of_range;
-            }
+            ec = framework::system::logic_error::not_supported;
             return ec;
         }
 

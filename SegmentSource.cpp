@@ -112,7 +112,7 @@ namespace ppbox
             ec = source_error_;
             while (1) {
                 if (ec) {
-                } else if (cur_segment_.position >= cur_segment_.size) {
+                } else if (cur_segment_.small_offset >= cur_segment_.size) {
                     ec = boost::asio::error::eof;
                 } else if (source_closed_ && open_segment(false, ec)) {
                 } else if (source()->is_open(ec)) {
@@ -126,7 +126,7 @@ namespace ppbox
                             << " bytes_transferred: " << bytes_transferred);
                     }
                     increase_download_byte(bytes_transferred);
-                    cur_segment_.position += bytes_transferred;
+                    cur_segment_.small_offset += bytes_transferred;
                     if (ec && !source()->continuable(ec)) {
                         //LOG_S(framework::logger::Logger::kLevelAlarm, 
                         //    "[prepare_read] read_some: " << ec.message() << 
@@ -136,7 +136,7 @@ namespace ppbox
                         if (ec == boost::asio::error::eof) {
                             //LOG_S(framework::logger::Logger::kLevelDebug, 
                             //    "[prepare_read] read eof, offset: " << cur_segment_.position);
-                            LOG_WARN("[prepare_read] read eof, offset: " << cur_segment_.position);
+                            LOG_WARN("[prepare_read] read eof, offset: " << cur_segment_.small_offset);
                         }
                     }
                 } else {
@@ -191,7 +191,7 @@ namespace ppbox
                     return false;
                 }
             } else if (ec == boost::asio::error::eof) {
-                if (cur_segment_.position >= cur_segment_.size) {
+                if (cur_segment_.small_offset >= cur_segment_.size) {
                     return true;
                 } else if (cur_segment_.try_times < max_try_) {
                     ec = boost::asio::error::connection_aborted;
@@ -203,6 +203,9 @@ namespace ppbox
                 }
             }
             // source()->on_error(ec);
+            //if (ec) {
+            //    media()->on_error(ec);
+            //}
             if (ec) {
                 source_error_ = ec;
             }
@@ -236,11 +239,11 @@ namespace ppbox
             //    << " range: " << cur_segment_.begin + cur_segment_.position
             //    << " : " << cur_segment_.end);
             LOG_WARN("[open_request] url: " << cur_segment_.url.to_string() 
-                << " range: " << cur_segment_.begin + cur_segment_.position
+                << " range: " << cur_segment_.begin + cur_segment_.small_offset
                 << " : " << cur_segment_.end);
             source()->open(
                 cur_segment_.url, 
-                cur_segment_.begin + cur_segment_.position, 
+                cur_segment_.begin + cur_segment_.small_offset, 
                 cur_segment_.end, 
                 ec);
             cur_segment_.try_times++;
@@ -261,7 +264,7 @@ namespace ppbox
                 //    << ", offset: " << cur_segment_.position);
                 LOG_WARN("[close_request] url: " << cur_segment_.url.to_string() 
                     << ", begin: " << cur_segment_.begin << ", end: " << cur_segment_.end 
-                    << ", offset: " << cur_segment_.position);
+                    << ", offset: " << cur_segment_.small_offset);
                 source()->close(ec);
                 source_closed_ = true;
             }
@@ -279,40 +282,39 @@ namespace ppbox
         void SegmentSource::reset(void)
         {
             boost::system::error_code ec;
-            strategy_->seek(0, cur_segment_, ec);
+            strategy_->byte_seek(0, cur_segment_, ec);
             has_seek_ = true;
         }
 
-        error_code SegmentSource::seek(
+        error_code SegmentSource::byte_seek(
             size_t offset, 
             boost::system::error_code & ec)
         {
             assert(state_ >= SegmentSource::State::segment_opened);
             assert(strategy_);
-            if (!strategy_->seek(offset, cur_segment_, ec)) {
+            if (!strategy_->byte_seek(offset, cur_segment_, ec)) {
                 has_seek_ = true;
             }
             return ec;
         }
 
-        //error_code SegmentSource::seek(
-        //    boost::uint64_t offset, 
-        //    boost::uint64_t size,
-        //    boost::system::error_code & ec);
-
-        error_code SegmentSource::seek(
-            boost::uint32_t segment_index, 
+        error_code SegmentSource::byte_seek(
             size_t offset, 
+            size_t size, 
             boost::system::error_code & ec)
         {
-            assert(state_ >= SegmentSource::State::segment_opened);
-            if (!strategy_->seek(
-                segment_index, 
-                offset, 
-                cur_segment_, 
-                ec)) {
-                    has_seek_ = true;
+            byte_seek(offset, ec);
+            if (!ec) {
+                need_size_ = offset + size;
             }
+            return ec;
+        }
+
+        error_code SegmentSource::time_seek(
+            boost::uint32_t time_ms,
+            error_code & ec)
+        {
+            // TODO: й╣ож
             return ec;
         }
 
@@ -367,6 +369,11 @@ namespace ppbox
             } else {
                 return 0;
             }
+        }
+
+        void SegmentSource::current_segment(SegmentInfoEx & info)
+        {
+            info = cur_segment_;
         }
 
         error_code SegmentSource::set_non_block(

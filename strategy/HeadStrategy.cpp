@@ -26,13 +26,10 @@ namespace ppbox
             is_next ? pos_++ : pos_;
             if (pos_ < media_.segment_count()) {
                 media_.segment_info(pos_, info);
-                info.try_times = 0;
+                info.index = pos_;
                 info.begin = 0;
                 info.end = info.head_size;
-                info.position = 0;
-                error_code ec;
-                media_.segment_url(pos_, info.url, ec);
-                // TODO: ´íÎóÂë´¦Àí
+                info.small_offset = 0;
                 res = true;
             } else {
                 pos_--;
@@ -41,20 +38,23 @@ namespace ppbox
             return res;
         }
 
-        error_code HeadStrategy::seek(
+        error_code HeadStrategy::byte_seek(
             size_t offset,
             SegmentInfoEx & info, 
-            boost::system::error_code & ec)
+            error_code & ec)
         {
             ec = framework::system::logic_error::out_of_range;
+            std::size_t offset_t = offset;
             for (boost::uint32_t i = 0; i < media_.segment_count(); ++i) {
                 media_.segment_info(i, info);
                 if (offset < info.head_size) {
                     info.begin = offset;
                     info.end = info.head_size;
-                    info.position = offset;
+                    info.small_offset = offset;
+                    info.big_offset = offset_t;
                     info.size = info.end - info.begin;
                     pos_ = i;
+                    info.index = pos_;
                     ec.clear();
                     break;
                 } else {
@@ -64,28 +64,56 @@ namespace ppbox
             return ec;
         }
 
-        error_code HeadStrategy::seek(
-            boost::uint32_t segment_index,
-            size_t offset, 
+        error_code HeadStrategy::time_seek(
+            boost::uint32_t time_ms, 
             SegmentInfoEx & info, 
-            boost::system::error_code & ec)
+            error_code & ec)
         {
-            if (segment_index < media_.segment_count()) {
-                media_.segment_info(segment_index, info);
-                if (offset > info.head_size) {
-                    ec = framework::system::logic_error::out_of_range;
-                } else {
-                    pos_ = segment_index;
-                    info.begin = offset;
+            ec = framework::system::logic_error::out_of_range;
+            boost::uint32_t time_ms_t = time_ms;
+            boost::uint64_t offset = 0;
+            for (boost::uint32_t i = 0; i < media_.segment_count(); ++i) {
+                media_.segment_info(i, info);
+                if (time_ms < info.duration) {
+                    info.begin = 0;
                     info.end = info.head_size;
+                    info.small_offset = 0;
+                    info.big_offset = offset;
                     info.size = info.end - info.begin;
-                    info.position = offset;
+                    pos_ = i;
+                    info.index = pos_;
+                    ec.clear();
+                    break;
+                } else {
+                    offset += info.head_size;
+                    time_ms -= info.duration;
                 }
-            } else {
-                ec = framework::system::logic_error::out_of_range;
             }
             return ec;
         }
+
+        //error_code HeadStrategy::seek(
+        //    boost::uint32_t segment_index,
+        //    size_t offset, 
+        //    SegmentInfoEx & info, 
+        //    boost::system::error_code & ec)
+        //{
+        //    if (segment_index < media_.segment_count()) {
+        //        media_.segment_info(segment_index, info);
+        //        if (offset > info.head_size) {
+        //            ec = framework::system::logic_error::out_of_range;
+        //        } else {
+        //            pos_ = segment_index;
+        //            info.begin = offset;
+        //            info.end = info.head_size;
+        //            info.size = info.end - info.begin;
+        //            info.position = offset;
+        //        }
+        //    } else {
+        //        ec = framework::system::logic_error::out_of_range;
+        //    }
+        //    return ec;
+        //}
 
         std::size_t HeadStrategy::size(void)
         {

@@ -15,6 +15,13 @@ namespace ppbox
     namespace data
     {
 
+        struct SegmentInfoEx2
+            : public SegmentInfoEx
+        {
+            boost::uint32_t try_times;
+            framework::string::Url url;
+        };
+
         class SegmentSource
             : public SourceBase
             , public DataObserver
@@ -78,13 +85,17 @@ namespace ppbox
                 boost::system::error_code const & ec);
 
         public:
-            boost::system::error_code seek(
+            boost::system::error_code byte_seek(
                 size_t offset, 
                 boost::system::error_code & ec);
 
-            boost::system::error_code seek(
-                boost::uint32_t segment_index, 
+            boost::system::error_code byte_seek(
                 size_t offset, 
+                size_t size, 
+                boost::system::error_code & ec);
+
+            boost::system::error_code time_seek(
+                boost::uint32_t time_ms,
                 boost::system::error_code & ec);
 
             void reset(void);
@@ -94,6 +105,8 @@ namespace ppbox
             void set_time_out(boost::uint32_t time);
 
             void set_strategy(Strategy * strategy);
+
+            void current_segment(SegmentInfoEx & info);
 
             MediaBase * media(void) const;
 
@@ -147,12 +160,13 @@ namespace ppbox
             Strategy * strategy_;
             bool source_closed_;
             bool has_seek_;
+            boost::uint64_t need_size_;
             boost::uint32_t time_out_;
             boost::uint32_t max_try_;
             State::Enum state_;
 
             response_type resp_;
-            SegmentInfoEx cur_segment_;
+            SegmentInfoEx2 cur_segment_;
 
              boost::system::error_code source_error_;
         };

@@ -18,6 +18,7 @@ namespace ppbox
     namespace data
     {
 
+        class MediaBase;
         class SourceBase
             : public util::stream::Source
         {
@@ -87,6 +88,13 @@ namespace ppbox
 
             virtual bool recoverable(
                 boost::system::error_code const & ec);
+
+            void media(MediaBase const *);
+
+            MediaBase const * media(void);
+
+        private:
+            MediaBase const * media_;
 
         private:
             static std::map< std::string, SourceBase::register_type > & source_map();

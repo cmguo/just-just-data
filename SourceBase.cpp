@@ -2,6 +2,7 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/SourceBase.h"
+#include "ppbox/data/MediaBase.h"
 
 #include <boost/bind.hpp>
 
@@ -103,6 +104,16 @@ namespace ppbox
             boost::system::error_code const & ec)
         {
             return false;
+        }
+
+        void SourceBase::media(MediaBase const * media)
+        {
+            media_ = media;
+        }
+
+        MediaBase const * SourceBase::media(void)
+        {
+            return media_;
         }
 
     } // namespace data

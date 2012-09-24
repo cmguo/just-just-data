@@ -53,6 +53,8 @@ namespace ppbox
             boost::uint64_t duration;
         };
 
+        class SourceBase;
+
         class MediaBase
         {
 
@@ -84,6 +86,10 @@ namespace ppbox
             static void destory(MediaBase* & segment);
 
         public:
+            void source(SourceBase const *);
+
+            SourceBase const * source(void);
+
             virtual void set_url(
                 framework::string::Url const & url);
 
@@ -132,6 +138,7 @@ namespace ppbox
 
         private:
             boost::asio::io_service & io_svc_;
+            SourceBase const * source_;
 
         private:
             static std::map<std::string, register_type> & media_map();

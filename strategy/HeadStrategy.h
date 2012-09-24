@@ -22,16 +22,21 @@ namespace ppbox
                 bool is_next,
                 SegmentInfoEx & info);
 
-            virtual boost::system::error_code seek(
+            virtual boost::system::error_code byte_seek(
                 size_t offset,
                 SegmentInfoEx & info, 
                 boost::system::error_code & ec);
 
-            virtual boost::system::error_code seek(
-                boost::uint32_t segment_index,
-                size_t offset, 
+            virtual boost::system::error_code time_seek(
+                boost::uint32_t time_ms,
                 SegmentInfoEx & info, 
                 boost::system::error_code & ec);
+
+            //virtual boost::system::error_code seek(
+            //    boost::uint32_t segment_index,
+            //    size_t offset, 
+            //    SegmentInfoEx & info, 
+            //    boost::system::error_code & ec);
 
             virtual std::size_t size(void);
 

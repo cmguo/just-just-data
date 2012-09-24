@@ -50,34 +50,5 @@ namespace ppbox
         {
         }
 
-        bool Strategy::next_segment(
-            bool is_next,
-            SegmentInfoEx & info)
-        {
-            return false;
-        }
-
-        error_code Strategy::seek(
-            size_t offset,
-            SegmentInfoEx & info, 
-            error_code & ec)
-        {
-            return ec;
-        }
-
-        error_code Strategy::seek(
-            boost::uint32_t segment_index,
-            size_t offset, 
-            SegmentInfoEx & info, 
-            error_code & ec)
-        {
-            return ec;
-        }
-
-        std::size_t Strategy::size(void)
-        {
-            return 0;
-        }
-
     }
 }

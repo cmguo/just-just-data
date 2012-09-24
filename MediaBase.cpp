@@ -2,6 +2,7 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/MediaBase.h"
+#include "ppbox/data/SourceBase.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
@@ -65,6 +66,16 @@ namespace ppbox
             framework::string::Url const &url)
         {
             url_ = url;
+        }
+
+        void MediaBase::source(SourceBase const * source)
+        {
+            source_ = source;
+        }
+
+        SourceBase const * MediaBase::source(void)
+        {
+            return source_;
         }
 
     } // data

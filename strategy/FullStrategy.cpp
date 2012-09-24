@@ -27,13 +27,10 @@ namespace ppbox
             is_next ? pos_++ : pos_;
             if (pos_ < media_.segment_count()) {
                 media_.segment_info(pos_, info);
-                info.try_times = 0;
+                info.index = pos_;
                 info.begin = 0;
                 info.end = boost::uint64_t(-1);
-                info.position = 0;
-                error_code ec;
-                media_.segment_url(pos_, info.url, ec);
-                // TODO: ´íÎóÂë´¦Àí
+                info.small_offset = 0;
                 res = true;
             } else {
                 pos_--;
@@ -42,20 +39,23 @@ namespace ppbox
             return res;
         }
 
-        error_code FullStrategy::seek(
+        error_code FullStrategy::byte_seek(
             size_t offset,
             SegmentInfoEx & info, 
             error_code & ec)
         {
             ec = framework::system::logic_error::out_of_range;
+            std::size_t offset_t = offset;
             for (boost::uint32_t i = 0; i < media_.segment_count(); ++i) {
                 media_.segment_info(i, info);
                 if (offset < info.size) {
                     info.begin = offset;
                     info.end = info.size;
-                    info.position = offset;
+                    info.small_offset = offset;
                     info.size = info.end - info.begin;
+                    info.big_offset = offset_t;
                     pos_ = i;
+                    info.index = pos_;
                     ec.clear();
                     break;
                 } else {
@@ -65,25 +65,28 @@ namespace ppbox
             return ec;
         }
 
-        error_code FullStrategy::seek(
-            boost::uint32_t segment_index,
-            size_t offset, 
+        error_code FullStrategy::time_seek(
+            boost::uint32_t time_ms,
             SegmentInfoEx & info, 
             error_code & ec)
         {
-            if (segment_index < media_.segment_count()) {
-                media_.segment_info(segment_index, info);
-                if (offset > info.size) {
-                    ec = framework::system::logic_error::out_of_range;
-                } else {
-                    pos_ = segment_index;
-                    info.begin = offset;
+            ec = framework::system::logic_error::out_of_range;
+            std::size_t offset = 0;
+            for (boost::uint32_t i = 0; i < media_.segment_count(); ++i) {
+                media_.segment_info(i, info);
+                if (time_ms < info.duration) {
+                    info.begin = 0;
                     info.end = info.size;
-                    info.size = info.end - info.begin;
-                    info.position = offset;
+                    info.small_offset = 0;
+                    info.big_offset = offset;
+                    pos_ = i;
+                    info.index = pos_;
+                    ec.clear();
+                    break;
+                } else {
+                    time_ms -= info.duration;
+                    offset += info.size;
                 }
-            } else {
-                ec = framework::system::logic_error::out_of_range;
             }
             return ec;
         }

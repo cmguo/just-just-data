@@ -85,17 +85,17 @@ namespace ppbox
                 boost::system::error_code const & ec);
 
         public:
-            boost::system::error_code byte_seek(
+            boost::system::error_code seek(
                 size_t offset, 
                 boost::system::error_code & ec);
 
-            boost::system::error_code byte_seek(
+            boost::system::error_code seek(
                 size_t offset, 
                 size_t size, 
                 boost::system::error_code & ec);
 
-            boost::system::error_code time_seek(
-                boost::uint32_t time_ms,
+            boost::system::error_code seek(
+                SegmentInfoEx const & info, 
                 boost::system::error_code & ec);
 
             void reset(void);

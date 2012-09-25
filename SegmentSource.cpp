@@ -286,7 +286,7 @@ namespace ppbox
             has_seek_ = true;
         }
 
-        error_code SegmentSource::byte_seek(
+        error_code SegmentSource::seek(
             size_t offset, 
             boost::system::error_code & ec)
         {
@@ -298,23 +298,22 @@ namespace ppbox
             return ec;
         }
 
-        error_code SegmentSource::byte_seek(
+        error_code SegmentSource::seek(
             size_t offset, 
             size_t size, 
             boost::system::error_code & ec)
         {
-            byte_seek(offset, ec);
+            seek(offset, ec);
             if (!ec) {
                 need_size_ = offset + size;
             }
             return ec;
         }
 
-        error_code SegmentSource::time_seek(
-            boost::uint32_t time_ms,
-            error_code & ec)
+        error_code SegmentSource::seek(
+            SegmentInfoEx const & info, 
+            boost::system::error_code & ec)
         {
-            // TODO: й╣ож
             return ec;
         }
 

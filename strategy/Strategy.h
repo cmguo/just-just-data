@@ -32,11 +32,41 @@ namespace ppbox
             // 是相对当前段的偏移量
             boost::uint64_t small_offset;
 
-            bool operator<(
-                SegmentInfoEx const & l)
+            boost::uint64_t big_beg() const
             {
-                return (index < l.index || 
-                    (index == l.index && begin < l.begin));
+                return big_offset + begin;
+            }
+
+            boost::uint64_t big_end() const
+            {
+                return big_offset + end;
+            }
+
+            boost::uint64_t big_pos() const
+            {
+                return big_offset + small_offset;
+            }
+
+            friend bool operator<(
+                SegmentInfoEx const & l, 
+                SegmentInfoEx const & r)
+            {
+                return (l.index < r.index || 
+                    (l.index == r.index && l.begin < r.begin));
+            }
+
+            friend bool operator==(
+                SegmentInfoEx const & l, 
+                SegmentInfoEx const & r)
+            {
+                return (l.index == r.index && l.begin == r.begin && l.end == r.end);
+            }
+
+            friend bool operator!=(
+                SegmentInfoEx const & l, 
+                SegmentInfoEx const & r)
+            {
+                return !(l == r);
             }
 
         };

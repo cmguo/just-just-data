@@ -84,6 +84,8 @@ namespace ppbox
             } else {
                 source_ = SourceBase::create(get_io_service(), playlink_.protocol());
                 assert(source_);
+                media_->source(source_);
+                source_->media(media_);
                 state_ = SegmentSource::State::segment_opened;
             }
             resp_(ec);

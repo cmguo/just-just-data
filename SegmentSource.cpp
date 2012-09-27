@@ -25,8 +25,8 @@ namespace ppbox
             : SourceBase(io_srv)
             , media_(NULL)
             , source_(NULL)
-            , source_closed_(true)
-            , has_seek_(false)
+            , request_closed_(true)
+            , segment_closed_(true)
             , time_out_(0)
             , max_try_(0)
         {
@@ -95,8 +95,6 @@ namespace ppbox
             util::stream::StreamMutableBuffers const & buffers, 
             boost::system::error_code & ec)
         {
-            if (has_seek_ && hand_seek(ec)) {
-            } // TODO: handseek的错误码没有处理
             return prepare_read(buffers, ec);
         }
 
@@ -116,7 +114,8 @@ namespace ppbox
                 if (ec) {
                 } else if (cur_segment_.small_offset >= cur_segment_.size) {
                     ec = boost::asio::error::eof;
-                } else if (source_closed_ && open_segment(false, ec)) {
+                } else if (segment_closed_ && open_segment(ec)) {
+                } else if (request_closed_ && open_request(ec)) {
                 } else if (source()->is_open(ec)) {
                     // update_segments();
                     framework::timer::TimeCounter tc;
@@ -162,12 +161,12 @@ namespace ppbox
                 bool is_error = handle_error(ec);
                 if (is_error) {
                     if (ec == boost::asio::error::eof) {
-                        open_segment(true, ec);
+                        open_segment(ec);
                         if (ec && !handle_error(ec)) {
                             break;
                         }
                     } else {
-                        open_segment(false, ec);
+                        open_segment(ec);
                     }
                 } else {
                     break;
@@ -215,17 +214,14 @@ namespace ppbox
         }
 
         error_code SegmentSource::open_segment(
-            bool is_next_segment, 
             error_code & ec)
         {
             assert(media_ != NULL);
             assert(strategy_ != NULL);
             ec.clear();
-            close_segment(ec); // TODO: 错误码是否需要处理
-            if (!is_next_segment || strategy_->next_segment(
-                true, 
-                cur_segment_)) {
-                    open_request(ec);
+            close_segment(ec);
+            if (strategy_->next_segment(cur_segment_)) {
+                segment_closed_ = false;
             } else {
                 ec = source_error::no_more_segment;
             }
@@ -240,6 +236,8 @@ namespace ppbox
             //    "[open_request] url: " << cur_segment_.url.to_string() 
             //    << " range: " << cur_segment_.begin + cur_segment_.position
             //    << " : " << cur_segment_.end);
+            source()->media()->segment_url(cur_segment_.index, cur_segment_.url, ec);
+            assert(!ec);
             LOG_WARN("[open_request] url: " << cur_segment_.url.to_string() 
                 << " range: " << cur_segment_.begin + cur_segment_.small_offset
                 << " : " << cur_segment_.end);
@@ -250,7 +248,7 @@ namespace ppbox
                 ec);
             cur_segment_.try_times++;
             state_ = SegmentSource::State::source_opening;
-            source_closed_ = false;
+            request_closed_ = false;
 
             return ec;
         }
@@ -259,7 +257,7 @@ namespace ppbox
             error_code & ec)
         {
             ec.clear();
-            if (!source_closed_ && source()) {
+            if (!request_closed_ && source()) {
                 //LOG_S(framework::logger::Logger::kLevelAlarm,
                 //    "[close_request] url: " << cur_segment_.url.to_string() 
                 //    << ", begin: " << cur_segment_.begin << ", end: " << cur_segment_.end 
@@ -268,7 +266,7 @@ namespace ppbox
                     << ", begin: " << cur_segment_.begin << ", end: " << cur_segment_.end 
                     << ", offset: " << cur_segment_.small_offset);
                 source()->close(ec);
-                source_closed_ = true;
+                request_closed_ = true;
             }
             return ec;
         }
@@ -276,16 +274,16 @@ namespace ppbox
         error_code SegmentSource::close_segment(
             error_code & ec)
         {
-            close_request(ec);
-            state_ = SegmentSource::State::source_not_open;
+            // state_ = SegmentSource::State::source_not_open;
+            segment_closed_ = true;
             return ec;
         }
 
         void SegmentSource::reset(void)
         {
             boost::system::error_code ec;
+            cur_segment_.reset();
             strategy_->byte_seek(0, cur_segment_, ec);
-            has_seek_ = true;
         }
 
         error_code SegmentSource::seek(
@@ -295,7 +293,10 @@ namespace ppbox
             assert(state_ >= SegmentSource::State::segment_opened);
             assert(strategy_);
             if (!strategy_->byte_seek(offset, cur_segment_, ec)) {
-                has_seek_ = true;
+                close_request(ec);
+                // 已经通过byte_seek打开一个segment
+                segment_closed_ = false;
+                source_error_.clear();
             }
             return ec;
         }
@@ -316,14 +317,6 @@ namespace ppbox
             SegmentInfoEx const & info, 
             boost::system::error_code & ec)
         {
-            return ec;
-        }
-
-        error_code SegmentSource::hand_seek(error_code & ec)
-        {
-            close_segment(ec);
-            source_error_.clear();
-            has_seek_ = false;
             return ec;
         }
 

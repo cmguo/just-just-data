@@ -16,7 +16,7 @@ namespace ppbox
             : SegmentInfo
         {
             SegmentInfoEx()
-                : index(0)
+                : index(boost::uint32_t(-1))
                 , begin(0)
                 , end(0)
                 , big_offset(0)
@@ -101,7 +101,6 @@ namespace ppbox
             virtual ~Strategy();
 
             virtual bool next_segment(
-                bool is_next,
                 SegmentInfoEx & info) = 0;
 
             virtual boost::system::error_code byte_seek(
@@ -124,7 +123,6 @@ namespace ppbox
 
         protected:
             MediaBase & media_;
-            boost::uint32_t pos_;
 
         private:
             static std::map<std::string, Strategy::register_type> & strategy_map();

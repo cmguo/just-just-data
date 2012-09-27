@@ -19,20 +19,19 @@ namespace ppbox
         }
 
         bool BodyStrategy::next_segment(
-            bool is_next, 
             SegmentInfoEx & info)
         {
             bool res = false;
-            is_next ? pos_++ : pos_;
-            if (pos_ < media_.segment_count()) {
-                media_.segment_info(pos_, info);
-                info.index = pos_;
+            boost::uint32_t pos = info.index;
+            if (pos < media_.segment_count()) {
+                media_.segment_info(pos, info);
+                info.index = pos;
                 info.begin = info.head_size;
                 info.end = info.size;
                 info.small_offset = 0;
                 res = true;
             } else {
-                pos_--;
+                res = false;
             }
             return res;
         }
@@ -52,8 +51,7 @@ namespace ppbox
                     info.small_offset = offset + info.head_size;
                     info.big_offset = offset_t;
                     info.size = info.end - info.begin;
-                    pos_ = i;
-                    info.index = 0;
+                    info.index = i;
                     ec.clear();
                     break;
                 } else {

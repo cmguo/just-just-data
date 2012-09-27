@@ -11,6 +11,7 @@ namespace ppbox
     {
         BigTailStrategy::BigTailStrategy(MediaBase & media)
             : Strategy(media)
+            , next_flag_(false)
         {
             assert(media_.segment_count() > 0);
             SegmentInfo tmp;
@@ -21,6 +22,7 @@ namespace ppbox
                 media_.segment_info(i, tmp);
                 body_size += (tmp.size - tmp.head_size);
             }
+            info_.index = 0;
             info_.begin = head_size + body_size;
             boost::system::error_code ec;
             MediaInfo media_info;
@@ -36,13 +38,15 @@ namespace ppbox
         }
 
         bool BigTailStrategy::next_segment(
-            bool is_next,
             SegmentInfoEx & info)
         {
             bool res = false;
-            if (!is_next && info_.size != 0) {
+            if (next_flag_) {
+                res = false;
+            } else {
                 info = info_;
                 res = true;
+                next_flag_ = true;
             }
             return res;
         }

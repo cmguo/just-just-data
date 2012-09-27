@@ -20,20 +20,18 @@ namespace ppbox
         }
 
         bool FullStrategy::next_segment(
-            bool is_next,
             SegmentInfoEx & info)
         {
             bool res = false;
-            is_next ? pos_++ : pos_;
-            if (pos_ < media_.segment_count()) {
-                media_.segment_info(pos_, info);
-                info.index = pos_;
+            boost::uint32_t pos = info.index;
+            if (pos < media_.segment_count()) {
+                media_.segment_info(pos, info);
+                info.index = pos;
                 info.begin = 0;
                 info.end = boost::uint64_t(-1);
                 info.small_offset = 0;
                 res = true;
             } else {
-                pos_--;
                 res = false;
             }
             return res;
@@ -54,8 +52,7 @@ namespace ppbox
                     info.small_offset = offset;
                     info.size = info.end - info.begin;
                     info.big_offset = offset_t;
-                    pos_ = i;
-                    info.index = pos_;
+                    info.index = i;
                     ec.clear();
                     break;
                 } else {
@@ -79,8 +76,7 @@ namespace ppbox
                     info.end = info.size;
                     info.small_offset = 0;
                     info.big_offset = offset;
-                    pos_ = i;
-                    info.index = pos_;
+                    info.index = i;
                     ec.clear();
                     break;
                 } else {

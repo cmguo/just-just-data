@@ -19,7 +19,6 @@ namespace ppbox
             virtual ~BodyStrategy();
 
             virtual bool next_segment(
-                bool is_next,
                 SegmentInfoEx & info);
 
             virtual boost::system::error_code byte_seek(

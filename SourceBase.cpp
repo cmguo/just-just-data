@@ -106,12 +106,12 @@ namespace ppbox
             return false;
         }
 
-        void SourceBase::media(MediaBase const * media)
+        void SourceBase::media(MediaBase * media)
         {
             media_ = media;
         }
 
-        MediaBase const * SourceBase::media(void)
+        MediaBase * SourceBase::media(void)
         {
             return media_;
         }

@@ -42,7 +42,6 @@ namespace ppbox
 
         Strategy::Strategy(MediaBase & media)
             : media_(media)
-            , pos_(0)
         {
         }
 

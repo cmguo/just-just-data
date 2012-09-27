@@ -19,7 +19,6 @@ namespace ppbox
             virtual ~BigHeadStrategy();
 
             virtual bool next_segment(
-                bool is_next,
                 SegmentInfoEx & info);
 
             virtual boost::system::error_code byte_seek(
@@ -35,6 +34,7 @@ namespace ppbox
             virtual std::size_t size(void);
 
         private:
+            bool next_flag_;
             SegmentInfoEx info_;
 
         };

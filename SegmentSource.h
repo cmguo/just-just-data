@@ -18,8 +18,18 @@ namespace ppbox
         struct SegmentInfoEx2
             : public SegmentInfoEx
         {
+            SegmentInfoEx2()
+                : try_times(0)
+            {
+            }
+
             boost::uint32_t try_times;
             framework::string::Url url;
+
+            void reset()
+            {
+                index = boost::uint32_t(-1);
+            }
         };
 
         class SegmentSource
@@ -137,7 +147,6 @@ namespace ppbox
             void update_video_info(void);
 
             boost::system::error_code open_segment(
-                bool is_next_segment, 
                 boost::system::error_code & ec);
 
             boost::system::error_code close_segment(
@@ -149,17 +158,16 @@ namespace ppbox
             boost::system::error_code close_request(
                 boost::system::error_code & ec);
 
-            boost::system::error_code hand_seek(
-                boost::system::error_code & ec);
-
         private:
             MediaBase * media_;
             SourceBase * source_;
             framework::string::Url playlink_;
 
             Strategy * strategy_;
-            bool source_closed_;
-            bool has_seek_;
+            // 已经关闭当前请求
+            bool request_closed_;
+            // 已经关闭当前分段
+            bool segment_closed_;
             boost::uint64_t need_size_;
             boost::uint32_t time_out_;
             boost::uint32_t max_try_;

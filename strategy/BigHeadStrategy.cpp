@@ -11,6 +11,7 @@ namespace ppbox
     {
         BigHeadStrategy::BigHeadStrategy(MediaBase & media)
             : Strategy(media)
+            , next_flag_(false)
         {
             assert(media_.segment_count() > 0);
             SegmentInfo sinfo;
@@ -28,13 +29,16 @@ namespace ppbox
         }
 
         bool BigHeadStrategy::next_segment(
-            bool is_next,
             SegmentInfoEx & info)
         {
             bool res = false;
-            if (!is_next) {
+            assert(info_.size > 0);
+            if (next_flag_) {
+                res = false;
+            } else {
                 info = info_;
                 res = true;
+                next_flag_ = true;
             }
             return res;
         }
@@ -48,6 +52,7 @@ namespace ppbox
             if (offset > info_.size) {
                 ec = framework::system::logic_error::out_of_range;
             } else {
+                next_flag_ = true;
                 info = info_;
                 info.small_offset = offset;
                 info.big_offset = offset;

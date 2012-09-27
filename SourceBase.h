@@ -89,12 +89,12 @@ namespace ppbox
             virtual bool recoverable(
                 boost::system::error_code const & ec);
 
-            void media(MediaBase const *);
+            void media(MediaBase *);
 
-            MediaBase const * media(void);
+            MediaBase * media(void);
 
         private:
-            MediaBase const * media_;
+            MediaBase * media_;
 
         private:
             static std::map< std::string, SourceBase::register_type > & source_map();

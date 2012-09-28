@@ -40,6 +40,7 @@ namespace ppbox
             util::protocol::HttpRequestHead & head = request.head();
             head.path = url.path_all();
             head["Accept"] = "{*.*}";
+            head.host = url.host_svc();
             head.connection = util::protocol::http_field::Connection::keep_alive;
             if (beg != 0 || end != (boost::uint64_t)-1) {
                 head.range.reset(util::protocol::http_field::Range((boost::int64_t)beg, (boost::int64_t)end));
@@ -68,6 +69,7 @@ namespace ppbox
             util::protocol::HttpRequestHead & head = request.head();
             head.path = url.path_all();
             head["Accept"] = "{*.*}";
+            head.host = url.host_svc();
             head.connection = util::protocol::http_field::Connection::keep_alive;
             if (beg != 0 || end != (boost::uint64_t)-1) {
                 head.range.reset(util::protocol::http_field::Range((boost::int64_t)beg, (boost::int64_t)end));

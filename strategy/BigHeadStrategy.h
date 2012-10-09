@@ -26,6 +26,10 @@ namespace ppbox
                 SegmentInfoEx & info, 
                 boost::system::error_code & ec);
 
+            virtual boost::system::error_code byte_seek(
+                SegmentInfoEx & info, 
+                boost::system::error_code & ec);
+
             virtual boost::system::error_code time_seek(
                 boost::uint32_t time_ms,
                 SegmentInfoEx & info, 

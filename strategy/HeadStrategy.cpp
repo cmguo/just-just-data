@@ -52,6 +52,7 @@ namespace ppbox
                     info.big_offset = offset_t;
                     info.size = info.end - info.begin;
                     info.index = i;
+                    url(info.index, info.url);
                     ec.clear();
                     break;
                 } else {
@@ -61,55 +62,34 @@ namespace ppbox
             return ec;
         }
 
+        error_code HeadStrategy::byte_seek(
+            SegmentInfoEx & info, 
+            boost::system::error_code & ec)
+        {
+            /*if (info.index < media_.segment_count()) {
+                media_.segment_info(info.index, info);
+                if (info.small_offset > info.head_size) {
+                    ec = framework::system::logic_error::out_of_range;
+                } else {
+                    info.begin = info.small_offset;
+                    info.end = info.head_size;
+                    info.size = info.end - info.begin;
+                }
+            } else {
+                ec = framework::system::logic_error::out_of_range;
+            }*/
+            ec = framework::system::logic_error::not_supported;
+            return ec;
+        }
+
         error_code HeadStrategy::time_seek(
             boost::uint32_t time_ms, 
             SegmentInfoEx & info, 
             error_code & ec)
         {
-            ec = framework::system::logic_error::out_of_range;
-            boost::uint32_t time_ms_t = time_ms;
-            boost::uint64_t offset = 0;
-            for (boost::uint32_t i = 0; i < media_.segment_count(); ++i) {
-                media_.segment_info(i, info);
-                if (time_ms < info.duration) {
-                    info.begin = 0;
-                    info.end = info.head_size;
-                    info.small_offset = 0;
-                    info.big_offset = offset;
-                    info.size = info.end - info.begin;
-                    info.index = i;
-                    ec.clear();
-                    break;
-                } else {
-                    offset += info.head_size;
-                    time_ms -= info.duration;
-                }
-            }
+            ec = framework::system::logic_error::not_supported;
             return ec;
         }
-
-        //error_code HeadStrategy::seek(
-        //    boost::uint32_t segment_index,
-        //    size_t offset, 
-        //    SegmentInfoEx & info, 
-        //    boost::system::error_code & ec)
-        //{
-        //    if (segment_index < media_.segment_count()) {
-        //        media_.segment_info(segment_index, info);
-        //        if (offset > info.head_size) {
-        //            ec = framework::system::logic_error::out_of_range;
-        //        } else {
-        //            pos_ = segment_index;
-        //            info.begin = offset;
-        //            info.end = info.head_size;
-        //            info.size = info.end - info.begin;
-        //            info.position = offset;
-        //        }
-        //    } else {
-        //        ec = framework::system::logic_error::out_of_range;
-        //    }
-        //    return ec;
-        //}
 
         std::size_t HeadStrategy::size(void)
         {

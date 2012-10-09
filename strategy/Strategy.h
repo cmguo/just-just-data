@@ -31,6 +31,7 @@ namespace ppbox
             boost::uint64_t big_offset;
             // 是相对当前段的偏移量
             boost::uint64_t small_offset;
+            framework::string::Url url;
 
             boost::uint64_t big_beg() const
             {
@@ -108,18 +109,21 @@ namespace ppbox
                 SegmentInfoEx & info, 
                 boost::system::error_code & ec) = 0;
 
+            virtual boost::system::error_code byte_seek(
+                SegmentInfoEx & info, 
+                boost::system::error_code & ec) = 0;
+
             virtual boost::system::error_code time_seek(
                 boost::uint32_t time_ms, 
                 SegmentInfoEx & info, 
                 boost::system::error_code & ec) = 0;
 
-            //virtual boost::system::error_code seek(
-            //    boost::uint32_t segment_index,
-            //    size_t offset, 
-            //    SegmentInfoEx & info, 
-            //    boost::system::error_code & ec) = 0;
-
             virtual std::size_t size(void) = 0;
+
+        protected:
+            void url(
+                std::size_t segment, 
+                framework::string::Url & url);
 
         protected:
             MediaBase & media_;

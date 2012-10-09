@@ -17,6 +17,7 @@ namespace ppbox
             SegmentInfo sinfo;
             media_.segment_info(0, sinfo);
             info_.index = boost::uint32_t(-1);
+            url(info_.index, info_.url);
             info_.begin = 0;
             info_.end = sinfo.offset;
             info_.size = info_.end - info_.begin;
@@ -57,6 +58,14 @@ namespace ppbox
                 info.small_offset = offset;
                 info.big_offset = offset;
             }
+            return ec;
+        }
+
+        error_code BigHeadStrategy::byte_seek(
+            SegmentInfoEx & info, 
+            boost::system::error_code & ec)
+        {
+            ec = framework::system::logic_error::not_supported;
             return ec;
         }
 

@@ -62,6 +62,32 @@ namespace ppbox
             return ec;
         }
 
+        error_code FullStrategy::byte_seek(
+            SegmentInfoEx & info, 
+            boost::system::error_code & ec)
+        {
+            if (info.index < media_.segment_count()) {
+                media_.segment_info(info.index, info);
+                if (info.small_offset > info.size) {
+                    ec = framework::system::logic_error::out_of_range;
+                } else {
+                    info.begin = info.small_offset;
+                    info.end = info.size;
+                    info.size = info.end - info.begin;
+                    info.big_offset = 0;
+                    for (boost::uint32_t i = 0; i < info.index; ++i) {
+                        SegmentInfo tmp;
+                        media_.segment_info(i, tmp);
+                        info.big_offset += tmp.size;
+                    }
+                    info.big_offset += info.small_offset;
+                }
+            } else {
+                ec = framework::system::logic_error::out_of_range;
+            }
+            return ec;
+        }
+
         error_code FullStrategy::time_seek(
             boost::uint32_t time_ms,
             SegmentInfoEx & info, 
@@ -77,6 +103,7 @@ namespace ppbox
                     info.small_offset = 0;
                     info.big_offset = offset;
                     info.index = i;
+                    url(info.index, info.url);
                     ec.clear();
                     break;
                 } else {

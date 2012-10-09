@@ -1,6 +1,6 @@
 // DataModule.h
 
-#include "ppbox/cdn/Cdn.h"
+#include "ppbox/cdn/CdnModule.h"
 #include "ppbox/common/CommonModuleBase.h"
 
 #include <framework/string/Url.h>

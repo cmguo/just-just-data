@@ -7,7 +7,7 @@
 #include "ppbox/data/DataStatistic.h"
 #include "ppbox/data/strategy/Strategy.h"
 
-#include <ppbox/cdn/Cdn.h>
+#include <ppbox/cdn/CdnModule.h>
 #include <framework/string/Url.h>
 
 namespace ppbox
@@ -24,7 +24,6 @@ namespace ppbox
             }
 
             boost::uint32_t try_times;
-            framework::string::Url url;
 
             void reset()
             {
@@ -37,25 +36,10 @@ namespace ppbox
             , public DataObserver
         {
         public:
-            struct State
-            {
-                enum Enum
-                {
-                    not_open = 0, 
-                    segment_opening, 
-                    segment_opened, 
-                    source_not_open, 
-                    source_opening, 
-                    source_opened, 
-                };
-            };
-
-        public:
             SegmentSource(boost::asio::io_service & io_srv);
 
             virtual ~SegmentSource();
 
-            // inheritance from : source base
             virtual boost::system::error_code open(
                 framework::string::Url const & url,
                 boost::uint64_t beg, 
@@ -96,31 +80,36 @@ namespace ppbox
 
         public:
             boost::system::error_code seek(
-                size_t offset, 
+                boost::uint64_t offset, 
                 boost::system::error_code & ec);
 
             boost::system::error_code seek(
-                size_t offset, 
-                size_t size, 
+                boost::uint64_t offset, 
+                boost::uint32_t size, 
                 boost::system::error_code & ec);
 
             boost::system::error_code seek(
-                SegmentInfoEx const & info, 
+                SegmentInfoEx & info, 
+                boost::system::error_code & ec);
+
+            boost::system::error_code seek(
+                SegmentInfoEx & info, 
+                boost::uint32_t size, 
                 boost::system::error_code & ec);
 
             void reset(void);
 
             void set_max_try(boost::uint32_t times);
 
-            void set_time_out(boost::uint32_t time);
+            SourceBase * source(void) const;
 
-            void set_strategy(Strategy * strategy);
+            void source(SourceBase * source);
+
+            void strategy(Strategy * strategy);
+
+            Strategy * strategy(void) const;
 
             void current_segment(SegmentInfoEx & info);
-
-            MediaBase * media(void) const;
-
-            SourceBase * source(void) const;
 
         private:
             // implement util::stream::Source
@@ -133,8 +122,6 @@ namespace ppbox
                 util::stream::StreamHandler const & handler);
 
         private:
-            void hand_async_open(boost::system::error_code const & ec);
-
             std::size_t prepare_read(
                 util::stream::StreamMutableBuffers const & buffers,
                 boost::system::error_code & ec);
@@ -161,22 +148,18 @@ namespace ppbox
         private:
             MediaBase * media_;
             SourceBase * source_;
-            framework::string::Url playlink_;
-
             Strategy * strategy_;
+
             // 已经关闭当前请求
             bool request_closed_;
             // 已经关闭当前分段
             bool segment_closed_;
-            boost::uint64_t need_size_;
+            boost::uint64_t download_end_offset_;
             boost::uint32_t time_out_;
             boost::uint32_t max_try_;
-            State::Enum state_;
 
-            response_type resp_;
             SegmentInfoEx2 cur_segment_;
-
-             boost::system::error_code source_error_;
+            boost::system::error_code source_error_;
         };
     }
 }

@@ -29,6 +29,7 @@ namespace ppbox
                 info.begin = info.head_size;
                 info.end = info.size;
                 info.small_offset = 0;
+                url(info.index, info.url);
                 res = true;
             } else {
                 res = false;
@@ -58,6 +59,26 @@ namespace ppbox
                     offset -= (info.size - info.head_size);
                 }
             }
+            return ec;
+        }
+
+        error_code BodyStrategy::byte_seek(
+            SegmentInfoEx & info, 
+            boost::system::error_code & ec)
+        {
+            /*if (info.index < media_.segment_count()) {
+                media_.segment_info(info.index, info);
+                if (info.small_offset > (info.size - info.head_size)) {
+                    ec = framework::system::logic_error::out_of_range;
+                } else {
+                    info.begin = info.small_offset;
+                    info.end = (info.size - info.head_size);
+                    info.size = info.end - info.begin;
+                }
+            } else {
+                ec = framework::system::logic_error::out_of_range;
+            }*/
+            ec = framework::system::logic_error::not_supported;
             return ec;
         }
 

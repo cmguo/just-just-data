@@ -49,5 +49,14 @@ namespace ppbox
         {
         }
 
+        void Strategy::url(
+            std::size_t segment, 
+            framework::string::Url & url)
+        {
+            boost::system::error_code ec;
+            media_.segment_url(segment, url, ec);
+            assert(!ec);
+        }
+
     }
 }

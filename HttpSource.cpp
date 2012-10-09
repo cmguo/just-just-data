@@ -39,6 +39,7 @@ namespace ppbox
             util::protocol::HttpRequest request;
             util::protocol::HttpRequestHead & head = request.head();
             head.path = url.path_all();
+            head.host = url.host_svc();
             head["Accept"] = "{*.*}";
             head.host = url.host_svc();
             head.connection = util::protocol::http_field::Connection::keep_alive;
@@ -68,6 +69,7 @@ namespace ppbox
             util::protocol::HttpRequest request;
             util::protocol::HttpRequestHead & head = request.head();
             head.path = url.path_all();
+            head.host = url.host_svc();
             head["Accept"] = "{*.*}";
             head.host = url.host_svc();
             head.connection = util::protocol::http_field::Connection::keep_alive;

@@ -22,7 +22,8 @@ namespace ppbox
                 media_.segment_info(i, tmp);
                 body_size += (tmp.size - tmp.head_size);
             }
-            info_.index = 0;
+            info_.index = boost::uint32_t(-1);
+            url(info_.index, info_.url);
             info_.begin = head_size + body_size;
             boost::system::error_code ec;
             MediaInfo media_info;
@@ -64,6 +65,14 @@ namespace ppbox
                 info.small_offset = offset;
                 info.big_offset = offset;
             }
+            return ec;
+        }
+
+        error_code BigTailStrategy::byte_seek(
+            SegmentInfoEx & info, 
+            boost::system::error_code & ec)
+        {
+            ec = framework::system::logic_error::not_supported;
             return ec;
         }
 

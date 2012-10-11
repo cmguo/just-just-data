@@ -1,7 +1,7 @@
 // PipeSource.h
 
 #include <ppbox/data/Common.h>
-#include <ppbox/data/PipeSource.h>
+#include <ppbox/data/source/PipeSource.h>
 
 #include <framework/system/ErrorCode.h>
 

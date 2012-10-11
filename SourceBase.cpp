@@ -30,10 +30,26 @@ namespace ppbox
             std::string const & proto)
         {
             std::map< std::string, register_type >::iterator iter = source_map().find(proto);
-            if (source_map().end() == iter) {
+            if (iter == source_map().end()) {
                 return NULL;
             }
             return iter->second(io_svc);
+        }
+
+        SourceBase * SourceBase::create(
+            boost::asio::io_service & io_svc,
+            MediaBase & media)
+        {
+            std::map< std::string, register_type >::iterator iter = 
+                source_map().find(media.get_protocol());
+            if (iter == source_map().end()) {
+                iter = source_map().find(media.segment_protocol());
+            }
+            if (iter == source_map().end()) {
+                return NULL;
+            }
+            SourceBase * source = iter->second(io_svc);
+            return source;
         }
 
         void SourceBase::destory(
@@ -106,14 +122,15 @@ namespace ppbox
             return false;
         }
 
-        void SourceBase::media(MediaBase * media)
+        void SourceBase::media(
+            MediaBase const & media)
         {
-            media_ = media;
+            media_ = &media;
         }
 
-        MediaBase * SourceBase::media(void)
+        MediaBase const & SourceBase::media(void)
         {
-            return media_;
+            return *media_;
         }
 
     } // namespace data

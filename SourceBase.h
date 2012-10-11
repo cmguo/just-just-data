@@ -19,6 +19,7 @@ namespace ppbox
     {
 
         class MediaBase;
+
         class SourceBase
             : public util::stream::Source
         {
@@ -39,6 +40,10 @@ namespace ppbox
             static SourceBase * create(
                 boost::asio::io_service & io_svc,
                 std::string const & proto);
+
+            static SourceBase * create(
+                boost::asio::io_service & io_svc,
+                MediaBase & media);
 
             static void destory(
                 SourceBase* & source);
@@ -89,12 +94,14 @@ namespace ppbox
             virtual bool recoverable(
                 boost::system::error_code const & ec);
 
-            void media(MediaBase *);
+        public:
+            void media(
+                MediaBase const &);
 
-            MediaBase * media(void);
+            MediaBase const & media(void);
 
         private:
-            MediaBase * media_;
+            MediaBase const * media_;
 
         private:
             static std::map< std::string, SourceBase::register_type > & source_map();

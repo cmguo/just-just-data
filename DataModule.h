@@ -51,20 +51,6 @@ namespace ppbox
 
             virtual void shutdown();
 
-            void async_open(
-                framework::string::Url const & url,
-                open_respone_trpe resp);
-
-            void close(
-                SegmentSource const *, 
-                boost::system::error_code &);
-
-            SourceBase const * get_media_source(
-                MediaBase const *);
-
-            MediaBase const * get_source_media(
-                SourceBase const *);
-
         private:
             void open_callback(
                 SegmentSource * segment_source, 

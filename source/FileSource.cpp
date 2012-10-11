@@ -1,7 +1,7 @@
 // FileSource.h
 
 #include <ppbox/data/Common.h>
-#include <ppbox/data/FileSource.h>
+#include <ppbox/data/source/FileSource.h>
 
 #include <framework/system/ErrorCode.h>
 

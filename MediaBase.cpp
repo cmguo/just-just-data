@@ -1,4 +1,4 @@
-//MediaBase.cpp
+// MediaBase.cpp
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/MediaBase.h"
@@ -8,7 +8,7 @@
 #include <framework/logger/StreamRecord.h>
 using namespace framework::logger;
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("MediaBase", 0);
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.MediaBase", Debug);
 
 namespace ppbox
 {
@@ -66,16 +66,6 @@ namespace ppbox
             framework::string::Url const &url)
         {
             url_ = url;
-        }
-
-        void MediaBase::source(SourceBase const * source)
-        {
-            source_ = source;
-        }
-
-        SourceBase const * MediaBase::source(void)
-        {
-            return source_;
         }
 
     } // data

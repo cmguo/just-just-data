@@ -1,5 +1,5 @@
 #include "ppbox/data/Common.h"
-#include "ppbox/data/HttpSource.h"
+#include "ppbox/data/source/HttpSource.h"
 
 #include <util/protocol/http/HttpError.h>
 
@@ -17,7 +17,7 @@ namespace ppbox
     namespace data
     {
 
-        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("HttpSource", 0);
+        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.HttpSource", Debug);
 
         HttpSource::HttpSource(
             boost::asio::io_service & io_svc)
@@ -39,7 +39,6 @@ namespace ppbox
             util::protocol::HttpRequest request;
             util::protocol::HttpRequestHead & head = request.head();
             head.path = url.path_all();
-            head.host = url.host_svc();
             head["Accept"] = "{*.*}";
             head.host = url.host_svc();
             head.connection = util::protocol::http_field::Connection::keep_alive;
@@ -69,7 +68,6 @@ namespace ppbox
             util::protocol::HttpRequest request;
             util::protocol::HttpRequestHead & head = request.head();
             head.path = url.path_all();
-            head.host = url.host_svc();
             head["Accept"] = "{*.*}";
             head.host = url.host_svc();
             head.connection = util::protocol::http_field::Connection::keep_alive;

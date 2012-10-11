@@ -9,20 +9,10 @@ namespace ppbox
 {
     namespace data
     {
-        BigHeadStrategy::BigHeadStrategy(MediaBase & media)
-            : Strategy(media)
-            , next_flag_(false)
+        BigHeadStrategy::BigHeadStrategy(
+            MediaBase & media)
+            : SegmentStrategy(media)
         {
-            assert(media_.segment_count() > 0);
-            SegmentInfo sinfo;
-            media_.segment_info(0, sinfo);
-            info_.index = boost::uint32_t(-1);
-            url(info_.index, info_.url);
-            info_.begin = 0;
-            info_.end = sinfo.offset;
-            info_.size = info_.end - info_.begin;
-            info_.small_offset = 0;
-            info_.big_offset = 0;
         }
 
         BigHeadStrategy::~BigHeadStrategy()
@@ -30,57 +20,28 @@ namespace ppbox
         }
 
         bool BigHeadStrategy::next_segment(
-            SegmentInfoEx & info)
-        {
-            bool res = false;
-            assert(info_.size > 0);
-            if (next_flag_) {
-                res = false;
-            } else {
-                info = info_;
-                res = true;
-                next_flag_ = true;
-            }
-            return res;
-        }
-
-        error_code BigHeadStrategy::byte_seek(
-            size_t offset,
-            SegmentInfoEx & info, 
+            SegmentPosition & pos, 
             boost::system::error_code & ec)
         {
-            ec.clear();
-            if (offset > info_.size) {
-                ec = framework::system::logic_error::out_of_range;
+            if (pos.item_context == NULL || pos.index = size_t(-1)) {
+                pos.item_context = this;
+                MediaInfo minfo;
+                media_.get_info(minfo, ec);
+                SegmentInfo sinfo;
+                media_.segment_info(0, sinfo);
+                pos.index = 0;
+                if (pos.url.is_valid())
+                    pos.url = minfo.cdn_url;
+                pos.size = minfo.file_size;
+                pos.byte_range.before_next();
+                pos.byte_range.beg = 0;
+                pos.byte_range.end = sinfo.offset;
+                pos.byte_range.after_next();
+                return true;
             } else {
-                next_flag_ = true;
-                info = info_;
-                info.small_offset = offset;
-                info.big_offset = offset;
+                return false;
             }
-            return ec;
         }
 
-        error_code BigHeadStrategy::byte_seek(
-            SegmentInfoEx & info, 
-            boost::system::error_code & ec)
-        {
-            ec = framework::system::logic_error::not_supported;
-            return ec;
-        }
-
-        error_code BigHeadStrategy::time_seek(
-            boost::uint32_t time_ms,
-            SegmentInfoEx & info, 
-            error_code & ec)
-        {
-            ec = framework::system::logic_error::not_supported;
-            return ec;
-        }
-
-        std::size_t BigHeadStrategy::size(void)
-        {
-            return (std::size_t)info_.size;
-        }
-    }
-}
+    } // namespace data
+} // namespace ppbox

@@ -1,9 +1,9 @@
 // HeadStrategy.h
 
-#ifndef     _PPBOX_DATA_HEAD_STRATEGY_
-#define     _PPBOX_DATA_HEAD_STRATEGY_
+#ifndef _PPBOX_DATA_STRATEGY_HEAD_STRATEGY_H_
+#define _PPBOX_DATA_STRATEGY_HEAD_STRATEGY_H_
 
-#include <ppbox/data/strategy/Strategy.h>
+#include <ppbox/data/SegmentStrategy.h>
 
 namespace ppbox
 {
@@ -11,37 +11,21 @@ namespace ppbox
     {
 
         class HeadStrategy
-            : public Strategy
+            : public SegmentStrategy
         {
         public:
-            HeadStrategy(MediaBase & media);
+            HeadStrategy(
+                MediaBase & media);
 
             virtual ~HeadStrategy();
 
-            virtual bool next_segment(
-                SegmentInfoEx & info);
-
-            virtual boost::system::error_code byte_seek(
-                size_t offset,
-                SegmentInfoEx & info, 
-                boost::system::error_code & ec);
-
-            virtual boost::system::error_code byte_seek(
-                SegmentInfoEx & info, 
-                boost::system::error_code & ec);
-
-            virtual boost::system::error_code time_seek(
-                boost::uint32_t time_ms,
-                SegmentInfoEx & info, 
-                boost::system::error_code & ec);
-
-            virtual std::size_t size(void);
-
+        private:
+            virtual void byte_range(
+                SegmentInfo const & info, 
+                SegmentRange & range);
         };
 
-        PPBOX_REGISTER_STRATEGY(head, HeadStrategy);
+    } // namespace data
+} // namespace ppbox
 
-    }
-}
-
-#endif // End _PPBOX_DATA_HEAD_STRATEGY_
+#endif // _PPBOX_DATA_STRATEGY_HEAD_STRATEGY_H_

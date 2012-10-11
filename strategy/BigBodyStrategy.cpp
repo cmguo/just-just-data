@@ -1,28 +1,28 @@
-// BodyStrategy.cpp
+// BigBodyStrategy.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/strategy/BodyStrategy.h"
+#include "ppbox/data/strategy/BigBodyStrategy.h"
 
 namespace ppbox
 {
     namespace data
     {
 
-        BodyStrategy::BodyStrategy(
+        BigBodyStrategy::BigBodyStrategy(
             MediaBase & media)
             : SegmentStrategy(media)
         {
         }
 
-        BodyStrategy::~BodyStrategy()
+        BigBodyStrategy::~BigBodyStrategy()
         {
         }
 
-        void BodyStrategy::byte_range(
+        void BigBodyStrategy::byte_range(
             SegmentInfo const & info, 
             SegmentRange & range)
         {
-            range.beg = info.head_size;
+            range.beg = info.head_size + (range.big_offset - info.offset);
             range.end = info.size;
         }
 

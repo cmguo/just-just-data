@@ -478,7 +478,7 @@ namespace ppbox
                     " range: ? - "<< write_.byte_range.end);
                 source_closed_ = true;
 
-                raise(SegmentStartEvent(write_));
+                raise(SegmentStopEvent(write_));
             }
             ec.clear();
             return true;

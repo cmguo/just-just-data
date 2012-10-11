@@ -1,23 +1,23 @@
-// FullStrategy.h
+// BigBodyStrategy.h
 
-#ifndef _PPBOX_DATA_STRATEGY_FULL_STRATEGY_H_
-#define _PPBOX_DATA_STRATEGY_FULL_STRATEGY_H_
+#ifndef _PPBOX_DATA_STRATEGY_BIG_BODY_STRATEGY_H_
+#define _PPBOX_DATA_STRATEGY_BIG_BODY_STRATEGY_H_
 
-#include "ppbox/data/SegmentStrategy.h"
+#include <ppbox/data/SegmentStrategy.h>
 
 namespace ppbox
 {
     namespace data
     {
 
-        class FullStrategy
+        class BigBodyStrategy
             : public SegmentStrategy
         {
         public:
-            FullStrategy(
+            BigBodyStrategy(
                 MediaBase & media);
 
-            virtual ~FullStrategy();
+            virtual ~BigBodyStrategy();
 
         private:
             virtual void byte_range(
@@ -28,4 +28,4 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#endif // _PPBOX_DATA_STRATEGY_FULL_STRATEGY_H_
+#endif // _PPBOX_DATA_STRATEGY_BIG_BODY_STRATEGY_H_

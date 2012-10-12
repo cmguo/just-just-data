@@ -19,10 +19,15 @@ namespace ppbox
 
             virtual ~BodyStrategy();
 
+            void drop_redundancy(void);
+
         private:
             virtual void byte_range(
-                SegmentInfo const & info, 
+                SegmentPosition const & info, 
                 SegmentRange & range);
+
+        private:
+            bool is_drop_redundancy_;
         };
 
     } // namespace data

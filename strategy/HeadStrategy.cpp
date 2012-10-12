@@ -21,7 +21,7 @@ namespace ppbox
         }
 
         void HeadStrategy::byte_range(
-            SegmentInfo const & info, 
+            SegmentPosition const & info, 
             SegmentRange & range)
         {
             range.beg = 0;

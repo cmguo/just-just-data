@@ -39,11 +39,11 @@ namespace ppbox
 
         private:
             virtual void byte_range(
-                SegmentInfo const & info, 
+                SegmentPosition const & info, 
                 SegmentRange & range);
 
             virtual void time_range(
-                SegmentInfo const & info, 
+                SegmentPosition const & info, 
                 SegmentRange & range);
 
         protected:

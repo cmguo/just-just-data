@@ -111,7 +111,7 @@ namespace ppbox
         }
 
         void SegmentStrategy::byte_range(
-            SegmentInfo const & pos, 
+            SegmentPosition const & pos, 
             SegmentRange & range)
         {
             range.beg = 0;
@@ -119,7 +119,7 @@ namespace ppbox
         }
 
         void SegmentStrategy::time_range(
-            SegmentInfo const & pos, 
+            SegmentPosition const & pos, 
             SegmentRange & range)
         {
             range.beg = 0;

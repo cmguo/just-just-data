@@ -26,7 +26,7 @@ namespace ppbox
             , max_try_(size_t(-1))
             , max_req_(total_req)
             , time_block_(0)
-            , strategy_(strategy)
+            , strategy_(&strategy)
             , source_(source)
             , num_try_(0)
             , sended_req_(0)
@@ -60,7 +60,7 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             segment_t seg;
-            if (strategy_.byte_seek(offset, seg, ec))
+            if (strategy_->byte_seek(offset, seg, ec))
                 return ec;
             return seek(seg, size, ec);
         }
@@ -307,7 +307,7 @@ namespace ppbox
             segment_t & seg, 
             boost::system::error_code & ec)
         {
-            if (seg.byte_range.big_end() >= seek_end_ || !strategy_.next_segment(seg, ec)) {
+            if (seg.byte_range.big_end() >= seek_end_ || !strategy_->next_segment(seg, ec)) {
                 ec = source_error::no_more_segment;
                 return false;
             }

@@ -23,7 +23,7 @@ namespace ppbox
             SegmentPosition & pos, 
             boost::system::error_code & ec)
         {
-            if (pos.item_context == NULL || pos.index = size_t(-1)) {
+            if (pos.item_context == NULL || pos.index == size_t(-1)) {
                 pos.item_context = this;
                 MediaInfo minfo;
                 media_.get_info(minfo, ec);

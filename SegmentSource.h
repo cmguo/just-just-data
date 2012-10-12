@@ -97,6 +97,12 @@ namespace ppbox
                 time_out_ = time_out / 1000;
             }
 
+            void set_strategy(
+                SegmentStrategy & strategy)
+            {
+                strategy_ = &strategy;
+            }
+
             void clear_error()
             {
                 source_error_ = boost::system::error_code();
@@ -172,7 +178,7 @@ namespace ppbox
             size_t max_req_;                // 配置值：最大队列串行请求数
             boost::uint32_t time_out_;      // 配置值：超时时间（秒）
 
-            SegmentStrategy & strategy_;
+            SegmentStrategy * strategy_;
             SourceBase & source_;
 
             size_t num_try_;                // 当前分段尝试次数

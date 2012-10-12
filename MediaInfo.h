@@ -30,7 +30,7 @@ namespace ppbox
             boost::uint32_t bitrate;    // 平均码流率
             boost::uint32_t is_live;
             boost::uint32_t delay;
-            framework::string::Url cdn_url;
+            framework::string::Url url;
         }; 
 
         struct SegmentInfo

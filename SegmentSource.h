@@ -24,6 +24,8 @@ namespace ppbox
         public:
             typedef SegmentPosition segment_t;
 
+            typedef SegmentRange range_t;
+
         public:
             SegmentSource(
                 SegmentStrategy & strategy, 
@@ -34,7 +36,7 @@ namespace ppbox
 
         public:
             boost::system::error_code seek(
-                segment_t segment, 
+                segment_t const & segment, 
                 boost::uint64_t size, 
                 boost::system::error_code & ec);
 
@@ -44,7 +46,7 @@ namespace ppbox
                 boost::system::error_code & ec);
 
             boost::system::error_code seek(
-                segment_t segment, 
+                segment_t const & segment, 
                 boost::system::error_code & ec)
             {
                 return seek(segment, invalid_size, ec);
@@ -147,6 +149,7 @@ namespace ppbox
 
             bool next_segment(
                 segment_t & seg, 
+                range_t & range, 
                 boost::system::error_code & ec);
 
             bool open_request(
@@ -189,6 +192,7 @@ namespace ppbox
             boost::system::error_code source_error_;    // 下载的错误码
 
             segment_t write_;
+            range_t write_range_;
             segment_t write_tmp_;
 
             boost::uint64_t seek_end_;      // 一般在seek操作时，如果获取头部数据，值为当前分段之前的分段总长+当前分段的head_size_；否则为-1

@@ -42,14 +42,21 @@ namespace ppbox
         }
 
         boost::system::error_code SegmentSource::seek(
-            segment_t segment, 
+            segment_t const & segment, 
             boost::uint64_t size, 
             boost::system::error_code & ec)
         {
+            assert(segment.byte_range.big_pos() != write_.byte_range.big_pos() || seek_end_ == write_.byte_range.big_pos());
             close_segment(ec);
             close_all_request(ec);
             write_tmp_ = write_ = segment;
+            write_range_ = write_.byte_range;
             seek_end_ = (size == invalid_size) ? invalid_size : write_.byte_range.big_pos() + size;
+            assert(seek_end_ >= write_range_.big_pos());
+            if (seek_end_ < write_range_.big_end()) {
+                write_range_.end = seek_end_ - write_range_.big_offset;
+                write_tmp_.byte_range = write_range_;
+            }
             ec.clear();
             return ec;
         }
@@ -116,7 +123,7 @@ namespace ppbox
             ec = source_error_;
             while (1) {
                 if (ec) {
-                } else if (write_.byte_range.pos >= write_.byte_range.end) {
+                } else if (write_range_.pos >= write_range_.end) {
                     ec = boost::asio::error::eof;
                 } else if (sended_req_ == 0 && !open_segment(false, ec)) {
                 } else if (!source_closed_ || segment_is_open(ec)) {
@@ -127,13 +134,13 @@ namespace ppbox
                             << " bytes_transferred: " << bytes_transferred);
                     }
                     increase_download_byte(bytes_transferred);
-                    write_.byte_range.pos += bytes_transferred;
+                    write_range_.pos += bytes_transferred;
                     if (ec && !source_.continuable(ec)) {
                         LOG_WARN("[prepare] read_some: " << ec.message() << 
                             " --- failed " << num_try_ << " times");
                         if (ec == boost::asio::error::eof) {
-                            LOG_DEBUG("[prepare] read eof, write_.offset: " << write_.byte_range.pos
-                                << " write_hole_.this_end: " << write_.byte_range.end);
+                            LOG_DEBUG("[prepare] read eof, write_.offset: " << write_range_.pos
+                                << " write_hole_.this_end: " << write_range_.end);
                         }
                     }
                 } else {
@@ -182,10 +189,10 @@ namespace ppbox
                     return false;
                 }
             } else if (ec == boost::asio::error::eof) {
-                if (write_.byte_range.pos >= write_.byte_range.end) {
+                if (write_range_.pos >= write_range_.end) {
                     return true;
                 } else if (write_.size == invalid_size) {
-                    write_.size = write_.byte_range.end = write_.byte_range.pos;
+                    write_.size = write_range_.end = write_range_.pos;
                     LOG_INFO("[handle_error] guess segment size " << write_.size);
                     return true;
                 } else if (num_try_ < max_try_) {
@@ -233,13 +240,13 @@ namespace ppbox
                     LOG_WARN("[handle_async] read_some: " << ec.message() << 
                         " --- failed " << num_try_ << " times");
                     if (ec == boost::asio::error::eof) {
-                        LOG_DEBUG("[handle_async] read eof, write_.offset: " << write_.byte_range.pos
-                            << " write_hole_.this_end: " << write_.byte_range.end);
+                        LOG_DEBUG("[handle_async] read eof, write_.offset: " << write_range_.pos
+                            << " write_hole_.this_end: " << write_range_.end);
                     }
                 }
             }
             increase_download_byte(bytes_transferred);
-            write_.byte_range.pos += bytes_transferred;
+            write_range_.pos += bytes_transferred;
             if (source_error_) {
                 ec = source_error_;
             }
@@ -260,7 +267,7 @@ namespace ppbox
                 }
             } else if (bytes_transferred > 0) {
                 response(handler, ec, bytes_transferred);
-            } else if (write_.byte_range.pos >= write_.byte_range.end) {
+            } else if (write_range_.pos >= write_range_.end) {
                 ec = boost::asio::error::eof;
                 handle_async(buffers, handler, ec, 0);
             } else if (sended_req_ == 0) {
@@ -299,20 +306,24 @@ namespace ppbox
                     write_.size = invalid_size; // source_.total()失败时返回0，需要重置
                 } else {
                     write_.byte_range.end = write_.size;
+                    if (write_range_.end > write_.size)
+                        write_range_.end = write_.size;
                 }
             }
         }
 
         bool SegmentSource::next_segment(
             segment_t & seg, 
+            range_t & range, 
             boost::system::error_code & ec)
         {
             if (seg.byte_range.big_end() >= seek_end_ || !strategy_->next_segment(seg, ec)) {
                 ec = source_error::no_more_segment;
                 return false;
             }
-            if (seg.byte_range.big_end() > seek_end_) {
-                seg.byte_range.end = seek_end_ - seg.byte_range.big_offset;
+            range = seg.byte_range;
+            if (range.big_end() > seek_end_) {
+                range.end = seek_end_ - range.big_offset;
             }
             ec.clear();
             return true;
@@ -324,8 +335,9 @@ namespace ppbox
         {
             for (; sended_req_ < max_req_; ) {
                 segment_t write_tmp = write_tmp_;
+                range_t range = write_tmp_.byte_range;
                 if (is_next_segment) {
-                    if (!next_segment(write_tmp_, ec)) {
+                    if (!next_segment(write_tmp_, write_tmp_.byte_range, ec)) {
                         if (sended_req_ && ec == source_error::no_more_segment) {
                             ec.clear();
                         }
@@ -375,7 +387,7 @@ namespace ppbox
                 source_.close(ec);
                 --sended_req_;
                 LOG_TRACE("[close_all_request] segment: " << write_.index << " sended_req: " << sended_req_ << "/" << max_req_);
-                next_segment(write_tmp_, ec);
+                next_segment(write_tmp_, write_tmp_.byte_range, ec);
             }
             write_tmp_ = write_;
             ec.clear();
@@ -414,7 +426,7 @@ namespace ppbox
             }
 
             if (is_next_segment) {
-                if (!next_segment(write_, ec)) {
+                if (!next_segment(write_, write_range_, ec)) {
                     assert(0);
                     return false;
                 }
@@ -422,9 +434,9 @@ namespace ppbox
 
             raise(SegmentStartEvent(write_));
 
-            LOG_DEBUG("[open_segment] write_.offset: " << write_.byte_range.pos << 
+            LOG_DEBUG("[open_segment] write_.offset: " << write_range_.big_pos() << 
                 " segment: " << write_.index << 
-                " range: " << write_.byte_range.pos << " - " << write_.byte_range.end);
+                " range: " << write_range_.pos << " - " << write_range_.end);
 
             return true;
         }
@@ -439,7 +451,7 @@ namespace ppbox
 
             if (is_next_segment) {
                 close_request(ec);
-                if (next_segment(write_, ec)) {
+                if (next_segment(write_, write_range_, ec)) {
                     resp(ec);
                     return;
                 }
@@ -454,8 +466,8 @@ namespace ppbox
 
             source_.async_open(
                 write_.url, 
-                write_.byte_range.pos, 
-                write_.byte_range.end == write_.size ? invalid_size : write_.byte_range.end, 
+                write_range_.pos, 
+                write_range_.end == write_.size ? invalid_size : write_range_.end, 
                 resp);
         }
 
@@ -473,9 +485,9 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             if (sended_req_) {
-                LOG_DEBUG("[close_segment] write_.offset: " << write_.byte_range.pos << 
+                LOG_DEBUG("[close_segment] write_.offset: " << write_range_.big_pos() << 
                     " segment: " << write_.index << 
-                    " range: ? - "<< write_.byte_range.end);
+                    " range: " << write_.byte_range.pos << " - "<< write_range_.end);
                 source_closed_ = true;
 
                 raise(SegmentStopEvent(write_));

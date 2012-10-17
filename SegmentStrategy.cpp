@@ -110,6 +110,12 @@ namespace ppbox
             return pos.time_range.big_end();
         }
 
+        void SegmentStrategy::on_error(
+            boost::system::error_code & ec)
+        {
+            return media_.on_error(ec);
+        }
+
         void SegmentStrategy::byte_range(
             SegmentPosition const & pos, 
             SegmentRange & range)

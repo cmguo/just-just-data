@@ -33,7 +33,7 @@ namespace ppbox
 
             boost::uint64_t big_end() const
             {
-                return big_offset + end;
+                return end == invalid_size ? invalid_size : big_offset + end;
             }
 
             boost::uint64_t big_pos() const
@@ -49,27 +49,6 @@ namespace ppbox
             void after_next()
             {
                 big_offset -= beg;
-            }
-
-            friend bool operator<(
-                SegmentRange const & l, 
-                SegmentRange const & r)
-            {
-                return (l.beg < r.beg);
-            }
-
-            friend bool operator==(
-                SegmentRange const & l, 
-                SegmentRange const & r)
-            {
-                return (l.beg == r.beg && l.end == r.end);
-            }
-
-            friend bool operator!=(
-                SegmentRange const & l, 
-                SegmentRange const & r)
-            {
-                return !(l == r);
             }
         };
 
@@ -88,19 +67,11 @@ namespace ppbox
             SegmentRange time_range;
             void * item_context;    // 树、列表的节点信息
 
-            friend bool operator<(
-                SegmentPosition const & l, 
-                SegmentPosition const & r)
-            {
-                return (l.index < r.index || 
-                    (l.index == r.index && l.byte_range < r.byte_range));
-            }
-
             friend bool operator==(
                 SegmentPosition const & l, 
                 SegmentPosition const & r)
             {
-                return (l.index == r.index && l.byte_range == r.byte_range);
+                return l.byte_range.big_beg() == r.byte_range.big_beg();
             }
 
             friend bool operator!=(

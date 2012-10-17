@@ -204,7 +204,11 @@ namespace ppbox
                     return true;
                 }
             }
-            //source_.on_error(ec);
+            strategy_->on_error(ec);
+            if (ec == boost::asio::error::would_block) {
+                pause(5000);
+                ec.clear();
+            }
             if (ec)
                 source_error_ = ec;
             return !ec;
@@ -308,6 +312,8 @@ namespace ppbox
                     write_.byte_range.end = write_.size;
                     if (write_range_.end > write_.size)
                         write_range_.end = write_.size;
+                    if (write_tmp_ == write_)
+                        write_tmp_.byte_range.end = write_.size;
                 }
             }
         }
@@ -451,7 +457,7 @@ namespace ppbox
 
             if (is_next_segment) {
                 close_request(ec);
-                if (next_segment(write_, write_range_, ec)) {
+                if (!next_segment(write_, write_range_, ec)) {
                     resp(ec);
                     return;
                 }

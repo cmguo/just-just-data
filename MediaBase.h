@@ -67,6 +67,9 @@ namespace ppbox
                 MediaInfo & info,
                 boost::system::error_code & ec) const = 0;
 
+            virtual void on_error(
+                boost::system::error_code & ec) const { /* do nothing */ };
+
         public:
             virtual size_t segment_count() const = 0;
 

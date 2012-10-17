@@ -37,6 +37,9 @@ namespace ppbox
 
             virtual boost::uint64_t time_size();
 
+            virtual void on_error(
+                boost::system::error_code & ec);
+
         private:
             virtual void byte_range(
                 SegmentPosition const & info, 

@@ -23,42 +23,43 @@ namespace ppbox
             ~HttpSource();
 
         public:
-            boost::system::error_code open(
+            virtual boost::system::error_code open(
                 framework::string::Url const & url,
                 boost::uint64_t beg, 
                 boost::uint64_t end, 
                 boost::system::error_code & ec);
 
-            void async_open(
+            virtual void async_open(
                 framework::string::Url const & url,
                 boost::uint64_t beg, 
                 boost::uint64_t end, 
                 response_type const & resp);
 
-            bool is_open(
+            virtual bool is_open(
                 boost::system::error_code & ec);
 
-            boost::system::error_code cancel(
+            virtual boost::system::error_code cancel(
                 boost::system::error_code & ec);
 
-            boost::system::error_code close(
+            virtual boost::system::error_code close(
                 boost::system::error_code & ec);
 
-            boost::uint64_t total(
+            virtual boost::uint64_t total(
                 boost::system::error_code & ec);
 
-            boost::system::error_code set_non_block(
+        public:
+            virtual boost::system::error_code set_non_block(
                 bool non_block, 
                 boost::system::error_code & ec);
 
-            boost::system::error_code set_time_out(
+            virtual boost::system::error_code set_time_out(
                 boost::uint32_t time_out, 
                 boost::system::error_code & ec);
 
-            bool continuable(
+            virtual bool continuable(
                 boost::system::error_code const & ec);
 
-            bool recoverable(
+            virtual bool recoverable(
                 boost::system::error_code const & ec);
 
         private:

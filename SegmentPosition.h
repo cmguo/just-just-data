@@ -50,6 +50,18 @@ namespace ppbox
             {
                 big_offset -= beg;
             }
+
+            void follow(
+                SegmentRange const & before)
+            {
+                big_offset = before.big_end() - beg;
+            }
+
+            bool followed_by(
+                SegmentRange const & after) const
+            {
+                return big_end() == after.big_beg();
+            }
         };
 
         struct SegmentPosition
@@ -79,6 +91,16 @@ namespace ppbox
                 SegmentPosition const & r)
             {
                 return !(l == r);
+            }
+
+            void assign_without_url(
+                SegmentPosition const & r)
+            {
+                (SegmentInfo &)(*this) = r;
+                index = r.index;
+                byte_range = r.byte_range;
+                time_range = r.time_range;
+                item_context = r.item_context;
             }
         };
 

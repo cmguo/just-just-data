@@ -63,12 +63,13 @@ namespace ppbox
                 return url_.protocol();
             }
 
-            virtual boost::system::error_code get_info(
+            virtual bool get_info(
                 MediaInfo & info,
                 boost::system::error_code & ec) const = 0;
 
-            virtual void on_error(
-                boost::system::error_code & ec) const { /* do nothing */ };
+            virtual bool get_url(
+                framework::string::Url & url,
+                boost::system::error_code & ec) const;
 
         public:
             virtual size_t segment_count() const = 0;
@@ -78,7 +79,7 @@ namespace ppbox
                 return get_protocol();
             }
 
-            virtual boost::system::error_code segment_url(
+            virtual bool segment_url(
                 size_t segment, 
                 framework::string::Url & url,
                 boost::system::error_code & ec) const = 0;
@@ -86,6 +87,10 @@ namespace ppbox
             virtual void segment_info(
                 size_t segment, 
                 SegmentInfo & info) const = 0;
+
+        public:
+            virtual void on_error(
+                boost::system::error_code & ec) const { /* do nothing */ };
 
         public:
             boost::asio::io_service & get_io_service()

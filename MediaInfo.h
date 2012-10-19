@@ -20,6 +20,7 @@ namespace ppbox
                 , bitrate(0)
                 , is_live(false)
                 , delay(0)
+                , current(0)
             {
             }
 
@@ -30,7 +31,7 @@ namespace ppbox
             boost::uint32_t bitrate;    // 平均码流率
             bool is_live;
             boost::uint32_t delay;
-            framework::string::Url url;
+            boost::uint64_t current;    // 当前时刻，描述有效数据量，播放现场还要根据delay计算
         }; 
 
         struct SegmentInfo

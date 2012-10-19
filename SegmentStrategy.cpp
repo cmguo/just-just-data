@@ -57,11 +57,13 @@ namespace ppbox
                 }
             }
 
-            while (offset >= pos.byte_range.big_beg()) {
+            while (offset >= pos.byte_range.big_end()) {
                 if (!next_segment(pos, ec)) {
                     return false;
                 }
             }
+
+            pos.byte_range.pos = offset - pos.byte_range.big_offset;
 
             media_.segment_url(pos.index, pos.url, ec);
 
@@ -83,11 +85,13 @@ namespace ppbox
                 }
             }
 
-            while (offset >= pos.time_range.big_beg()) {
+            while (offset >= pos.time_range.big_end()) {
                 if (!next_segment(pos, ec)) {
                     return false;
                 }
             }
+
+            pos.time_range.pos = offset - pos.time_range.big_offset;
 
             media_.segment_url(pos.index, pos.url, ec);
 

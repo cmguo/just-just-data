@@ -68,5 +68,14 @@ namespace ppbox
             url_ = url;
         }
 
+        bool MediaBase::get_url(
+            framework::string::Url & url,
+            boost::system::error_code & ec) const
+        {
+            url = url_;
+            ec.clear();
+            return true;
+        }
+
     } // data
 } // ppbox

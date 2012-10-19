@@ -132,11 +132,11 @@ namespace ppbox
         {
             boost::uint64_t n = 0;
             if (http_.is_open(ec)) {
-                if (http_.response_head().content_length.is_initialized()) {
-                    n = http_.response_head().content_length.get();
-                } else if (http_.response_head().content_range.is_initialized()) {
+                if (http_.response_head().content_range.is_initialized()) {
                     n = http_.response_head().content_range.get().total();
-                } else {
+                } else if (http_.response_head().content_length.is_initialized()) {
+                    n = http_.response_head().content_length.get();
+                } else{
                     ec = framework::system::logic_error::no_data;
                 }
             }

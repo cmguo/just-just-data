@@ -32,7 +32,7 @@ namespace ppbox
                 media_.segment_info(media_.segment_count() - 1, sinfo);
                 pos.index = 0;
                 if (pos.url.is_valid())
-                    pos.url = minfo.url;
+                    media_.get_url(pos.url, ec);
                 pos.size = minfo.file_size;
                 pos.byte_range.before_next();
                 pos.byte_range.beg = sinfo.offset + sinfo.size - sinfo.head_size;

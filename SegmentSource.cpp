@@ -46,10 +46,20 @@ namespace ppbox
             boost::uint64_t size, 
             boost::system::error_code & ec)
         {
-            assert(segment.byte_range.big_pos() != write_.byte_range.big_pos() || seek_end_ == write_.byte_range.big_pos());
+            //assert(segment.byte_range.big_pos() != write_.byte_range.big_pos() || seek_end_ == write_.byte_range.big_pos());
+
             close_segment(ec);
             close_all_request(ec);
-            write_tmp_ = write_ = segment;
+            write_ = segment;
+            if (!segment.url.is_valid()) {
+                segment_t tmp = segment;
+                // 这里 byte_seek 只会补充 url
+                if (!strategy_->byte_seek(tmp.byte_range.big_beg(), tmp, ec)) {
+                    return ec;
+                }
+                write_.url = tmp.url;
+            }
+            write_tmp_ = write_;
             write_range_ = write_.byte_range;
             seek_end_ = (size == invalid_size) ? invalid_size : write_.byte_range.big_pos() + size;
             assert(seek_end_ >= write_range_.big_pos());

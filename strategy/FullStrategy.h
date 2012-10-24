@@ -18,11 +18,6 @@ namespace ppbox
                 MediaBase & media);
 
             virtual ~FullStrategy();
-
-        private:
-            virtual void byte_range(
-                SegmentPosition const & info, 
-                SegmentRange & range);
         };
 
     } // namespace data

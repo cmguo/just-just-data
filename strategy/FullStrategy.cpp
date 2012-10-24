@@ -18,13 +18,5 @@ namespace ppbox
         {
         }
 
-        void FullStrategy::byte_range(
-            SegmentPosition const & info, 
-            SegmentRange & range)
-        {
-            range.beg = 0;
-            range.end = info.size;
-        }
-
-    }
-}
+    } // namespace data
+} // namespace ppbox

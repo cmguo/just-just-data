@@ -23,6 +23,10 @@ namespace ppbox
             virtual void byte_range(
                 SegmentPosition const & info, 
                 SegmentRange & range);
+
+            virtual void time_range(
+                SegmentPosition const & info, 
+                SegmentRange & range);
         };
 
     } // namespace data

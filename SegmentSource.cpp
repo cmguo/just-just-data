@@ -214,7 +214,7 @@ namespace ppbox
                     return true;
                 }
             }
-            strategy_->on_error(ec);
+            strategy_->on_error(write_, ec);
             if (ec == boost::asio::error::would_block) {
                 pause(5000);
                 ec.clear();
@@ -337,6 +337,7 @@ namespace ppbox
                 ec = source_error::no_more_segment;
                 return false;
             }
+            seg.byte_range.pos = seg.byte_range.beg;
             range = seg.byte_range;
             if (range.big_end() > seek_end_) {
                 range.end = seek_end_ - range.big_offset;

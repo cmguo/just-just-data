@@ -53,9 +53,11 @@ namespace ppbox
             virtual void async_open(
                 response_type const & resp) = 0;
 
-            virtual void cancel() = 0;
+            virtual void cancel(
+                boost::system::error_code & ec) = 0;
 
-            virtual void close()= 0;
+            virtual void close(
+                boost::system::error_code & ec)= 0;
 
         public:
             std::string const & get_protocol() const

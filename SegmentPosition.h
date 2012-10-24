@@ -93,6 +93,18 @@ namespace ppbox
                 return !(l == r);
             }
 
+            bool valid() const
+            {
+                return item_context != NULL;
+            }
+
+            bool is_same_segment( 
+                SegmentPosition const & r) const
+            {
+                return (this->item_context == r.item_context 
+                    && this->index == r.index);
+            }
+
             void assign_without_url(
                 SegmentPosition const & r)
             {

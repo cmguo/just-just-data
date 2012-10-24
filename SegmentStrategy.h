@@ -20,17 +20,21 @@ namespace ppbox
 
         public:
             virtual bool next_segment(
-                SegmentPosition & info, 
+                SegmentPosition & pos, 
                 boost::system::error_code & ec);
 
             virtual bool byte_seek(
                 boost::uint64_t offset, 
-                SegmentPosition & info, 
+                SegmentPosition & pos, 
                 boost::system::error_code & ec);
 
             virtual bool time_seek(
                 boost::uint64_t offset, 
-                SegmentPosition & info, 
+                SegmentPosition & pos, 
+                boost::system::error_code & ec);
+
+            virtual bool get_url(
+                SegmentPosition & pos, 
                 boost::system::error_code & ec);
 
             virtual boost::uint64_t byte_size();
@@ -38,15 +42,16 @@ namespace ppbox
             virtual boost::uint64_t time_size();
 
             virtual void on_error(
+                SegmentPosition const & pos, 
                 boost::system::error_code & ec);
 
         private:
             virtual void byte_range(
-                SegmentPosition const & info, 
+                SegmentPosition const & pos, 
                 SegmentRange & range);
 
             virtual void time_range(
-                SegmentPosition const & info, 
+                SegmentPosition const & pos, 
                 SegmentRange & range);
 
         protected:

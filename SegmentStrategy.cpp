@@ -23,7 +23,12 @@ namespace ppbox
             SegmentPosition & pos, 
             boost::system::error_code & ec)
         {
+            if (pos.item_context == NULL) {
+                pos.index = boost::uint32_t(-1);
+                pos.item_context = this;
+            }
             if (++pos.index >= media_.segment_count()) {
+                pos.item_context = NULL;
                 ec = source_error::no_more_segment;
                 return false;
             }
@@ -39,6 +44,7 @@ namespace ppbox
             time_range(pos, pos.time_range);
             pos.time_range.after_next();
 
+            ec.clear();
             return true;
         }
 
@@ -58,6 +64,7 @@ namespace ppbox
             }
 
             while (offset >= pos.byte_range.big_end()) {
+                pos.url.protocol("");
                 if (!next_segment(pos, ec)) {
                     return false;
                 }
@@ -65,9 +72,7 @@ namespace ppbox
 
             pos.byte_range.pos = offset - pos.byte_range.big_offset;
 
-            media_.segment_url(pos.index, pos.url, ec);
-
-            return true;
+            return get_url(pos, ec);
         }
 
         bool SegmentStrategy::time_seek(
@@ -93,9 +98,14 @@ namespace ppbox
 
             pos.time_range.pos = offset - pos.time_range.big_offset;
 
-            media_.segment_url(pos.index, pos.url, ec);
+            return get_url(pos, ec);
+        }
 
-            return true;
+        bool SegmentStrategy::get_url(
+            SegmentPosition & pos, 
+            boost::system::error_code & ec)
+        {
+            return media_.segment_url(pos.index, pos.url, ec);
         }
 
         boost::uint64_t SegmentStrategy::byte_size()
@@ -115,6 +125,7 @@ namespace ppbox
         }
 
         void SegmentStrategy::on_error(
+            SegmentPosition const & pos, 
             boost::system::error_code & ec)
         {
             return media_.on_error(ec);

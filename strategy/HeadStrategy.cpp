@@ -28,5 +28,13 @@ namespace ppbox
             range.end = info.head_size;
         }
 
+        void HeadStrategy::time_range(
+            SegmentPosition const & info, 
+            SegmentRange & range)
+        {
+            range.beg = 0;
+            range.end = info.head_size;
+        }
+
     }
 }

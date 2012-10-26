@@ -139,10 +139,12 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             ec = last_ec_;
+            if (ec)
+                return 0;
             size_t n = 0;
-            while (!ec && amount > n) {
-                n += prepare(amount, ec);
-            }
+            do {
+                n += prepare_some(amount - n, ec);
+            } while (!ec && amount > n);
             return n;
         }
 
@@ -376,9 +378,9 @@ namespace ppbox
                         ec = framework::system::logic_error::out_of_range;
                     }
                     if (pos >= out_position()) {
-                        boost::system::error_code ec1 = last_ec_;
-                        prepare_at_least((size_t)(pos - out_position()), ec1);
-                        if (pos > out_position()) { // 如果 pos == out_position()，也不算失败
+                        boost::system::error_code ec1;
+                        prepare_at_least((size_t)(pos - out_position()), ec1); // 尽量让buffer有数据
+                        if (pos > out_position()) { // 如果没有，也不算失败
                             pos = out_position();
                             if (!ec) ec = ec1;
                         }

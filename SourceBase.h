@@ -104,7 +104,7 @@ namespace ppbox
             MediaBase const * media_;
 
         private:
-            static std::map< std::string, SourceBase::register_type > & source_map();
+            static std::map<std::string, register_type> & source_map();
         };
 
     } // namespace data

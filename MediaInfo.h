@@ -24,14 +24,15 @@ namespace ppbox
             {
             }
 
-            std::string name;
-            std::string format;
             boost::uint64_t file_size;
             boost::uint64_t duration;
             boost::uint32_t bitrate;    // 平均码流率
             bool is_live;
             boost::uint32_t delay;
             boost::uint64_t current;    // 当前时刻，描述有效数据量，播放现场还要根据delay计算
+            std::string name;
+            std::string format;
+            std::string format_data;
         }; 
 
         struct SegmentInfo

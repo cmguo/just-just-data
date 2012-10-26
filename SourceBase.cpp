@@ -11,9 +11,9 @@ namespace ppbox
     namespace data
     {
 
-        std::map< std::string, SourceBase::register_type > & SourceBase::source_map()
+        std::map<std::string, SourceBase::register_type> & SourceBase::source_map()
         {
-            static std::map< std::string, SourceBase::register_type > get_map;
+            static std::map<std::string, register_type> get_map;
             return get_map;
         }
 
@@ -29,7 +29,7 @@ namespace ppbox
             boost::asio::io_service & io_svc,
             std::string const & proto)
         {
-            std::map< std::string, register_type >::iterator iter = source_map().find(proto);
+            std::map<std::string, register_type>::const_iterator iter = source_map().find(proto);
             if (iter == source_map().end()) {
                 return NULL;
             }
@@ -40,7 +40,7 @@ namespace ppbox
             boost::asio::io_service & io_svc,
             MediaBase & media)
         {
-            std::map< std::string, register_type >::iterator iter = 
+            std::map<std::string, register_type>::const_iterator iter = 
                 source_map().find(media.get_protocol());
             if (iter == source_map().end()) {
                 iter = source_map().find(media.segment_protocol());

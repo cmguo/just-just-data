@@ -81,6 +81,12 @@ namespace ppbox
                 return prepare(amount > prepare_size_ ? amount : prepare_size_, ec);
             }
 
+            size_t prepare_some(
+                boost::system::error_code & ec)
+            {
+                return prepare(prepare_size_, ec);
+            }
+
             size_t prepare_at_least(
                 size_t amount, 
                 boost::system::error_code & ec);

@@ -123,6 +123,7 @@ namespace ppbox
                     }
                 }
                 if (ec) {
+                    last_ec_ = ec;
                     return 0;
                 }
             }
@@ -139,8 +140,6 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             ec = last_ec_;
-            if (ec)
-                return 0;
             size_t n = 0;
             do {
                 n += prepare_some(amount - n, ec);
@@ -162,6 +161,7 @@ namespace ppbox
                 }
             }
             if (ec) {
+                last_ec_ = ec;
                 resp_(ec, 0);
                 return;
             }
@@ -195,7 +195,10 @@ namespace ppbox
             } else if (offset + size > read_.byte_range.big_end()) {
                 ec = boost::asio::error::eof;
             } else {
-                prepare_at_least((boost::uint32_t)(offset + size - out_position()), ec);
+                ec = last_ec_;
+                if (!ec) {
+                    prepare_at_least((boost::uint32_t)(offset + size - out_position()), ec);
+                }
                 if (offset + size <= out_position()) {
                     Buffer::read_buffer(offset, offset + size, data);
                     ec.clear();
@@ -378,8 +381,10 @@ namespace ppbox
                         ec = framework::system::logic_error::out_of_range;
                     }
                     if (pos >= out_position()) {
-                        boost::system::error_code ec1;
-                        prepare_at_least((size_t)(pos - out_position()), ec1); // 尽量让buffer有数据
+                        boost::system::error_code ec1 = last_ec_;
+                        if (!ec1) {
+                            prepare_at_least((size_t)(pos - out_position()), ec1); // 尽量让buffer有数据
+                        }
                         if (pos > out_position()) { // 如果没有，也不算失败
                             pos = out_position();
                             if (!ec) ec = ec1;

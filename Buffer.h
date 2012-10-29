@@ -137,16 +137,6 @@ namespace ppbox
                 return write_.offset- read_.offset;
             }
 
-            boost::uint64_t data_begin() const
-            {
-                return data_beg_;
-            }
-
-            boost::uint64_t data_end() const
-            {
-                return data_end_;
-            }
-
             template <
                 typename BufferSequence
             >
@@ -183,6 +173,21 @@ namespace ppbox
             }
 
         public:
+            boost::uint64_t data_begin() const
+            {
+                return data_beg_;
+            }
+
+            boost::uint64_t data_end() const
+            {
+                return data_end_;
+            }
+
+            boost::uint64_t seek_end() const
+            {
+                return seek_end_;
+            }
+
             bool check_hole(
                 boost::system::error_code & ec)
             {

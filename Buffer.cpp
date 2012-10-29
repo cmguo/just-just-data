@@ -165,6 +165,7 @@ namespace ppbox
                 // lay a read hole
                 read_hole_.next_beg = write_read_hole(read_hole_next_beg, read_hole_);
             }
+            boost::uint64_t seek_end = seek_end_;
             seek_end_ = size == invalid_size ? invalid_size : offset + size;
             if (write_offset != write_.offset) {
                 // 修正下一个下载Hole
@@ -177,7 +178,7 @@ namespace ppbox
             }
             LOG_TRACE("after seek " << offset);
             dump();
-            return write_offset != write_.offset;
+            return write_offset != write_.offset || seek_end != seek_end_;
         }
 
         bool Buffer::next_write_hole(

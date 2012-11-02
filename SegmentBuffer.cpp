@@ -71,8 +71,11 @@ namespace ppbox
                     write_stream_->seek(write_.byte_range.pos);
             }
 
-            if (read_stream_)
+            if (read_stream_) {
                 read_stream_->seek(read_.byte_range.pos);
+            }
+
+            last_ec_ = ec;
 
             return !ec;
         }

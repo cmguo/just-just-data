@@ -8,6 +8,8 @@
 #include <ppbox/common/Call.h>
 #include <ppbox/common/Create.h>
 
+#include <framework/string/Url.h>
+
 #define PPBOX_REGISTER_MEDIA(n, c) \
     static ppbox::common::Call reg ## n(ppbox::data::MediaBase::register_media, BOOST_PP_STRINGIZE(n), ppbox::common::Creator<c>())
 

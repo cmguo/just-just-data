@@ -3,8 +3,6 @@
 #ifndef _PPBOX_DATA_MEDIA_INFO_H_
 #define _PPBOX_DATA_MEDIA_INFO_H_
 
-#include <framework/string/Url.h>
-
 namespace ppbox 
 {
     namespace data 

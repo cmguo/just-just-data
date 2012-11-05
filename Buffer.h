@@ -377,7 +377,7 @@ namespace ppbox
                 boost::uint32_t size, 
                 void const * src);
 
-            void Buffer::move_back(
+            void move_back(
                 Position & position, 
                 boost::uint64_t offset) const
             {
@@ -385,7 +385,7 @@ namespace ppbox
                 position.offset -= offset;
             }
 
-            void Buffer::move_front(
+            void move_front(
                 Position & position, 
                 boost::uint64_t offset) const
             {
@@ -393,7 +393,7 @@ namespace ppbox
                 position.offset += offset;
             }
 
-            void Buffer::move_back_to(
+            void move_back_to(
                 Position & position, 
                 boost::uint64_t offset) const
             {
@@ -401,7 +401,7 @@ namespace ppbox
                 position.offset = offset;
             }
 
-            void Buffer::move_front_to(
+            void move_front_to(
                 Position & position, 
                 boost::uint64_t offset) const
             {
@@ -409,7 +409,7 @@ namespace ppbox
                 position.offset = offset;
             }
 
-            void Buffer::move_to(
+            void move_to(
                 Position & position, 
                 boost::uint64_t offset) const
             {

@@ -155,7 +155,7 @@ namespace ppbox
                     }
                 } else {
                     if (!source_.continuable(ec)) {
-                        LOG_WARN("[prepare] open_segment: " << ec.message() << 
+                        LOG_WARN("[prepare] open_segment: " << write_.index << " ec: " << ec.message() << 
                             " --- failed " << num_try_ << " times");
                     } else {
                         increase_download_byte(0);
@@ -246,7 +246,7 @@ namespace ppbox
             if (ec && !source_.continuable(ec)) {
                 if (is_open_callback) {
                     if (ec != source_error::no_more_segment) {
-                        LOG_DEBUG("[handle_async] open_segment: " << ec.message() << 
+                        LOG_WARN("[handle_async] open_segment: " << write_.index << " ec: " << ec.message() << 
                             " --- failed " << num_try_ << " times");
                     }
                 }
@@ -267,8 +267,8 @@ namespace ppbox
             if (ec) {
                 bool is_error = handle_error(ec);
                 if (is_error) {
+                    reset_zero_interval();
                     if (ec == boost::asio::error::eof) {
-                        reset_zero_interval();
                         time_block_ = 0;
                         async_open_segment(true, boost::bind(&SegmentSource::handle_async, this, buffers, handler, _1, (size_t)-1));
                     } else {
@@ -436,7 +436,7 @@ namespace ppbox
 
             if (ec && !source_.continuable(ec)) {
                 if (ec != source_error::no_more_segment) {
-                    LOG_DEBUG("[open_segment] source_.open_segment: " << ec.message() << 
+                    LOG_WARN("[open_segment] segment: " << write_.index << " ec: " << ec.message() << 
                         " --- failed " << num_try_ << " times");
                 }
                 return false;

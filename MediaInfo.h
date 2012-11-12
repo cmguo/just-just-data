@@ -13,21 +13,33 @@ namespace ppbox
         struct MediaInfo
         {
             MediaInfo()
-                : file_size(invalid_size)
+                : type(vod)
+                , file_size(invalid_size)
                 , duration(invalid_size)
                 , bitrate(0)
-                , is_live(false)
+                , start_time(0)
                 , delay(0)
                 , current(0)
             {
             }
 
+            enum TypeEnum
+            {
+                vod, 
+                live, 
+            };
+
+            TypeEnum type;
             boost::uint64_t file_size;
             boost::uint64_t duration;
             boost::uint32_t bitrate;    // 平均码流率
-            bool is_live;
+
+            // live only
+            time_t start_time;
             boost::uint32_t delay;
             boost::uint64_t current;    // 当前时刻，描述有效数据量，播放现场还要根据delay计算
+
+            // description
             std::string name;
             std::string format;
             std::string format_data;

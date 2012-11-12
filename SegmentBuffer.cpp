@@ -62,7 +62,7 @@ namespace ppbox
             bool write_change = Buffer::seek(pos.byte_range.big_pos(), size);
 
             insert_segment(false, pos);
-            read_.assign_without_url(pos);
+            find_segment(in_position(), read_);
 
             if (write_change || !write_.valid()) {
                 find_segment(out_position(), write_);

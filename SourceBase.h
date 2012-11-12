@@ -3,15 +3,11 @@
 #ifndef _PPBOX_DATA_SOURCE_BASE_H_
 #define _PPBOX_DATA_SOURCE_BASE_H_
 
-#include <ppbox/common/Call.h>
-#include <ppbox/common/Create.h>
+#include <ppbox/common/ClassFactory.h>
 
 #include <util/stream/Source.h>
 
 #include <framework/string/Url.h>
-
-#define PPBOX_REGISTER_SOURCE(n, c) \
-    static ppbox::common::Call reg_ ## n(ppbox::data::SourceBase::register_source, BOOST_PP_STRINGIZE(n), ppbox::common::Creator<c>())
 
 namespace ppbox
 {
@@ -22,6 +18,11 @@ namespace ppbox
 
         class SourceBase
             : public util::stream::Source
+            , public ppbox::common::ClassFactory<
+                SourceBase, 
+                std::string, 
+                SourceBase * (boost::asio::io_service &)
+            >
         {
         public:
             typedef boost::function<void (
@@ -33,10 +34,6 @@ namespace ppbox
             > register_type;
 
         public:
-            static void register_source(
-                std::string const & name,
-                register_type func);
-            
             static SourceBase * create(
                 boost::asio::io_service & io_svc,
                 std::string const & proto);
@@ -44,9 +41,6 @@ namespace ppbox
             static SourceBase * create(
                 boost::asio::io_service & io_svc,
                 MediaBase & media);
-
-            static void destory(
-                SourceBase* & source);
 
         public:
             SourceBase(
@@ -93,12 +87,11 @@ namespace ppbox
 
             virtual bool recoverable(
                 boost::system::error_code const & ec);
-
-        private:
-            static std::map<std::string, register_type> & source_map();
         };
 
     } // namespace data
 } // namespace ppbox
+
+#define PPBOX_REGISTER_SOURCE(k, c) PPBOX_REGISTER_CLASS(k, c)
 
 #endif // _PPBOX_DATA_SOURCE_BASE_H_

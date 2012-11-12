@@ -5,13 +5,9 @@
 
 #include "ppbox/data/MediaInfo.h"
 
-#include <ppbox/common/Call.h>
-#include <ppbox/common/Create.h>
+#include <ppbox/common/ClassFactory.h>
 
 #include <framework/string/Url.h>
-
-#define PPBOX_REGISTER_MEDIA(n, c) \
-    static ppbox::common::Call reg ## n(ppbox::data::MediaBase::register_media, BOOST_PP_STRINGIZE(n), ppbox::common::Creator<c>())
 
 namespace ppbox 
 {
@@ -19,17 +15,16 @@ namespace ppbox
     {
 
         class MediaBase
+            : public ppbox::common::ClassFactory<
+                MediaBase, 
+                std::string, 
+                MediaBase * (boost::asio::io_service &)
+            >
         {
-
         public:
             typedef boost::function<
-                void(boost::system::error_code const &) > 
+                void (boost::system::error_code const &) > 
                 response_type;
-
-            typedef boost::function<MediaBase * (
-                boost::asio::io_service & )
-            > register_type;
-
 
         public:
             MediaBase(
@@ -41,12 +36,6 @@ namespace ppbox
             static MediaBase * create(
                 boost::asio::io_service & io_svc,
                 framework::string::Url const & playlink);
-
-            static void register_media(
-                std::string const & proto,
-                register_type func);
-
-            static void destory(MediaBase* & segment);
 
         public:
             virtual void set_url(
@@ -107,12 +96,11 @@ namespace ppbox
 
         private:
             boost::asio::io_service & io_svc_;
-
-        private:
-            static std::map<std::string, register_type> & media_map();
         };
 
     } // namespace data
 } // namespace ppbox
+
+#define PPBOX_REGISTER_MEDIA(k, c) PPBOX_REGISTER_CLASS(k, c)
 
 #endif//_PPBOX_DATA_MEDIA_BASE_H_

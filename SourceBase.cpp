@@ -11,52 +11,22 @@ namespace ppbox
     namespace data
     {
 
-        std::map<std::string, SourceBase::register_type> & SourceBase::source_map()
-        {
-            static std::map<std::string, register_type> get_map;
-            return get_map;
-        }
-
-        void SourceBase::register_source(
-            std::string const & name, 
-            register_type func)
-        {
-            source_map().insert(std::make_pair(name, func));
-            return;
-        }
-
         SourceBase * SourceBase::create(
             boost::asio::io_service & io_svc,
             std::string const & proto)
         {
-            std::map<std::string, register_type>::const_iterator iter = source_map().find(proto);
-            if (iter == source_map().end()) {
-                return NULL;
-            }
-            return iter->second(io_svc);
+            return factory_type::create(proto, io_svc);
         }
 
         SourceBase * SourceBase::create(
             boost::asio::io_service & io_svc,
             MediaBase & media)
         {
-            std::map<std::string, register_type>::const_iterator iter = 
-                source_map().find(media.get_protocol());
-            if (iter == source_map().end()) {
-                iter = source_map().find(media.segment_protocol());
+            SourceBase * source = factory_type::create(media.get_protocol(), io_svc);
+            if (source == NULL) {
+                source = factory_type::create(media.segment_protocol(), io_svc);
             }
-            if (iter == source_map().end()) {
-                return NULL;
-            }
-            SourceBase * source = iter->second(io_svc);
             return source;
-        }
-
-        void SourceBase::destory(
-            SourceBase* & source)
-        {
-            delete source;
-            source = NULL;
         }
 
         SourceBase::SourceBase(

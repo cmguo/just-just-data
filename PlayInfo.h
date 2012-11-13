@@ -36,4 +36,4 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#endif//_PPBOX_DATA_PLAY_INFO_H_
+#endif //_PPBOX_DATA_PLAY_INFO_H_

@@ -1,41 +1,11 @@
 // DataModule.h
 
-#include "ppbox/cdn/CdnModule.h"
 #include "ppbox/common/CommonModuleBase.h"
-
-#include <framework/string/Url.h>
-#include <boost/thread/mutex.hpp>
 
 namespace ppbox
 {
     namespace data
     {
-        class SegmentSource;
-        class MediaBase;
-        class SourceBase;
-
-        typedef boost::function< void ( 
-            boost::system::error_code const & ec, 
-            SegmentSource *) 
-        > open_respone_trpe;
-
-        struct State
-        {
-             enum Enum
-             {
-                 closed,
-                 opening,
-                 canceled,
-                 opened,
-             };
-        };
-
-        struct SegmentSourceStatisic
-        {
-            State::Enum state;
-            SegmentSource * source;
-            open_respone_trpe resp;
-        };
 
         class DataModule
             : public ppbox::common::CommonModuleBase<DataModule>
@@ -50,17 +20,6 @@ namespace ppbox
             virtual boost::system::error_code startup();
 
             virtual void shutdown();
-
-        private:
-            void open_callback(
-                SegmentSource * segment_source, 
-                boost::system::error_code const & ec);
-
-        private:
-            boost::asio::io_service & io_srv_;
-            std::vector<SegmentSourceStatisic> segment_sources_;
-            boost::mutex mutex_;
-
         };
     }
 }

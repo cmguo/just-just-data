@@ -2,13 +2,11 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/MediaBase.h"
-#include "ppbox/data/SourceBase.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
-using namespace framework::logger;
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.MediaBase", Debug);
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.MediaBase", framework::logger::Debug);
 
 namespace ppbox
 {

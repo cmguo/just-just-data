@@ -3,17 +3,18 @@
 #ifndef _PPBOX_DATA_MEDIA_INFO_H_
 #define _PPBOX_DATA_MEDIA_INFO_H_
 
+#include "ppbox/data/DataBase.h"
+
 namespace ppbox 
 {
     namespace data 
     {
 
-        static boost::uint64_t const invalid_size = boost::uint64_t(-1);
-
         struct MediaInfo
         {
             MediaInfo()
                 : type(vod)
+                , flags(0)
                 , file_size(invalid_size)
                 , duration(invalid_size)
                 , bitrate(0)
@@ -29,7 +30,18 @@ namespace ppbox
                 live, 
             };
 
+            enum FlagEnum
+            {
+                f_seekable, 
+                // 分段属性
+                f_segment = 10, 
+                f_time_smoth = 20, 
+                f_fix_duration = 40, 
+                f_segment_seek = 80, 
+            };
+
             TypeEnum type;
+            boost::uint32_t flags;
             boost::uint64_t file_size;
             boost::uint64_t duration;
             boost::uint32_t bitrate;    // 平均码流率
@@ -45,23 +57,7 @@ namespace ppbox
             std::string format_data;
         }; 
 
-        struct SegmentInfo
-        {
-            SegmentInfo()
-                : head_size(invalid_size)
-                , size(invalid_size)
-                , offset(invalid_size)
-                , duration(invalid_size)
-            {
-            }
-
-            boost::uint64_t head_size;
-            boost::uint64_t size;
-            boost::uint64_t offset;
-            boost::uint64_t duration;
-        };
-
     } // namespace data
 } // namespace ppbox
 
-#endif//_PPBOX_DATA_MEDIA_BASE_H_
+#endif//_PPBOX_DATA_MEDIA_INFO_H_

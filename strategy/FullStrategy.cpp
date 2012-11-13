@@ -9,7 +9,7 @@ namespace ppbox
     {
 
         FullStrategy::FullStrategy(
-            MediaBase & media)
+            SegmentMedia & media)
             : SegmentStrategy(media)
         {
         }

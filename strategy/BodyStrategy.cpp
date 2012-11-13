@@ -9,7 +9,7 @@ namespace ppbox
     {
 
         BodyStrategy::BodyStrategy(
-            MediaBase & media)
+            SegmentMedia & media)
             : SegmentStrategy(media)
         {
         }

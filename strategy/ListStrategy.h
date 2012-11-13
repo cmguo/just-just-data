@@ -15,7 +15,7 @@ namespace ppbox
         {
         public:
             ListStrategy(
-                MediaBase & media);
+                SegmentMedia & media);
 
             virtual ~ListStrategy();
 

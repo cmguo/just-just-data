@@ -4,6 +4,7 @@
 #define _PPBOX_DATA_SEGMENT_STRATEGY_H_
 
 #include <ppbox/data/SegmentPosition.h>
+#include <ppbox/data/SegmentMedia.h>
 
 namespace ppbox
 {
@@ -14,7 +15,7 @@ namespace ppbox
         {
         public:
             SegmentStrategy(
-                MediaBase const & media);
+                SegmentMedia const & media);
 
             virtual ~SegmentStrategy();
 
@@ -55,7 +56,7 @@ namespace ppbox
                 SegmentRange & range);
 
         protected:
-            MediaBase const & media_;
+            SegmentMedia const & media_;
         };
 
     } // namespace data

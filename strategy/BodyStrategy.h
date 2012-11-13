@@ -15,7 +15,7 @@ namespace ppbox
         {
         public:
             BodyStrategy(
-                MediaBase & media);
+                SegmentMedia & media);
 
             virtual ~BodyStrategy();
 

@@ -3,6 +3,7 @@
 #include "ppbox/data/Common.h"
 #include "ppbox/data/SourceBase.h"
 #include "ppbox/data/MediaBase.h"
+#include "ppbox/data/SegmentMedia.h"
 
 #include <boost/bind.hpp>
 
@@ -24,7 +25,11 @@ namespace ppbox
         {
             SourceBase * source = factory_type::create(media.get_protocol(), io_svc);
             if (source == NULL) {
-                source = factory_type::create(media.segment_protocol(), io_svc);
+                MediaInfo info;
+                boost::system::error_code ec;
+                if (media.get_info(info, ec) && info.flags & MediaInfo::f_segment) {
+                    source = factory_type::create(((SegmentMedia &)media).segment_protocol(), io_svc);
+                }
             }
             return source;
         }

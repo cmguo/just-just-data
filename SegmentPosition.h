@@ -3,7 +3,7 @@
 #ifndef _PPBOX_DATA_SEGMENT_POSITION_H_
 #define _PPBOX_DATA_SEGMENT_POSITION_H_
 
-#include <ppbox/data/MediaBase.h>
+#include <ppbox/data/SegmentInfo.h>
 
 namespace ppbox
 {

@@ -15,7 +15,7 @@ namespace ppbox
         {
         public:
             FullStrategy(
-                MediaBase & media);
+                SegmentMedia & media);
 
             virtual ~FullStrategy();
         };

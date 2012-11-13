@@ -10,7 +10,7 @@ namespace ppbox
     {
 
         ListStrategy::ListStrategy(
-            MediaBase & media)
+            SegmentMedia & media)
             : SegmentStrategy(media)
             , strategys_(NULL)
             , last_strategy_(NULL)

@@ -10,7 +10,7 @@ namespace ppbox
     {
 
         SegmentStrategy::SegmentStrategy(
-            MediaBase const & media)
+            SegmentMedia const & media)
             : media_(media)
         {
         }

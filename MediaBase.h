@@ -7,8 +7,6 @@
 
 #include <ppbox/common/ClassFactory.h>
 
-#include <framework/string/Url.h>
-
 namespace ppbox 
 {
     namespace data 
@@ -63,23 +61,6 @@ namespace ppbox
             virtual bool get_url(
                 framework::string::Url & url,
                 boost::system::error_code & ec) const;
-
-        public:
-            virtual size_t segment_count() const = 0;
-
-            virtual std::string const segment_protocol() const
-            {
-                return get_protocol();
-            }
-
-            virtual bool segment_url(
-                size_t segment, 
-                framework::string::Url & url,
-                boost::system::error_code & ec) const = 0;
-
-            virtual void segment_info(
-                size_t segment, 
-                SegmentInfo & info) const = 0;
 
         public:
             virtual void on_error(

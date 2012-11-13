@@ -15,7 +15,7 @@ namespace ppbox
         {
         public:
             HeadStrategy(
-                MediaBase & media);
+                SegmentMedia & media);
 
             virtual ~HeadStrategy();
 

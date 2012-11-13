@@ -18,7 +18,9 @@ namespace ppbox
             : public ppbox::common::ClassFactory<
                 MediaBase, 
                 std::string, 
-                MediaBase * (boost::asio::io_service &)
+                MediaBase * (
+                    boost::asio::io_service &,
+                    framework::string::Url const &)
             >
         {
         public:
@@ -28,19 +30,17 @@ namespace ppbox
 
         public:
             MediaBase(
-                boost::asio::io_service & io_svc);
+                boost::asio::io_service & io_svc,
+                framework::string::Url const & url);
 
             ~MediaBase();
 
         public:
             static MediaBase * create(
                 boost::asio::io_service & io_svc,
-                framework::string::Url const & playlink);
-
-        public:
-            virtual void set_url(
                 framework::string::Url const & url);
 
+        public:
             virtual void async_open(
                 response_type const & resp) = 0;
 
@@ -91,11 +91,11 @@ namespace ppbox
                 return io_svc_;
             }
 
-        protected:
-            framework::string::Url url_;
-
         private:
             boost::asio::io_service & io_svc_;
+
+        protected:
+            framework::string::Url url_;
         };
 
     } // namespace data

@@ -19,26 +19,19 @@ namespace ppbox
             boost::asio::io_service & io_svc,
             framework::string::Url const & url)
         {
-            MediaBase * media = factory_type::create(url.protocol(), io_svc);
-            if (media)
-                media->set_url(url);
-            return media;
+            return factory_type::create(url.protocol(), io_svc, url);
         }
 
         MediaBase::MediaBase(
-            boost::asio::io_service & io_svc)
+            boost::asio::io_service & io_svc,
+            framework::string::Url const & url)
             : io_svc_(io_svc)
+            , url_(url)
         {
         }
 
         MediaBase::~MediaBase()
         {
-        }
-
-        void MediaBase::set_url(
-            framework::string::Url const &url)
-        {
-            url_ = url;
         }
 
         bool MediaBase::get_url(

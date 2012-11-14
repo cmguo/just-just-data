@@ -77,7 +77,7 @@ namespace ppbox
             util::protocol::HttpClient http_;
         };
 
-        PPBOX_REGISTER_SOURCE(http, HttpSource);
+        PPBOX_REGISTER_SOURCE("http", HttpSource);
 
     } // namespace data
 } // namespace ppbox

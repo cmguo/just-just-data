@@ -3,15 +3,13 @@
 #ifndef _PPBOX_DATA_SINK_BASE_H_
 #define _PPBOX_DATA_SINK_BASE_H_
 
-#include <ppbox/common/Call.h>
-#include <ppbox/common/Create.h>
+#include "ppbox/data/DataBase.h"
+
+#include <ppbox/common/ClassFactory.h>
 
 #include <util/stream/Sink.h>
 
 #include <framework/string/Url.h>
-
-#define PPBOX_REGISTER_SINK(n, c) \
-    static ppbox::common::Call reg_ ## n(ppbox::data::SinkBase::register_sink, BOOST_PP_STRINGIZE(n), ppbox::common::Creator<c>())
 
 namespace ppbox
 {
@@ -20,27 +18,21 @@ namespace ppbox
 
         class SinkBase
             : public util::stream::Sink
+            , public ppbox::common::ClassFactory<
+                SinkBase, 
+                std::string, 
+                SinkBase * (boost::asio::io_service &)
+            >
         {
         public:
             typedef boost::function<void (
                 boost::system::error_code const &)
             > response_type;
 
-            typedef boost::function<SinkBase * (
-                boost::asio::io_service & )
-            > register_type;
-
         public:
-            static void register_sink(
-                std::string const & name,
-                register_type func);
-            
             static SinkBase * create(
                 boost::asio::io_service & io_svc,
                 std::string const & proto);
-
-            static void destory(
-                SinkBase* & sink);
 
         public:
             SinkBase(
@@ -72,12 +64,11 @@ namespace ppbox
 
             virtual bool recoverable(
                 boost::system::error_code const & ec);
-
-        private:
-            static std::map< std::string, SinkBase::register_type > & sink_map();
         };
 
     } // namespace data
 } // namespace ppbox
+
+#define PPBOX_REGISTER_SINK(k, c) PPBOX_REGISTER_CLASS(k, c)
 
 #endif // _PPBOX_DATA_SINK_BASE_H_

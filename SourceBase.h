@@ -3,18 +3,16 @@
 #ifndef _PPBOX_DATA_SOURCE_BASE_H_
 #define _PPBOX_DATA_SOURCE_BASE_H_
 
+#include "ppbox/data/DataBase.h"
+
 #include <ppbox/common/ClassFactory.h>
 
 #include <util/stream/Source.h>
-
-#include <framework/string/Url.h>
 
 namespace ppbox
 {
     namespace data
     {
-
-        class MediaBase;
 
         class SourceBase
             : public util::stream::Source
@@ -28,10 +26,6 @@ namespace ppbox
             typedef boost::function<void (
                 boost::system::error_code const &)
             > response_type;
-
-            typedef boost::function<SourceBase * (
-                boost::asio::io_service & )
-            > register_type;
 
         public:
             static SourceBase * create(

@@ -61,7 +61,7 @@ namespace ppbox
             bool is_open_;
         };
 
-        PPBOX_REGISTER_SOURCE(pipe, PipeSource);
+        PPBOX_REGISTER_SOURCE("pipe", PipeSource);
 
     } // namespace data
 } // namespace ppbox

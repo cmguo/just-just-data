@@ -11,36 +11,11 @@ namespace ppbox
     namespace data
     {
 
-        std::map<std::string, SinkBase::register_type> & SinkBase::sink_map()
-        {
-            static std::map<std::string, register_type> get_map;
-            return get_map;
-        }
-
-        void SinkBase::register_sink(
-            std::string const & name, 
-            register_type func)
-        {
-            sink_map().insert(std::make_pair(name, func));
-            return;
-        }
-
         SinkBase * SinkBase::create(
             boost::asio::io_service & io_svc,
             std::string const & proto)
         {
-            std::map<std::string, register_type>::const_iterator iter = sink_map().find(proto);
-            if (iter == sink_map().end()) {
-                return NULL;
-            }
-            return iter->second(io_svc);
-        }
-
-        void SinkBase::destory(
-            SinkBase* & sink)
-        {
-            delete sink;
-            sink = NULL;
+            return factory_type::create(proto, io_svc);
         }
 
         SinkBase::SinkBase(

@@ -49,7 +49,7 @@ namespace ppbox
             bool is_open_;
         };
 
-        PPBOX_REGISTER_SINK(file, FileSink);
+        PPBOX_REGISTER_SINK("file", FileSink);
 
     } // namespace demux
 } // namespace ppbox

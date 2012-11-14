@@ -48,7 +48,7 @@ namespace ppbox
             bool is_open_;
         };
 
-        PPBOX_REGISTER_SOURCE(file, FileSource);
+        PPBOX_REGISTER_SOURCE("file", FileSource);
 
     } // namespace demux
 } // namespace ppbox

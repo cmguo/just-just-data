@@ -3,8 +3,8 @@
 #ifndef _PPBOX_DATA_SEGMENT_MEDIA_H_
 #define _PPBOX_DATA_SEGMENT_MEDIA_H_
 
-#include "ppbox/data/MediaBase.h"
-#include "ppbox/data/SegmentInfo.h"
+#include "ppbox/data/base/MediaBase.h"
+#include "ppbox/data/segment/SegmentInfo.h"
 
 namespace ppbox 
 {

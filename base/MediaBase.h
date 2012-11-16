@@ -3,7 +3,7 @@
 #ifndef _PPBOX_DATA_MEDIA_BASE_H_
 #define _PPBOX_DATA_MEDIA_BASE_H_
 
-#include "ppbox/data/MediaInfo.h"
+#include "ppbox/data/base/MediaInfo.h"
 
 #include <ppbox/common/ClassFactory.h>
 

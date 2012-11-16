@@ -1,12 +1,12 @@
 // SegmentSource.h
 
-#ifndef _PPBOX_DEMUX_BASE_SEGMENT_SOURCE_H_
-#define _PPBOX_DEMUX_SOURCE_BUFFER_LIST_H_
+#ifndef _PPBOX_DATA_SEGMENT_SEGMENT_SOURCE_H_
+#define _PPBOX_DATA_SEGMENT_SEGMENT_SOURCE_H_
 
-#include "ppbox/data/DataStatistic.h"
-#include "ppbox/data/SegmentStrategy.h"
+#include "ppbox/data/base/DataStatistic.h"
+#include "ppbox/data/segment/SegmentStrategy.h"
 
-#include <ppbox/data/SourceBase.h>
+#include <ppbox/data/base/SourceBase.h>
 
 #include <util/stream/Source.h>
 #include <util/event/Observable.h>
@@ -203,4 +203,4 @@ namespace ppbox
     } // namespace demux
 } // namespace ppbox
 
-#endif // _PPBOX_DEMUX_SOURCE_BUFFER_LIST_H_
+#endif // _PPBOX_DATA_SEGMENT_SEGMENT_SOURCE_H_

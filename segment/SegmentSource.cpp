@@ -1,9 +1,9 @@
 // SegmentSource.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/SegmentSource.h"
-#include "ppbox/data/SourceError.h"
-#include "ppbox/data/SourceEvent.h"
+#include "ppbox/data/segment/SegmentSource.h"
+#include "ppbox/data/base/SourceError.h"
+#include "ppbox/data/base/SourceEvent.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
@@ -143,7 +143,7 @@ namespace ppbox
                         LOG_DEBUG("[prepare] read elapse: " << tc.elapse() 
                             << " bytes_transferred: " << bytes_transferred);
                     }
-                    increase_download_byte(bytes_transferred);
+                    increase_bytes(bytes_transferred);
                     write_range_.pos += bytes_transferred;
                     if (ec && !source_.continuable(ec)) {
                         LOG_WARN("[prepare] read_some: " << ec.message() << 
@@ -158,7 +158,7 @@ namespace ppbox
                         LOG_WARN("[prepare] open_segment: " << write_.index << " ec: " << ec.message() << 
                             " --- failed " << num_try_ << " times");
                     } else {
-                        increase_download_byte(0);
+                        increase_bytes(0);
                     }
                 }
                 if (source_error_) {
@@ -259,7 +259,7 @@ namespace ppbox
                     }
                 }
             }
-            increase_download_byte(bytes_transferred);
+            increase_bytes(bytes_transferred);
             write_range_.pos += bytes_transferred;
             if (source_error_) {
                 ec = source_error_;

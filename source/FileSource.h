@@ -1,9 +1,9 @@
-// FileBufferList.h
+// FileSource.h
 
-#ifndef _PPBOX_DEMUX_SOURCE_FILE_BUFFER_LIST_H_
-#define _PPBOX_DEMUX_SOURCE_FILE_BUFFER_LIST_H_
+#ifndef _PPBOX_DATA_SOURCE_FILE_SOURCE_H_
+#define _PPBOX_DATA_SOURCE_FILE_SOURCE_H_
 
-#include "ppbox/data/SourceBase.h"
+#include "ppbox/data/base/SourceBase.h"
 
 #include <fstream>
 
@@ -53,4 +53,4 @@ namespace ppbox
     } // namespace demux
 } // namespace ppbox
 
-#endif // _PPBOX_DEMUX_SOURCE_FILE_BUFFER_LIST_H_
+#endif // _PPBOX_DATA_SOURCE_FILE_SOURCE_H_

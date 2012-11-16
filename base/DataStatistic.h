@@ -3,19 +3,12 @@
 #ifndef _PPBOX_DATA_DATA_STATISTIC_H_
 #define _PPBOX_DATA_DATA_STATISTIC_H_
 
-#include <framework/timer/ClockTime.h>
-
 namespace framework { namespace timer { class Ticker; } }
 
 namespace ppbox
 {
     namespace data
     {
-        //定义采样集中需要采样的时间
-        static const boost::uint32_t ONE_REG = 1;
-        static const boost::uint32_t FIVE_REG = 5;
-        static const boost::uint32_t TWENTY_REG = 20;
-        static const boost::uint32_t SIXTY_REG = 60;
 
         struct SpeedStatistics
         {
@@ -39,12 +32,13 @@ namespace ppbox
 
         struct DataStatistic
         {
-            DataStatistic()
-                : start_time(0)
-                , total_bytes(0)
-                , zero_time(0)
-            {
-            }
+            DataStatistic();
+
+            //定义采样集中需要采样的时间
+            static const boost::uint32_t ONE_REG = 1;
+            static const boost::uint32_t FIVE_REG = 5;
+            static const boost::uint32_t TWENTY_REG = 20;
+            static const boost::uint32_t SIXTY_REG = 60;
 
             time_t start_time;
             boost::uint64_t total_bytes;        // 记录下载总字节
@@ -53,6 +47,7 @@ namespace ppbox
         };
 
         class DataObserver
+            : public DataStatistic
         {
         public: 
             DataObserver();
@@ -60,25 +55,15 @@ namespace ppbox
             ~DataObserver();
 
         public: 
-            //记录每次收到数据的时间间隔
-            boost::uint64_t get_current_interval();
-
             boost::uint32_t get_zero_interval();
 
             void reset_zero_interval();
 
             //每次下载数据所调用的统计接口
-            void increase_download_byte(
+            void increase_bytes(
                 boost::uint32_t byte_size);
 
-            //获得统计信息
-            DataStatistic const & buffer_stat() const
-            {
-                return stat_;
-            }
-
         private:
-            DataStatistic stat_;
             framework::timer::Ticker * ticker_;
         };
 

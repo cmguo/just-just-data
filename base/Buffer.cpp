@@ -1,7 +1,7 @@
 // Buffer.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/Buffer.h"
+#include "ppbox/data/base/Buffer.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>

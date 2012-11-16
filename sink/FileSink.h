@@ -1,9 +1,9 @@
-// FileBufferList.h
+// FileSink.h
 
-#ifndef _PPBOX_DEMUX_SOURCE_FILE_BUFFER_LIST_H_
-#define _PPBOX_DEMUX_SOURCE_FILE_BUFFER_LIST_H_
+#ifndef _PPBOX_DATA_SINK_FILE_SINK_H_
+#define _PPBOX_DATA_SINK_FILE_SINK_H_
 
-#include "ppbox/data/SinkBase.h"
+#include "ppbox/data/base/SinkBase.h"
 
 #include <fstream>
 
@@ -54,4 +54,4 @@ namespace ppbox
     } // namespace demux
 } // namespace ppbox
 
-#endif // _PPBOX_DEMUX_SOURCE_FILE_BUFFER_LIST_H_
+#endif // _PPBOX_DATA_SINK_FILE_SINK_H_

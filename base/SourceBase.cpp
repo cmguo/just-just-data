@@ -1,9 +1,9 @@
 // SourceBase.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/SourceBase.h"
-#include "ppbox/data/MediaBase.h"
-#include "ppbox/data/SegmentMedia.h"
+#include "ppbox/data/base/SourceBase.h"
+#include "ppbox/data/base/MediaBase.h"
+#include "ppbox/data/segment/SegmentMedia.h"
 
 #include <boost/bind.hpp>
 

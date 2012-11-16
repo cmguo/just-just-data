@@ -1,9 +1,9 @@
-// BytesStream.h
+// SegmentStream.h
 
-#ifndef _PPBOX_DATA_BYTES_STREAM_H_
-#define _PPBOX_DATA_BYTES_STREAM_H_
+#ifndef _PPBOX_DATA_SEGMENT_SEGMENT_STREAM_H_
+#define _PPBOX_DATA_SEGMENT_SEGMENT_STREAM_H_
 
-#include "ppbox/data/SegmentBuffer.h"
+#include "ppbox/data/segment/SegmentBuffer.h"
 
 #include <util/buffers/BufferSize.h>
 #include <util/buffers/StlBuffer.h>
@@ -15,7 +15,7 @@ namespace ppbox
     namespace data
     {
 
-        class BytesStream
+        class SegmentStream
             : public util::buffers::StlStream<boost::uint8_t>
         {
         public:
@@ -27,7 +27,7 @@ namespace ppbox
                 util::buffers::detail::_read, boost::uint8_t, std::char_traits<boost::uint8_t> > buffer_type;
 
         public:
-            BytesStream(
+            SegmentStream(
                 SegmentBuffer & buffer)
                 : buffer_(buffer)
                 , segment_(NULL)
@@ -46,12 +46,11 @@ namespace ppbox
                 boost::uint64_t pos64 = pos;
                 boost::uint64_t off32 = 0;
                 boost::asio::const_buffer buf;;
-                boost::system::error_code ec;
-                ec = buffer_.segment_buffer(*segment_, type, pos64, off32, buf);
+                bool ok = buffer_.segment_buffer(*segment_, type, pos64, off32, buf);
                 pos_ = pos64;
                 buf_ = buf;
                 gbump(off32);
-                return !ec;
+                return ok;
             }
 
             void update()
@@ -107,9 +106,6 @@ namespace ppbox
                 std::ios_base::seekdir dir,
                 std::ios_base::openmode mode)
             {
-                if (mode != std::ios_base::in) {
-                    return pos_type(-1);
-                }
                 if (dir == std::ios_base::cur) {
                     pos_type pos = pos_ + gptr() - eback();
                     if (off == 0) {
@@ -135,6 +131,12 @@ namespace ppbox
                 std::ios_base::openmode mode)
             {
                 assert(position != pos_type(-1));
+                if (mode == (std::ios_base::in | std::ios_base::out)) {
+                    if (!buffer_.segment_seek(*segment_, position)) {
+                        return pos_type(-1);
+                    }
+                    mode = std::ios_base::in;
+                }
                 if (mode != std::ios_base::in) {
                     return pos_type(-1);// Ä£Ê½´íÎó
                 }
@@ -154,4 +156,4 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#endif // _PPBOX_DATA_BYTES_STREAM_H_
+#endif // _PPBOX_DATA_SEGMENT_SEGMENT_STREAM_H_

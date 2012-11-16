@@ -1,10 +1,10 @@
 // SegmentBuffer.h
 
-#ifndef _PPBOX_DATA_SEGMENT_BUFFER_H_
-#define _PPBOX_DATA_SEGMENT_BUFFER_H_
+#ifndef _PPBOX_DATA_SEGMENT_SEGMENT_BUFFER_H_
+#define _PPBOX_DATA_SEGMENT_SEGMENT_BUFFER_H_
 
-#include "ppbox/data/SegmentStrategy.h"
-#include "ppbox/data/Buffer.h"
+#include "ppbox/data/segment/SegmentStrategy.h"
+#include "ppbox/data/base/Buffer.h"
 
 #include <util/event/Event.h>
 #include <util/stream/StreamBuffers.h>
@@ -21,7 +21,7 @@ namespace ppbox
     namespace data
     {
 
-        class BytesStream;
+        class SegmentStream;
 
         class SegmentBuffer
             : public Buffer
@@ -167,18 +167,18 @@ namespace ppbox
 
         public:
             void detach_stream(
-                BytesStream & stream);
+                SegmentStream & stream);
 
             void attach_stream(
-                BytesStream & stream, 
+                SegmentStream & stream, 
                 bool read);
 
             void change_stream(
-                BytesStream & stream, 
+                SegmentStream & stream, 
                 bool read);
 
         private:
-            friend class BytesStream;
+            friend class SegmentStream;
 
             struct PositionType
             {
@@ -190,7 +190,11 @@ namespace ppbox
                 };
             };
 
-            boost::system::error_code segment_buffer(
+            bool segment_seek(
+                segment_t const & segment, 
+                boost::uint64_t pos);
+
+            bool segment_buffer(
                 segment_t const & segment, 
                 PositionType::Enum pos_type, 
                 boost::uint64_t & pos, 
@@ -232,8 +236,8 @@ namespace ppbox
             segment_t read_;
             segment_t write_;
 
-            BytesStream * read_stream_;    // ¶ÁStream
-            BytesStream * write_stream_;   // Ð´Stream
+            SegmentStream * read_stream_;    // ¶ÁStream
+            SegmentStream * write_stream_;   // Ð´Stream
 
             prepare_response_type resp_;
 
@@ -243,4 +247,4 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#endif // _PPBOX_DATA_SEGMENT_BUFFER_H_
+#endif // _PPBOX_DATA_SEGMENT_SEGMENT_BUFFER_H_

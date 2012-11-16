@@ -1,12 +1,12 @@
 // SegmentBuffer.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/SegmentBuffer.h"
-#include "ppbox/data/BytesStream.h"
+#include "ppbox/data/segment/SegmentBuffer.h"
+#include "ppbox/data/segment/SegmentStream.h"
 
-#include <ppbox/data/SegmentSource.h>
-#include <ppbox/data/SourceEvent.h>
-#include <ppbox/data/SourceError.h>
+#include <ppbox/data/segment/SegmentSource.h>
+#include <ppbox/data/base/SourceEvent.h>
+#include <ppbox/data/base/SourceError.h>
 
 #include <framework/system/LogicError.h>
 #include <framework/logger/Logger.h>
@@ -319,7 +319,7 @@ namespace ppbox
         }
 */
         void SegmentBuffer::attach_stream(
-            BytesStream & stream, 
+            SegmentStream & stream, 
             bool read)
         {
             assert ((read ? read_stream_ : write_stream_) == NULL);
@@ -331,21 +331,32 @@ namespace ppbox
         }
 
         void SegmentBuffer::detach_stream(
-            BytesStream & stream)
+            SegmentStream & stream)
         {
             assert (&stream == read_stream_ || &stream == write_stream_);
             (&stream == read_stream_ ? read_stream_ : write_stream_) = NULL;
         }
 
         void SegmentBuffer::change_stream(
-            BytesStream & stream, 
+            SegmentStream & stream, 
             bool read)
         {
             detach_stream(stream);
             attach_stream(stream, read);
         }
 
-        boost::system::error_code SegmentBuffer::segment_buffer(
+        bool SegmentBuffer::segment_seek(
+            segment_t const & segment, 
+            boost::uint64_t pos)
+        {
+            assert(&segment == &read_);
+            segment_t read = read_;
+            read.byte_range.pos = pos;
+            boost::system::error_code ec;
+            return seek(read, ec);
+        }
+
+        bool SegmentBuffer::segment_buffer(
             segment_t const & segment, 
             PositionType::Enum pos_type, 
             boost::uint64_t & pos, 
@@ -403,7 +414,7 @@ namespace ppbox
             off = pos - beg;
             pos = beg - segment.byte_range.big_offset;
             buffer = boost::asio::const_buffer(ptr, (size_t)(end - beg));
-            return ec;
+            return !ec;
         }
 
         void SegmentBuffer::on_event(

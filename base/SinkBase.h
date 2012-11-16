@@ -3,7 +3,7 @@
 #ifndef _PPBOX_DATA_SINK_BASE_H_
 #define _PPBOX_DATA_SINK_BASE_H_
 
-#include "ppbox/data/DataBase.h"
+#include "ppbox/data/base/DataBase.h"
 
 #include <ppbox/common/ClassFactory.h>
 

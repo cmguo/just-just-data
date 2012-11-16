@@ -2,7 +2,7 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/strategy/ListStrategy.h"
-#include "ppbox/data/SourceError.h"
+#include "ppbox/data/base/SourceError.h"
 
 namespace ppbox
 {

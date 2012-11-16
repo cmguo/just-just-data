@@ -1,8 +1,7 @@
 // SinkBase.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/SinkBase.h"
-#include "ppbox/data/MediaBase.h"
+#include "ppbox/data/base/SinkBase.h"
 
 #include <boost/bind.hpp>
 

@@ -1,10 +1,9 @@
 // HttpSource.h
 
-#ifndef _PPBOX_DATA_HTTPSOURCE_H_
-#define _PPBOX_DATA_HTTPSOURCE_H_
+#ifndef _PPBOX_DATA_SOURCE_HTTP_SOURCE_H_
+#define _PPBOX_DATA_SOURCE_HTTP_SOURCE_H_
 
-#include "ppbox/data/SourceBase.h"
-#include "ppbox/data/MediaBase.h"
+#include "ppbox/data/base/SourceBase.h"
 
 #include <util/protocol/http/HttpClient.h>
 
@@ -82,4 +81,4 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#endif // _PPBOX_DATA_HTTPSOURCE_H_
+#endif // _PPBOX_DATA_SOURCE_HTTP_SOURCE_H_

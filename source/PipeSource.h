@@ -1,9 +1,9 @@
 // PipeSource.h
 
-#ifndef _PPBOX_DATA_PIPE_SOURCE_H_
-#define _PPBOX_DATA_PIPE_SOURCE_H_
+#ifndef _PPBOX_DATA_SOURCE_PIPE_SOURCE_H_
+#define _PPBOX_DATA_SOURCE_PIPE_SOURCE_H_
 
-#include <ppbox/data/SourceBase.h>
+#include <ppbox/data/base/SourceBase.h>
 
 #ifndef BOOST_WINDOWS_API
 #  include <boost/asio/posix/stream_descriptor.hpp>
@@ -66,4 +66,4 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#endif // _PPBOX_DATA_PIPE_SOURCE_H_
+#endif // _PPBOX_DATA_SOURCE_PIPE_SOURCE_H_

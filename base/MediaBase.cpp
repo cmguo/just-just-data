@@ -17,7 +17,11 @@ namespace ppbox
             boost::asio::io_service & io_svc,
             framework::string::Url const & url)
         {
-            return factory_type::create(url.protocol(), io_svc, url);
+            MediaBase * media = factory_type::create(url.protocol(), io_svc, url);
+            if (media == NULL) {
+                media = new SingleMedia(io_svc, url);
+            }
+            return media;
         }
 
         MediaBase::MediaBase(

@@ -9,6 +9,7 @@ namespace ppbox
 {
     namespace data 
     {
+
         SingleMedia::SingleMedia(
             boost::asio::io_service & io_svc,
             framework::string::Url const & url)

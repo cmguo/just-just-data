@@ -34,6 +34,7 @@ namespace ppbox
             , seek_end_(0)
             , expire_pause_time_(framework::timer::Time::now())
         {
+            write_range_.big_offset = invalid_size;
         }
 
         SingleSource::~SingleSource()
@@ -299,16 +300,16 @@ namespace ppbox
 
             write_range_.beg = write_range_.pos; // 记录开始位置
 
+            source_open_ = true;
+
             source_.open(
                 url_, 
                 write_range_.pos, 
                 write_range_.big_offset == write_range_.end ? invalid_size : write_range_.end, ec);
 
             if (ec && !source_.continuable(ec)) {
-                if (ec != source_error::no_more_segment) {
-                    LOG_WARN("[open_source] ec: " << ec.message() << 
-                        " --- failed " << num_try_ << " times");
-                }
+                LOG_WARN("[open_source] ec: " << ec.message() << 
+                    " --- failed " << num_try_ << " times");
                 return false;
             }
 
@@ -329,6 +330,8 @@ namespace ppbox
             ++num_try_;
 
             write_range_.beg = write_range_.pos; // 记录开始位置
+
+            source_open_ = true;
 
             source_.async_open(
                 url_, 

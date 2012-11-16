@@ -145,6 +145,7 @@ namespace ppbox
             boost::uint32_t prepare_size_;  // 下载一次，最大的下载数据大小
             util::stream::StreamMutableBuffers prepare_buffers_;
             prepare_response_type resp_;
+            boost::uint64_t stream_pos_;
             boost::uint64_t total_size_;
             boost::system::error_code last_ec_;
         };

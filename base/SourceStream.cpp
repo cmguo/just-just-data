@@ -28,6 +28,8 @@ namespace ppbox
             : Buffer(buffer_size)
             , source_(source)
             , prepare_size_(prepare_size)
+            , stream_pos_(0)
+            , total_size_(invalid_size)
         {
         }
 
@@ -49,7 +51,7 @@ namespace ppbox
                 source_seek(ec);
             }
 
-            update();
+            read_seek(pos, ec);
 
             last_ec_ = ec;
 
@@ -159,6 +161,7 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             if (consume((size_t)(position() - in_position()))) {
+                setg(gptr(), gptr(), egptr());
                 ec.clear();
             } else {
                 ec = framework::system::logic_error::out_of_range;
@@ -174,7 +177,7 @@ namespace ppbox
                 ec = framework::system::logic_error::invalid_argument;
                 return false;
             } else if (consume((size_t)(offset - in_position()))) {
-                ec.clear();
+                read_seek(offset, ec);
                 return true;
             } else {
                 ec = framework::system::logic_error::out_of_range;
@@ -212,6 +215,7 @@ namespace ppbox
             boost::uint8_t * ptr = (boost::uint8_t *)read_buffer(beg, pos, end);
             pos -= beg;
             end -= beg;
+            stream_pos_ = beg;
             setg(ptr, ptr + pos, ptr + end);
             return !ec;
         }
@@ -249,7 +253,7 @@ namespace ppbox
 
         boost::uint64_t SourceStream::position()
         {
-            pos_type pos = in_position() + off_type(gptr() - eback());
+            pos_type pos = stream_pos_ + off_type(gptr() - eback());
             return pos;
         }
 

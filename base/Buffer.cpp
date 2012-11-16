@@ -24,7 +24,7 @@ namespace ppbox
             , seek_end_(0)
         {
             buffer_ = (char *)memory_.alloc_block(buffer_size_);
-            reset(0);
+            reset(0, 0);
         }
 
         Buffer::~Buffer()

@@ -9,6 +9,16 @@ namespace ppbox
 {
     namespace data 
     {
+        SingleMedia::SingleMedia(
+            boost::asio::io_service & io_svc,
+            framework::string::Url const & url)
+            : MediaBase(io_svc, url)
+        {
+        }
+
+        SingleMedia::~SingleMedia()
+        {
+        }
 
         void SingleMedia::async_open(
             response_type const & resp)

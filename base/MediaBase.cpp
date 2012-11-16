@@ -2,6 +2,7 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/base/MediaBase.h"
+#include "ppbox/data/base/SingleMedia.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>

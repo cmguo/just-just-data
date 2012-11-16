@@ -1,7 +1,7 @@
 // MediaInfo.h
 
-#ifndef _PPBOX_DATA_MEDIA_INFO_H_
-#define _PPBOX_DATA_MEDIA_INFO_H_
+#ifndef _PPBOX_DATA_BASE_MEDIA_INFO_H_
+#define _PPBOX_DATA_BASE_MEDIA_INFO_H_
 
 #include "ppbox/data/base/DataBase.h"
 
@@ -60,4 +60,4 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#endif//_PPBOX_DATA_MEDIA_INFO_H_
+#endif//_PPBOX_DATA_BASE_MEDIA_INFO_H_

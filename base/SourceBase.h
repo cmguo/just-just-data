@@ -1,7 +1,7 @@
 // SourceBase.h
 
-#ifndef _PPBOX_DATA_SOURCE_BASE_H_
-#define _PPBOX_DATA_SOURCE_BASE_H_
+#ifndef _PPBOX_DATA_BASE_SOURCE_BASE_H_
+#define _PPBOX_DATA_BASE_SOURCE_BASE_H_
 
 #include "ppbox/data/base/DataBase.h"
 
@@ -88,4 +88,4 @@ namespace ppbox
 
 #define PPBOX_REGISTER_SOURCE(k, c) PPBOX_REGISTER_CLASS(k, c)
 
-#endif // _PPBOX_DATA_SOURCE_BASE_H_
+#endif // _PPBOX_DATA_BASE_SOURCE_BASE_H_

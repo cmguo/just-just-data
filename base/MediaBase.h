@@ -1,7 +1,7 @@
 // MediaBase.h
 
-#ifndef _PPBOX_DATA_MEDIA_BASE_H_
-#define _PPBOX_DATA_MEDIA_BASE_H_
+#ifndef _PPBOX_DATA_BASE_MEDIA_BASE_H_
+#define _PPBOX_DATA_BASE_MEDIA_BASE_H_
 
 #include "ppbox/data/base/MediaInfo.h"
 
@@ -84,4 +84,4 @@ namespace ppbox
 
 #define PPBOX_REGISTER_MEDIA(k, c) PPBOX_REGISTER_CLASS(k, c)
 
-#endif//_PPBOX_DATA_MEDIA_BASE_H_
+#endif//_PPBOX_DATA_BASE_MEDIA_BASE_H_

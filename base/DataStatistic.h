@@ -1,7 +1,7 @@
 // DataStatistic.h
 
-#ifndef _PPBOX_DATA_DATA_STATISTIC_H_
-#define _PPBOX_DATA_DATA_STATISTIC_H_
+#ifndef _PPBOX_DATA_BASE_DATA_STATISTIC_H_
+#define _PPBOX_DATA_BASE_DATA_STATISTIC_H_
 
 namespace framework { namespace timer { class Ticker; } }
 
@@ -70,4 +70,4 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#endif // _PPBOX_DATA_DATA_STATISTIC_H_
+#endif // _PPBOX_DATA_BASE_DATA_STATISTIC_H_

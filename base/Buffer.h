@@ -1,9 +1,9 @@
 // Buffer.h
 
-#ifndef _PPBOX_DATA_BUFFER_H_
-#define _PPBOX_DATA_BUFFER_H_
+#ifndef _PPBOX_DATA_BASE_BUFFER_H_
+#define _PPBOX_DATA_BASE_BUFFER_H_
 
-#include <util/buffers//Buffers.h>
+#include <util/buffers/Buffers.h>
 
 #include <framework/memory/PrivateMemory.h>
 
@@ -441,4 +441,4 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#endif // _PPBOX_DATA_BUFFER_H_
+#endif // _PPBOX_DATA_BASE_BUFFER_H_

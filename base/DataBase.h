@@ -1,7 +1,7 @@
 // DataBase.h
 
-#ifndef _PPBOX_DATA_DATA_BASE_H_
-#define _PPBOX_DATA_DATA_BASE_H_
+#ifndef _PPBOX_DATA_BASE_DATA_BASE_H_
+#define _PPBOX_DATA_BASE_DATA_BASE_H_
 
 #include <framework/string/Url.h>
 
@@ -22,4 +22,4 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#endif//_PPBOX_DATA_DATA_BASE_H_
+#endif//_PPBOX_DATA_BASE_DATA_BASE_H_

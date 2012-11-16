@@ -1,7 +1,7 @@
 // MediaBase.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/MediaBase.h"
+#include "ppbox/data/base/MediaBase.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>

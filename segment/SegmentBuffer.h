@@ -9,8 +9,6 @@
 #include <util/event/Event.h>
 #include <util/stream/StreamBuffers.h>
 
-#include <framework/system/LogicError.h>
-
 namespace ppbox
 {
     namespace data
@@ -43,13 +41,14 @@ namespace ppbox
 
             ~SegmentBuffer();
 
+        public:
             // 目前只发生在，seek到一个分段，还没有该分段头部数据时，
             // 此时size为head_size_头部数据大小
             // TO BE FIXED
             bool seek(
                 segment_t const & base,
                 segment_t const & pos,
-                boost::uint64_t end, 
+                boost::uint64_t size, 
                 boost::system::error_code & ec);
 
             // seek到分段的具体位置offset
@@ -61,7 +60,7 @@ namespace ppbox
 
             bool seek(
                 segment_t const & pos,
-                boost::uint64_t end, 
+                boost::uint64_t size, 
                 boost::system::error_code & ec);
 
             bool seek(
@@ -202,7 +201,7 @@ namespace ppbox
                 boost::asio::const_buffer & buffer);
 
         private:
-            virtual void on_event(
+            void on_event(
                 util::event::Event const & event);
 
         private:

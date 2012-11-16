@@ -1,7 +1,7 @@
 // SourceEvent.h
 
-#ifndef _PPBOX_DATA_SOURCE_EVENT_H_
-#define _PPBOX_DATA_SOURCE_EVENT_H_
+#ifndef _PPBOX_DATA_BASE_SOURCE_EVENT_H_
+#define _PPBOX_DATA_BASE_SOURCE_EVENT_H_
 
 #include <util/event/Event.h>
 
@@ -43,4 +43,4 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#endif // _PPBOX_DATA_SOURCE_EVENT_H_
+#endif // _PPBOX_DATA_BASE_SOURCE_EVENT_H_

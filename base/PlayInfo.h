@@ -1,7 +1,7 @@
 // PlayInfo.h
 
-#ifndef _PPBOX_DATA_PLAY_INFO_H_
-#define _PPBOX_DATA_PLAY_INFO_H_
+#ifndef _PPBOX_DATA_BASE_PLAY_INFO_H_
+#define _PPBOX_DATA_BASE_PLAY_INFO_H_
 
 namespace ppbox 
 {
@@ -36,4 +36,4 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#endif //_PPBOX_DATA_PLAY_INFO_H_
+#endif //_PPBOX_DATA_BASE_PLAY_INFO_H_

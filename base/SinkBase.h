@@ -1,7 +1,7 @@
 // SinkBase.h
 
-#ifndef _PPBOX_DATA_SINK_BASE_H_
-#define _PPBOX_DATA_SINK_BASE_H_
+#ifndef _PPBOX_DATA_BASE_SINK_BASE_H_
+#define _PPBOX_DATA_BASE_SINK_BASE_H_
 
 #include "ppbox/data/base/DataBase.h"
 
@@ -71,4 +71,4 @@ namespace ppbox
 
 #define PPBOX_REGISTER_SINK(k, c) PPBOX_REGISTER_CLASS(k, c)
 
-#endif // _PPBOX_DATA_SINK_BASE_H_
+#endif // _PPBOX_DATA_BASE_SINK_BASE_H_

@@ -1,7 +1,7 @@
 // SourceError.h
 
-#ifndef _PPBOX_DATA_SOURCE_ERROR_H_
-#define _PPBOX_DATA_SOURCE_ERROR_H_
+#ifndef _PPBOX_DATA_BASE_SOURCE_ERROR_H_
+#define _PPBOX_DATA_BASE_SOURCE_ERROR_H_
 
 namespace ppbox
 {
@@ -82,4 +82,4 @@ namespace boost
     }
 }
 
-#endif // _PPBOX_DATA_SOURCE_ERROR_H_
+#endif // _PPBOX_DATA_BASE_SOURCE_ERROR_H_

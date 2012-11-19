@@ -10,17 +10,11 @@ namespace ppbox
     namespace data 
     {
 
-        struct MediaInfo
+        struct MediaBasicInfo
         {
-            MediaInfo()
+            MediaBasicInfo()
                 : type(vod)
                 , flags(0)
-                , file_size(invalid_size)
-                , duration(invalid_size)
-                , bitrate(0)
-                , start_time(0)
-                , delay(0)
-                , current(0)
             {
             }
 
@@ -42,6 +36,21 @@ namespace ppbox
 
             TypeEnum type;
             boost::uint32_t flags;
+        }; 
+
+        struct MediaInfo
+            : MediaBasicInfo
+        {
+            MediaInfo()
+                : file_size(invalid_size)
+                , duration(invalid_size)
+                , bitrate(0)
+                , start_time(0)
+                , delay(0)
+                , current(0)
+            {
+            }
+
             boost::uint64_t file_size;
             boost::uint64_t duration;
             boost::uint32_t bitrate;    // 平均码流率

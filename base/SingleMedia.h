@@ -36,6 +36,10 @@ namespace ppbox
                 boost::system::error_code & ec);
 
         public:
+            virtual bool get_basic_info(
+                MediaBasicInfo & info,
+                boost::system::error_code & ec) const;
+
             virtual bool get_info(
                 MediaInfo & info,
                 boost::system::error_code & ec) const;

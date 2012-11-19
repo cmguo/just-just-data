@@ -40,6 +40,14 @@ namespace ppbox
             ec.clear();
         }
 
+        bool SingleMedia::get_basic_info(
+            MediaBasicInfo & info, 
+            boost::system::error_code & ec) const
+        {
+            ec.clear();
+            return true;
+        }
+
         bool SingleMedia::get_info(
             MediaInfo & info,
             boost::system::error_code & ec) const

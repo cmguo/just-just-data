@@ -54,6 +54,10 @@ namespace ppbox
                 return url_.protocol();
             }
 
+            virtual bool get_basic_info(
+                MediaBasicInfo & info,
+                boost::system::error_code & ec) const = 0;
+
             virtual bool get_info(
                 MediaInfo & info,
                 boost::system::error_code & ec) const = 0;

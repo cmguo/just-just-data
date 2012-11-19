@@ -24,5 +24,14 @@ namespace ppbox
         {
         }
 
+        bool SegmentMedia::get_basic_info(
+            MediaBasicInfo & info,
+            boost::system::error_code & ec) const
+        {
+            info.flags = MediaBasicInfo::f_segment;
+            ec.clear();
+            return true;
+        }
+
     } // data
 } // ppbox

@@ -27,6 +27,11 @@ namespace ppbox
             ~SegmentMedia();
 
         public:
+            virtual bool get_basic_info(
+                MediaBasicInfo & info,
+                boost::system::error_code & ec) const;
+
+        public:
             virtual size_t segment_count() const = 0;
 
             virtual std::string const segment_protocol() const

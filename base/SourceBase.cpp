@@ -25,9 +25,9 @@ namespace ppbox
         {
             SourceBase * source = factory_type::create(media.get_protocol(), io_svc);
             if (source == NULL) {
-                MediaInfo info;
+                MediaBasicInfo info;
                 boost::system::error_code ec;
-                if (media.get_info(info, ec) && info.flags & MediaInfo::f_segment) {
+                if (media.get_basic_info(info, ec) && (info.flags & MediaInfo::f_segment)) {
                     source = factory_type::create(((SegmentMedia &)media).segment_protocol(), io_svc);
                 }
             }

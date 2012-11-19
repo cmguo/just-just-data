@@ -36,7 +36,8 @@ namespace ppbox
 
             TypeEnum type;
             boost::uint32_t flags;
-        }; 
+            std::string format;
+        };
 
         struct MediaInfo
             : MediaBasicInfo
@@ -62,7 +63,6 @@ namespace ppbox
 
             // description
             std::string name;
-            std::string format;
             std::string format_data;
         }; 
 

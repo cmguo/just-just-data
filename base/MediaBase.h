@@ -13,13 +13,6 @@ namespace ppbox
     {
 
         class MediaBase
-            : public ppbox::common::ClassFactory<
-                MediaBase, 
-                std::string, 
-                MediaBase * (
-                    boost::asio::io_service &,
-                    framework::string::Url const &)
-            >
         {
         public:
             typedef boost::function<
@@ -83,9 +76,32 @@ namespace ppbox
             framework::string::Url url_;
         };
 
+        class MediaProtocolFactory
+            : public ppbox::common::ClassFactory<
+                MediaBase, 
+                std::string, 
+                MediaBase * (
+                    boost::asio::io_service &,
+                    framework::string::Url const &)
+                >
+        {
+        };
+
+        class MediaFormatFactory
+            : public ppbox::common::ClassFactory<
+                MediaBase, 
+                std::string, 
+                MediaBase * (
+                    boost::asio::io_service &,
+                    framework::string::Url const &)
+            >
+        {
+        };
+
     } // namespace data
 } // namespace ppbox
 
-#define PPBOX_REGISTER_MEDIA(k, c) PPBOX_REGISTER_CLASS(k, c)
+#define PPBOX_REGISTER_MEDIA_BY_PROTOCOL(k, c) PPBOX_REGISTER_CLASS_FACTORY(k, ppbox::data::MediaProtocolFactory, c)
+#define PPBOX_REGISTER_MEDIA_BY_FORMAT(k, c) PPBOX_REGISTER_CLASS_FACTORY(k, ppbox::data::MediaFormatFactory, c)
 
 #endif//_PPBOX_DATA_BASE_MEDIA_BASE_H_

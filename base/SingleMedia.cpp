@@ -44,14 +44,6 @@ namespace ppbox
             MediaBasicInfo & info, 
             boost::system::error_code & ec) const
         {
-            ec.clear();
-            return true;
-        }
-
-        bool SingleMedia::get_info(
-            MediaInfo & info,
-            boost::system::error_code & ec) const
-        {
             info.format = url_.param("format");
             if (info.format.empty()) {
                 std::string::size_type pos = url_.path().rfind(".");
@@ -60,6 +52,14 @@ namespace ppbox
                 }
             }
             ec.clear();
+            return true;
+        }
+
+        bool SingleMedia::get_info(
+            MediaInfo & info,
+            boost::system::error_code & ec) const
+        {
+            get_basic_info(info, ec);
             return true;
         }
 

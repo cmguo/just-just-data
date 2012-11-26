@@ -198,9 +198,11 @@ namespace ppbox
             } else if (offset + size > read_.byte_range.big_end()) {
                 ec = boost::asio::error::eof;
             } else {
-                ec = last_ec_;
-                if (!ec) {
-                    prepare_at_least((boost::uint32_t)(offset + size - out_position()), ec);
+                if (offset + size > out_position()) {
+                    ec = last_ec_;
+                    if (!ec) {
+                        prepare_at_least((boost::uint32_t)(offset + size - out_position()), ec);
+                    }
                 }
                 if (offset + size <= out_position()) {
                     Buffer::read_buffer(offset, offset + size, data);

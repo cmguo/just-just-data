@@ -145,9 +145,11 @@ namespace ppbox
             } else if (offset + size > total_size_) {
                 ec = boost::asio::error::eof;
             } else {
-                ec = last_ec_;
-                if (!ec) {
-                    prepare_at_least((boost::uint32_t)(offset + size - out_position()), ec);
+                if (offset + size > out_position()) {
+                    ec = last_ec_;
+                    if (!ec) {
+                        prepare_at_least((boost::uint32_t)(offset + size - out_position()), ec);
+                    }
                 }
                 if (offset + size <= out_position()) {
                     Buffer::read_buffer(offset, offset + size, data);
@@ -161,6 +163,7 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             if (consume((size_t)(position() - in_position()))) {
+                stream_pos_ = in_position();
                 setg(gptr(), gptr(), egptr());
                 ec.clear();
             } else {

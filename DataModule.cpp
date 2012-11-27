@@ -4,6 +4,7 @@
 #include "ppbox/data/DataModule.h"
 #include "ppbox/data/base/SourceTypes.h"
 #include "ppbox/data/base/SinkTypes.h"
+#include "ppbox/data/base/MediaTypes.h"
 
 namespace ppbox
 {
@@ -30,5 +31,5 @@ namespace ppbox
         {
         }
 
-    }
-}
+    } // namespace data
+} // namespace ppbox

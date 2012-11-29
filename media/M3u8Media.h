@@ -5,7 +5,7 @@
 
 #include "ppbox/data/segment/SegmentMedia.h"
 
-#include <boost/asio/streambuf.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace ppbox 
 {
@@ -63,24 +63,8 @@ namespace ppbox
                 SegmentInfo & info) const;
 
         private:
-            void handle_open(
-                response_type const & resp, 
-                boost::system::error_code ec);
-
-            void handle_read(
-                response_type const & resp, 
-                boost::system::error_code ec);
-
-            void parse_m3u8(
-                boost::system::error_code & ec);
-
-        private:
-            MediaInfo info_;
-            SourceBase * source_;
-            boost::asio::streambuf buf_;
-            size_t sequence_;
-            std::vector<SegmentInfo> segments_;
-            std::vector<std::string> segment_urls_;
+            class Impl;
+            boost::shared_ptr<Impl> impl_;
         };
 
         PPBOX_REGISTER_MEDIA_BY_FORMAT("m3u8", M3u8Media);

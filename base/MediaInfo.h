@@ -60,6 +60,7 @@ namespace ppbox
             time_t start_time;
             boost::uint32_t delay;
             boost::uint64_t current;    // 当前时刻，描述有效数据量，播放现场还要根据delay计算
+            boost::uint64_t shift;      // 能够时移的长度
 
             // description
             std::string name;

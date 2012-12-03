@@ -7,16 +7,6 @@
 
 #include <framework/system/AutoVersion.h>
 
-#include <util/Version.h>
-
-namespace ppbox
-{
-    namespace common
-    {
-
-        void log_versions();
-
-    } // namespace common
-} // namespace ppbox
+#include <ppbox/common/Version.h>
 
 #endif // _PPBOX_DATA_VERSION_H_

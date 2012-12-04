@@ -49,6 +49,7 @@ namespace ppbox
                 , start_time(0)
                 , delay(0)
                 , current(0)
+				, shift(0)
             {
             }
 

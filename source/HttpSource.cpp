@@ -10,14 +10,13 @@
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
 #include <framework/logger/StringRecord.h>
-using namespace framework::logger;
 
 namespace ppbox
 {
     namespace data
     {
 
-        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.HttpSource", Debug);
+        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.HttpSource", framework::logger::Debug);
 
         HttpSource::HttpSource(
             boost::asio::io_service & io_svc)
@@ -49,7 +48,7 @@ namespace ppbox
             }
             std::ostringstream oss;
             head.get_content(oss);
-            LOG_STR(Trace, ("http_request_head", oss.str()));
+            LOG_STR(framework::logger::Trace, ("http_request_head", oss.str()));
 
             http_.open(request, ec);
 
@@ -78,7 +77,7 @@ namespace ppbox
             }
             std::ostringstream oss;
             head.get_content(oss);
-            LOG_STR(Trace, ("http_request_head", oss.str()));
+            LOG_STR(framework::logger::Trace, ("http_request_head", oss.str()));
 
             http_.async_open(request, resp);
         }
@@ -91,7 +90,7 @@ namespace ppbox
                 util::protocol::HttpResponseHead head = http_.response().head();
                 std::ostringstream oss;
                 head.get_content(oss);
-                LOG_STR(Trace, ("http_response_head", oss.str()));
+                LOG_STR(framework::logger::Trace, ("http_response_head", oss.str()));
                 flag_ = false;
             }
             return result;

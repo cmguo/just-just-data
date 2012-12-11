@@ -347,7 +347,7 @@ namespace ppbox
                 update_size(ec);
                 source_is_open_ = true;
             }
-            return !source_is_open_;
+            return source_is_open_;
         }
 
         bool SingleSource::close_source(

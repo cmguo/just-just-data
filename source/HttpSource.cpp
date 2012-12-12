@@ -2,6 +2,7 @@
 #include "ppbox/data/source/HttpSource.h"
 
 #include <util/protocol/http/HttpError.h>
+#include <util/protocol/http/HttpSocket.hpp>
 
 #include <boost/asio/read.hpp>
 #include <boost/asio/buffer.hpp>

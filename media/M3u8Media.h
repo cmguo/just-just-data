@@ -13,6 +13,7 @@ namespace ppbox
     {
 
         class SourceBase;
+        class M3u8MediaImpl;
 
         class M3u8Media
             : public SegmentMedia
@@ -49,6 +50,10 @@ namespace ppbox
                 boost::system::error_code & ec) const;
 
         public:
+            virtual void on_error(
+                boost::system::error_code & ec) const;
+
+        public:
             virtual size_t segment_count() const;
 
             virtual std::string const segment_protocol() const;
@@ -63,8 +68,7 @@ namespace ppbox
                 SegmentInfo & info) const;
 
         private:
-            class Impl;
-            boost::shared_ptr<Impl> impl_;
+            M3u8MediaImpl * impl_;
         };
 
         PPBOX_REGISTER_MEDIA_BY_FORMAT("m3u8", M3u8Media);

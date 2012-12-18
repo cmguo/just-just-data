@@ -30,9 +30,6 @@ namespace ppbox
                 size_t)
             > prepare_response_type;
 
-            //typedef ppbox::data::SegmentInfoEx segment_t;
-            typedef ppbox::data::SegmentPosition segment_t;
-
         public:
             SegmentBuffer(
                 ppbox::data::SegmentSource & source, 
@@ -46,25 +43,25 @@ namespace ppbox
             // 此时size为head_size_头部数据大小
             // TO BE FIXED
             bool seek(
-                segment_t const & base,
-                segment_t const & pos,
+                SegmentPosition const & base,
+                SegmentPosition const & pos,
                 boost::uint64_t size, 
                 boost::system::error_code & ec);
 
             // seek到分段的具体位置offset
             // TO BE FIXED
             bool seek(
-                segment_t const & base,
-                segment_t const & pos, 
+                SegmentPosition const & base,
+                SegmentPosition const & pos, 
                 boost::system::error_code & ec);
 
             bool seek(
-                segment_t const & pos,
+                SegmentPosition const & pos,
                 boost::uint64_t size, 
                 boost::system::error_code & ec);
 
             bool seek(
-                segment_t const & pos, 
+                SegmentPosition const & pos, 
                 boost::system::error_code & ec);
 
             // Parameter: boost::uint32_t amount 需要下载的数据大小
@@ -104,6 +101,7 @@ namespace ppbox
             bool fetch(
                 boost::uint64_t offset, 
                 boost::uint32_t size, 
+                bool merge, 
                 std::deque<boost::asio::const_buffer> & data, 
                 boost::system::error_code & ec);
 
@@ -123,7 +121,7 @@ namespace ppbox
                 boost::system::error_code & ec);
 
             bool write_next(
-                segment_t & segment, 
+                SegmentPosition & segment, 
                 boost::system::error_code & ec);
 
             void clear();
@@ -146,20 +144,20 @@ namespace ppbox
 
         public:
             // 写分段
-            segment_t const & base_segment() const
+            SegmentPosition const & base_segment() const
             {
                 return base_;
             }
 
             // 读BytesStream
             // 读分段
-            segment_t const & read_segment() const
+            SegmentPosition const & read_segment() const
             {
                 return read_;
             }
 
             // 写分段
-            segment_t const & write_segment() const
+            SegmentPosition const & write_segment() const
             {
                 return write_;
             }
@@ -190,12 +188,14 @@ namespace ppbox
             };
 
             bool segment_seek(
-                segment_t const & segment, 
+                SegmentPosition & segment, 
+                bool merge, 
                 boost::uint64_t pos);
 
             bool segment_buffer(
-                segment_t const & segment, 
+                SegmentPosition & segment, 
                 PositionType::Enum pos_type, 
+                bool merge, 
                 boost::uint64_t & pos, 
                 boost::uint64_t & off, 
                 boost::asio::const_buffer & buffer);
@@ -206,18 +206,18 @@ namespace ppbox
 
         private:
             void reset(
-                segment_t const & base, 
-                segment_t const & pos);
+                SegmentPosition const & base, 
+                SegmentPosition const & pos);
 
             void clear_segments();
 
             void insert_segment(
                 bool is_read, 
-                segment_t const & seg);
+                SegmentPosition const & seg);
 
             void find_segment(
                 boost::uint64_t offset, 
-                segment_t & seg);
+                SegmentPosition & seg);
 
             void handle_async(
                 boost::system::error_code const & ecc, 
@@ -230,10 +230,10 @@ namespace ppbox
             boost::uint32_t prepare_size_;  // 下载一次，最大的下载数据大小
             util::stream::StreamMutableBuffers prepare_buffers_;
 
-            segment_t base_;
-            std::deque<segment_t> segments_;
-            segment_t read_;
-            segment_t write_;
+            SegmentPosition base_;
+            std::deque<SegmentPosition> segments_;
+            SegmentPosition read_;
+            SegmentPosition write_;
 
             SegmentStream * read_stream_;    // 读Stream
             SegmentStream * write_stream_;   // 写Stream

@@ -47,8 +47,8 @@ namespace ppbox
         // 此时size为head_size_头部数据大小 
         // TO BE FIXED
         bool SegmentBuffer::seek(
-            segment_t const & base,
-            segment_t const & pos,
+            SegmentPosition const & base,
+            SegmentPosition const & pos,
             boost::uint64_t size, 
             boost::system::error_code & ec)
         {
@@ -81,15 +81,15 @@ namespace ppbox
         }
 
         bool SegmentBuffer::seek(
-            segment_t const & base,
-            segment_t const & pos, 
+            SegmentPosition const & base,
+            SegmentPosition const & pos, 
             boost::system::error_code & ec)
         {
             return seek(base, pos, invalid_size, ec);
         }
 
         bool SegmentBuffer::seek(
-            segment_t const & pos, 
+            SegmentPosition const & pos, 
             boost::uint64_t size, 
             boost::system::error_code & ec)
         {
@@ -97,7 +97,7 @@ namespace ppbox
         }
 
         bool SegmentBuffer::seek(
-            segment_t const & pos, 
+            SegmentPosition const & pos, 
             boost::system::error_code & ec)
         {
             return seek(base_, pos, ec);
@@ -188,14 +188,16 @@ namespace ppbox
         bool SegmentBuffer::fetch(
             boost::uint64_t offset, 
             boost::uint32_t size, 
+            bool merge, 
             std::deque<boost::asio::const_buffer> & data, 
             boost::system::error_code & ec)
         {
-            offset += read_.byte_range.big_offset;
-            assert(offset >= in_position() && offset + size <= read_.byte_range.big_end());
+            if (!merge)
+                offset += read_.byte_range.big_offset;
+            assert(offset >= in_position() && (merge || offset + size <= read_.byte_range.big_end()));
             if (offset < in_position()) {
                 ec = framework::system::logic_error::out_of_range;
-            } else if (offset + size > read_.byte_range.big_end()) {
+            } else if (!merge && offset + size > read_.byte_range.big_end()) {
                 ec = boost::asio::error::eof;
             } else {
                 if (offset + size > out_position()) {
@@ -276,7 +278,7 @@ namespace ppbox
         }
 
         bool SegmentBuffer::write_next(
-            segment_t & segment, 
+            SegmentPosition & segment, 
             boost::system::error_code & ec)
         {
             insert_segment(true, segment);
@@ -325,7 +327,7 @@ namespace ppbox
             bool read)
         {
             assert ((read ? read_stream_ : write_stream_) == NULL);
-            segment_t & segment = read ? read_ : write_;
+            SegmentPosition & segment = read ? read_ : write_;
             if (segment.byte_range.big_pos() < in_position())
                 segment.byte_range.pos = in_position() - segment.byte_range.big_offset;
             stream.change_to(segment);
@@ -348,25 +350,31 @@ namespace ppbox
         }
 
         bool SegmentBuffer::segment_seek(
-            segment_t const & segment, 
+            SegmentPosition & segment, 
+            bool merge, 
             boost::uint64_t pos)
         {
             assert(&segment == &read_);
-            segment_t read = read_;
-            read.byte_range.pos = pos;
+            SegmentPosition read = read_;
+            if (merge) {
+                find_segment(pos, read);
+            } else {
+                read.byte_range.pos = pos;
+            }
             boost::system::error_code ec;
             return seek(read, ec);
         }
 
         bool SegmentBuffer::segment_buffer(
-            segment_t const & segment, 
+            SegmentPosition & segment, 
             PositionType::Enum pos_type, 
+            bool merge, 
             boost::uint64_t & pos, 
             boost::uint64_t & off, 
             boost::asio::const_buffer & buffer)
         {
-            boost::uint64_t beg = segment.byte_range.big_beg();
-            boost::uint64_t end = segment.byte_range.big_end();
+            boost::uint64_t beg = merge ? 0 : segment.byte_range.big_beg();
+            boost::uint64_t end = merge ? invalid_size : segment.byte_range.big_end();
             if (beg < in_position()) {
                 beg = in_position();
             }
@@ -387,12 +395,13 @@ namespace ppbox
                     ec = framework::system::logic_error::out_of_range;
                 }
             } else {
-                pos += segment.byte_range.big_offset;
+                if (!merge)
+                    pos += segment.byte_range.big_offset;
                 if (pos < beg) {
                    pos = beg;
                    ec = framework::system::logic_error::out_of_range;
                 } else if (pos >= end) {
-                    if (pos > segment.byte_range.big_end()) {
+                    if (!merge && pos > segment.byte_range.big_end()) {
                         pos = segment.byte_range.big_end();
                         ec = framework::system::logic_error::out_of_range;
                     }
@@ -405,7 +414,7 @@ namespace ppbox
                             pos = out_position();
                             if (!ec) ec = ec1;
                         }
-                        end = segment.byte_range.big_end();
+                        end = merge ? invalid_size : segment.byte_range.big_end();
                         if (end > out_position())
                             end = out_position();
                     }
@@ -413,6 +422,9 @@ namespace ppbox
                 }
             }
             char const * ptr = read_buffer(beg, pos, end); // read_buffer里面会调整beg或者end
+            if (merge) {
+                find_segment(beg, segment);
+            }
             off = pos - beg;
             pos = beg - segment.byte_range.big_offset;
             buffer = boost::asio::const_buffer(ptr, (size_t)(end - beg));
@@ -423,25 +435,26 @@ namespace ppbox
             util::event::Event const & e)
         {
             if (ppbox::data::SegmentStartEvent const * event = e.as<ppbox::data::SegmentStartEvent>()) {
-                insert_segment(false, (segment_t const &)event->segment);
+                insert_segment(false, (SegmentPosition const &)event->segment);
                 find_segment(out_position(), write_);
             } else if (ppbox::data::SegmentStopEvent const * event = e.as<ppbox::data::SegmentStopEvent>()) {
-                insert_segment(false, (segment_t const &)event->segment);
+                insert_segment(false, (SegmentPosition const &)event->segment);
+                clear_segments();
             }
         }
 
         void SegmentBuffer::clear()
         {
-            segment_t seg = read_;
+            SegmentPosition seg = read_;
             seg.byte_range.pos = in_position() - seg.byte_range.big_offset;
             reset(base_, seg);
         }
 
         void SegmentBuffer::reset(
-            segment_t const & base, 
-            segment_t const & pos)
+            SegmentPosition const & base, 
+            SegmentPosition const & pos)
         {
-            base_ = base;
+            base_.assign_without_url(base);
             Buffer::reset(pos.byte_range.big_pos());
             segments_.clear();
             
@@ -469,8 +482,8 @@ namespace ppbox
         struct comp_big_beg
         {
             bool operator()(
-                SegmentBuffer::segment_t const & l, 
-                SegmentBuffer::segment_t const & r)
+                SegmentPosition const & l, 
+                SegmentPosition const & r)
             {
                 return l.byte_range.big_beg() < r.byte_range.big_beg();
             }
@@ -478,14 +491,14 @@ namespace ppbox
 
         void SegmentBuffer::insert_segment(
             bool is_read, 
-            segment_t const & seg1)
+            SegmentPosition const & seg1)
         {
-            segment_t seg;
+            SegmentPosition seg;
             seg.assign_without_url(seg1);
-            std::deque<segment_t>::iterator iter = 
+            std::deque<SegmentPosition>::iterator iter = 
                 std::lower_bound(segments_.begin(), segments_.end(), seg, comp_big_beg());
             if (iter != segments_.end() && !comp_big_beg()(seg, *iter)) { // 相等
-                segment_t & segment = *iter;
+                SegmentPosition & segment = *iter;
                 if (!is_read && segment.byte_range.end == invalid_size) {
                     segment.byte_range = seg.byte_range;
                     if (read_ == seg) {
@@ -506,7 +519,7 @@ namespace ppbox
                     ppbox::data::SegmentRange & byte_range = seg.byte_range; // 借用一下
                     ppbox::data::SegmentRange & time_range = seg.time_range; // 借用一下
                     while (++iter != segments_.end()) {
-                        segment_t & segment = *iter;
+                        SegmentPosition & segment = *iter;
                         if (!byte_range.followed_by(segment.byte_range))
                             break;
                         segment.time_range.follow(time_range);
@@ -522,7 +535,7 @@ namespace ppbox
             } else {
                 assert(iter == segments_.end() || seg.byte_range.big_end() <= iter->byte_range.big_beg());
                 if (iter != segments_.begin()) {
-                    segment_t & segment = *--iter;
+                    SegmentPosition & segment = *--iter;
                     if (segment.byte_range.followed_by(seg.byte_range)) {
                         seg.time_range.follow(segment.time_range);
                     }
@@ -535,8 +548,8 @@ namespace ppbox
         struct comp_big_end
         {
             bool operator()(
-                SegmentBuffer::segment_t const & l, 
-                SegmentBuffer::segment_t const & r)
+                SegmentPosition const & l, 
+                SegmentPosition const & r)
             {
                 return l.byte_range.big_end() < r.byte_range.big_end();
             }
@@ -544,12 +557,12 @@ namespace ppbox
 
         void SegmentBuffer::find_segment(
             boost::uint64_t offset, 
-            segment_t & seg)
+            SegmentPosition & seg)
         {
             seg.byte_range.big_offset = offset;
             seg.byte_range.beg = 0;
             seg.byte_range.end = 0;
-            std::deque<segment_t>::iterator iter = 
+            std::deque<SegmentPosition>::iterator iter = 
                 std::upper_bound(segments_.begin(), segments_.end(), seg, comp_big_end());
             if (iter == segments_.end()) { // 有可能不存在。。。
                 iter = std::lower_bound(segments_.begin(), segments_.end(), seg, comp_big_end());

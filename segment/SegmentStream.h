@@ -21,16 +21,16 @@ namespace ppbox
         public:
             friend class SegmentBuffer;
 
-            typedef SegmentBuffer::segment_t segment_t;
-
             typedef util::buffers::StlBuffer<
                 util::buffers::detail::_read, boost::uint8_t, std::char_traits<boost::uint8_t> > buffer_type;
 
         public:
             SegmentStream(
-                SegmentBuffer & buffer)
+                SegmentBuffer & buffer, 
+                bool merge)
                 : buffer_(buffer)
                 , segment_(NULL)
+                , merge_(merge)
                 , pos_(0)
                 , buf_(*this)
             {
@@ -46,7 +46,7 @@ namespace ppbox
                 boost::uint64_t pos64 = pos;
                 boost::uint64_t off32 = 0;
                 boost::asio::const_buffer buf;;
-                bool ok = buffer_.segment_buffer(*segment_, type, pos64, off32, buf);
+                bool ok = buffer_.segment_buffer(*segment_, type, merge_, pos64, off32, buf);
                 pos_ = pos64;
                 buf_ = buf;
                 gbump(off32);
@@ -72,6 +72,12 @@ namespace ppbox
                 return pos;
             }
 
+            pos_type position2()
+            {
+                pos_type pos = (merge_ ? segment_->byte_range.big_offset : 0) + pos_ + off_type(gptr() - eback());
+                return pos;
+            }
+
             void drop_all()
             {
                 update(SegmentBuffer::PositionType::set, 0);
@@ -84,16 +90,17 @@ namespace ppbox
             }
 
             void change_to(
-                SegmentBuffer::segment_t & segment)
+                SegmentPosition & segment)
             {
                 segment_ = &segment;
-                update(SegmentBuffer::PositionType::set, segment.byte_range.pos);
+                setg(NULL, NULL, NULL);
+                update(SegmentBuffer::PositionType::set, position2());
             }
 
         private:
             virtual int_type underflow()
             {
-                pos_type pos = pos_ + gptr() - eback();
+                pos_type pos = position2();
                 if (update(SegmentBuffer::PositionType::set, pos) && (gptr() < egptr())) {
                     return *gptr();
                 } else {
@@ -107,7 +114,7 @@ namespace ppbox
                 std::ios_base::openmode mode)
             {
                 if (dir == std::ios_base::cur) {
-                    pos_type pos = pos_ + gptr() - eback();
+                    pos_type pos = position2();
                     if (off == 0) {
                         return pos;
                     }
@@ -120,7 +127,7 @@ namespace ppbox
                     if (!update(SegmentBuffer::PositionType::end, pos_type(-off))) {
                         return pos_type(-1);
                     }
-                    return pos_ + gptr() - eback();
+                    return position2();
                 } else {
                     return pos_type(-1);
                 }
@@ -132,7 +139,7 @@ namespace ppbox
             {
                 assert(position != pos_type(-1));
                 if (mode == (std::ios_base::in | std::ios_base::out)) {
-                    if (!buffer_.segment_seek(*segment_, position)) {
+                    if (!buffer_.segment_seek(*segment_, merge_, position)) {
                         return pos_type(-1);
                     }
                     mode = std::ios_base::in;
@@ -148,7 +155,8 @@ namespace ppbox
 
         private:
             SegmentBuffer & buffer_;
-            SegmentBuffer::segment_t * segment_;
+            SegmentPosition * segment_;
+            bool merge_;            // 是否合并分段数据
             pos_type pos_;          // 与iter_对应分段的开头
             buffer_type buf_;       // 当前的内存段
         };

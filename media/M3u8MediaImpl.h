@@ -76,6 +76,10 @@ namespace ppbox
             void parse_m3u8(
                 boost::system::error_code & ec);
 
+            void complete_url(
+                framework::string::Url & url,
+                std::string const & str) const;
+
         private:
             mutable boost::mutex mutex_;
             bool closed_;
@@ -86,9 +90,13 @@ namespace ppbox
             boost::asio::deadline_timer timer_;
             boost::asio::streambuf buf_;
 
+            struct StreamInfo;
+
             size_t seq_start_;
             size_t seq_lastest_;
             boost::uint64_t duration_;
+            std::vector<StreamInfo> streams_;
+            std::vector<std::string> stream_urls_;
             std::vector<SegmentInfo> segments_;
             std::vector<std::string> segment_urls_;
             mutable std::string segment_url_prefix_;

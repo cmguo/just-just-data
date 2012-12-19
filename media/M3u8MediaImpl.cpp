@@ -70,9 +70,12 @@ namespace ppbox
             boost::mutex::scoped_lock lc(mutex_);
 
             if (closed_) {
+                lc.unlock();
                 delete this;
                 return;
             }
+
+            closed_ = true;
 
             timer_.cancel(ec);
             source_->cancel(ec);
@@ -131,26 +134,7 @@ namespace ppbox
             if (segment >= seq_lastest_ && segment - seq_lastest_ < segments_.size()) {
                 std::string const & str = segment_urls_[segment - seq_lastest_];
                 LOG_DEBUG("[segment_url] segment: " << segment << ", seq_lastest: " << seq_lastest_ << ", url: " << str);
-                if (segment_url_subpos_ == std::string::npos) {
-                    if (str.find("://") == std::string::npos) {
-                        if (str[0] == '/') {
-                            segment_url_prefix_ = url_.protocol() + "://" + url_.host_svc();
-                            segment_url_subpos_ = 0;
-                        } else {
-                            segment_url_prefix_ = url_.protocol() + "://" + url_.host_svc() + url_.path();
-                            std::string::size_type pos = segment_url_prefix_.rfind('/');
-                            segment_url_prefix_ = segment_url_prefix_.substr(0, pos + 1);
-                            segment_url_subpos_ = 0;
-                        }
-                    } else {
-                        segment_url_subpos_ = 0;
-                    }
-                }
-                if (segment_url_prefix_.empty()) {
-                    url.from_string(str);
-                } else {
-                    url.from_string(segment_url_prefix_ + str.substr(segment_url_subpos_));
-                }
+                complete_url(url, str);
                 ec.clear();
                 return true;
             }
@@ -175,6 +159,7 @@ namespace ppbox
             boost::mutex::scoped_lock lc(mutex_);
 
             if (closed_) {
+                lc.unlock();
                 delete this;
                 return;
             }
@@ -201,6 +186,7 @@ namespace ppbox
             boost::mutex::scoped_lock lc(mutex_);
 
             if (closed_) {
+                lc.unlock();
                 delete this;
                 return;
             }
@@ -213,6 +199,13 @@ namespace ppbox
             if (!ec) {
                 parse_m3u8(ec);
             }
+
+            if (!ec && segments_.empty()) {
+                source_->async_open(url_, 0, invalid_size, 
+                    boost::bind(&M3u8MediaImpl::handle_open, this, _1));
+                return;
+            }
+
             if (info_.type ==  MediaBasicInfo::live) {
                 timer_.expires_from_now(
                     boost::posix_time::seconds(duration_));
@@ -237,6 +230,7 @@ namespace ppbox
             boost::mutex::scoped_lock lc(mutex_);
 
             if (closed_) {
+                lc.unlock();
                 delete this;
                 return;
             }
@@ -245,12 +239,17 @@ namespace ppbox
                 boost::bind(&M3u8MediaImpl::handle_open, this, _1));
         }
 
+        struct M3u8MediaImpl::StreamInfo
+        {
+        };
+
         void M3u8MediaImpl::parse_m3u8(
             boost::system::error_code & ec)
         {
             char const * const M3U8_BEGIN = "#EXTM3U";
             char const * const M3U8_TARGETDURATION = "#EXT-X-TARGETDURATION";
             char const * const M3U8_SEQUENCE = "#EXT-X-MEDIA-SEQUENCE";
+            char const * const M3U8_EXTSTREAMINF = "#EXT-X-STREAM-INF";
             char const * const M3U8_EXTINF = "#EXTINF";
             char const * const M3U8_END  = "#EXT-X-ENDLIST";
 
@@ -260,6 +259,8 @@ namespace ppbox
             bool end = false;
             size_t line_num = 0;
             boost::uint64_t duration = 0;
+            streams_.clear();
+            stream_urls_.clear();
             segments_.clear();
             segment_urls_.clear();
             while (std::getline(is, line)) {
@@ -285,6 +286,14 @@ namespace ppbox
                         }
                         seq_lastest_ -= seq_start_;
                     }
+                } else if (token == M3U8_EXTSTREAMINF) {
+                    StreamInfo info;
+                    if (!std::getline(is, line)) {
+                        LOG_WARN("[parse_m3u8] no url at line: " << line_num); 
+                    }
+                    framework::string::trim(line);
+                    streams_.push_back(info);
+                    stream_urls_.push_back(line);
                 } else if (token == M3U8_EXTINF) {
                     SegmentInfo info;
                     if (iss >> info.duration)
@@ -298,6 +307,14 @@ namespace ppbox
                     segment_urls_.push_back(line);
                 }
             }
+
+            if (!streams_.empty()) {
+                complete_url(url_, stream_urls_.front());
+                segments_.clear();
+                segment_urls_.clear();
+                return;
+            }
+
             if (end) {
                 info_.duration = duration;
             } else {
@@ -310,6 +327,32 @@ namespace ppbox
                 }
                 info_.delay = delay;
                 info_.shift = duration;
+            }
+        }
+
+        void M3u8MediaImpl::complete_url(
+            framework::string::Url & url,
+            std::string const & str) const
+        {
+            if (segment_url_subpos_ == std::string::npos) {
+                if (str.find("://") == std::string::npos) {
+                    if (str[0] == '/') {
+                        segment_url_prefix_ = url_.protocol() + "://" + url_.host_svc();
+                        segment_url_subpos_ = 0;
+                    } else {
+                        segment_url_prefix_ = url_.protocol() + "://" + url_.host_svc() + url_.path();
+                        std::string::size_type pos = segment_url_prefix_.rfind('/');
+                        segment_url_prefix_ = segment_url_prefix_.substr(0, pos + 1);
+                        segment_url_subpos_ = 0;
+                    }
+                } else {
+                    segment_url_subpos_ = 0;
+                }
+            }
+            if (segment_url_prefix_.empty()) {
+                url.from_string(str);
+            } else {
+                url.from_string(segment_url_prefix_ + str.substr(segment_url_subpos_));
             }
         }
 

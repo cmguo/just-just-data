@@ -485,7 +485,9 @@ namespace ppbox
                 SegmentPosition const & l, 
                 SegmentPosition const & r)
             {
-                return l.byte_range.big_beg() < r.byte_range.big_beg();
+                return l.byte_range.big_beg() < r.byte_range.big_beg() 
+                    || (l.byte_range.big_beg() == r.byte_range.big_beg() 
+                        && l.index < r.index);
             }
         };
 
@@ -567,8 +569,8 @@ namespace ppbox
             if (iter == segments_.end()) { // 有可能不存在。。。
                 iter = std::lower_bound(segments_.begin(), segments_.end(), seg, comp_big_end());
             }
-            assert (iter != segments_.end() && !comp_big_beg()(seg, *iter));
-            if (iter != segments_.end() && !comp_big_beg()(seg, *iter)) {
+            assert (iter != segments_.end() && offset >= iter->byte_range.big_beg());
+            if (iter != segments_.end() && offset >= iter->byte_range.big_beg()) {
                 seg = *iter;
                 seg.byte_range.pos = offset - seg.byte_range.big_offset;
             }

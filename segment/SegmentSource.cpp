@@ -216,6 +216,7 @@ namespace ppbox
             }
             strategy_->on_error(write_, ec);
             if (ec == boost::asio::error::would_block) {
+                LOG_DEBUG("[handle_error] pause");
                 pause(5000);
                 ec.clear();
             }

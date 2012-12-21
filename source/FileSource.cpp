@@ -42,6 +42,8 @@ namespace ppbox
             } else {
                 if (beg > 0)
                     file_.seekg(beg, std::ios_base::beg);
+                assert(file_);
+                assert((boost::uint64_t)file_.tellg() == beg);
             }
             return ec;
         }
@@ -55,6 +57,7 @@ namespace ppbox
         boost::system::error_code FileSource::close(
             boost::system::error_code & ec)
         {
+            file_.clear();
             file_.close();
             is_open_ = false;
             return ec = boost::system::error_code();

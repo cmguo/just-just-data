@@ -242,9 +242,6 @@ namespace ppbox
             if (size == 0) {
                 ec = source_error::at_end_point;
             }
-            if (size != invalid_size) {
-                size += out_position();
-            }
             source_.seek(out_position(), size, ec);
             return !ec;
         }

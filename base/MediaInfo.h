@@ -29,10 +29,10 @@ namespace ppbox
                 f_seekable      = 1, 
                 f_segment       = 2, 
                 // ∑÷∂Œ Ù–‘
-                f_smoth         = 10, 
-                f_time_smoth    = 20, 
-                f_fix_duration  = 40, 
-                f_segment_seek  = 80, 
+                f_smoth         = 0x10, 
+                f_time_smoth    = 0x20, 
+                f_fix_duration  = 0x40, 
+                f_segment_seek  = 0x80, 
             };
 
             TypeEnum type;

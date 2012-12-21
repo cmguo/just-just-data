@@ -230,7 +230,7 @@ namespace ppbox
             offset = write_.offset;
             while (1) {
                 LOG_TRACE("write_hole:" << offset << "-" << hole.this_end);
-                if (hole.next_beg == invalid_size)
+                if (hole.this_end == invalid_size)
                     break;
                 offset = read_write_hole(hole.next_beg, hole);
             }
@@ -250,13 +250,13 @@ namespace ppbox
                 return offset;
             } else {
                 read(offset, sizeof(hole), &hole);
-                if (hole.this_end > data_end_) {
-                    hole.this_end = hole.next_beg = invalid_size;
-                }
                 if (hole.this_end != invalid_size)
                     hole.this_end += offset;
                 if (hole.next_beg != invalid_size)
                     hole.next_beg += offset;
+                if (hole.this_end > data_end_) {
+                    hole.this_end = hole.next_beg = invalid_size;
+                }
                 assert(hole.next_beg >= hole.this_end);
                 return offset;
             }
@@ -304,14 +304,14 @@ namespace ppbox
                 return offset;
             } else {
                 back_read(offset - sizeof(hole), sizeof(hole), &hole);
-                if (hole.this_end < data_beg_) {
-                    hole.this_end = 0;
-                    hole.next_beg = 0;
-                }
                 if (hole.this_end != 0)
                     hole.this_end = offset - hole.this_end;
                 if (hole.next_beg != 0)
                     hole.next_beg = offset - hole.next_beg;
+                if (hole.this_end < data_beg_) {
+                    hole.this_end = 0;
+                    hole.next_beg = 0;
+                }
                 assert(hole.next_beg <= hole.this_end);
                 return offset;
             }

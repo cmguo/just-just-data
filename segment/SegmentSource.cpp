@@ -401,11 +401,13 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             write_tmp_ = write_;
-            for (size_t i = 0; i < sended_req_; ++i) {
+            write_tmp_.url.protocol("");
+            while (sended_req_) {
                 source_.close(ec);
                 --sended_req_;
                 LOG_TRACE("[close_all_request] segment: " << write_.index << " sended_req: " << sended_req_ << "/" << max_req_);
-                next_segment(write_tmp_, write_tmp_.byte_range, ec);
+                if (sended_req_)
+                    next_segment(write_tmp_, write_tmp_.byte_range, ec);
             }
             write_tmp_ = write_;
             ec.clear();

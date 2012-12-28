@@ -80,7 +80,7 @@ namespace ppbox
         {
             time_out_ = time_out / 1000;
             boost::system::error_code ec;
-            source_.set_time_out(5000, ec);
+            source_.set_time_out(time_out, ec);
         }
 
         boost::system::error_code SingleSource::cancel(

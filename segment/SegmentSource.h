@@ -94,10 +94,7 @@ namespace ppbox
                 size_t num);
 
             void set_time_out(
-                boost::uint32_t time_out)
-            {
-                time_out_ = time_out / 1000;
-            }
+                boost::uint32_t time_out);
 
             void set_strategy(
                 SegmentStrategy & strategy)

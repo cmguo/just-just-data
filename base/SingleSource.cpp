@@ -75,6 +75,14 @@ namespace ppbox
             expire_pause_time_ = framework::timer::Time::now() + framework::timer::Duration::milliseconds(time);
         }
 
+        void SingleSource::set_time_out(
+            boost::uint32_t time_out)
+        {
+            time_out_ = time_out / 1000;
+            boost::system::error_code ec;
+            source_.set_time_out(5000, ec);
+        }
+
         boost::system::error_code SingleSource::cancel(
             boost::system::error_code & ec)
         {

@@ -75,10 +75,7 @@ namespace ppbox
             }
 
             void set_time_out(
-                boost::uint32_t time_out)
-            {
-                time_out_ = time_out / 1000;
-            }
+                boost::uint32_t time_out);
 
             void clear_error()
             {

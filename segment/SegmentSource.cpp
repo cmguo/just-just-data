@@ -312,6 +312,14 @@ namespace ppbox
             open_request(true, ec);
         }
 
+        void SegmentSource::set_time_out(
+            boost::uint32_t time_out)
+        {
+            time_out_ = time_out / 1000;
+            boost::system::error_code ec;
+            source_.set_time_out(time_out, ec);
+        }
+
         void SegmentSource::update_segment(
             boost::system::error_code & ec)
         {

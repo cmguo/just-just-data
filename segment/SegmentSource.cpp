@@ -361,7 +361,6 @@ namespace ppbox
         {
             for (; sended_req_ < max_req_; ) {
                 segment_t write_tmp = write_tmp_;
-                range_t range = write_tmp_.byte_range;
                 if (is_next_segment) {
                     if (!next_segment(write_tmp_, write_tmp_.byte_range, ec)) {
                         if (sended_req_ && ec == source_error::no_more_segment) {
@@ -371,7 +370,6 @@ namespace ppbox
                     }
                 }
                 LOG_TRACE("[open_request] segment: " << write_tmp_.index << " sended_req: " << sended_req_ << "/" << max_req_);
-                ++num_try_;
                 ++sended_req_;
                 source_.open(
                     write_tmp_.url, 
@@ -418,6 +416,7 @@ namespace ppbox
                     next_segment(write_tmp_, write_tmp_.byte_range, ec);
             }
             write_tmp_ = write_;
+            write_tmp_.byte_range = write_range_;
             ec.clear();
             return true;
         }
@@ -442,6 +441,10 @@ namespace ppbox
                 ec = boost::asio::error::would_block;
                 return false;
             }
+
+            ++num_try_;
+
+            write_.byte_range.pos = write_range_.pos;  // 记录开始位置
 
             open_request(is_next_segment, ec);
 
@@ -491,6 +494,8 @@ namespace ppbox
 
             ++sended_req_;
             ++num_try_;
+
+            write_.byte_range.pos = write_range_.pos;  // 记录开始位置
 
             source_.async_open(
                 write_.url, 

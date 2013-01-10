@@ -169,7 +169,7 @@ namespace ppbox
             seek_end_ = size == invalid_size ? invalid_size : offset + size;
             if (write_offset != write_.offset) {
                 // 修正下一个下载Hole
-                if (seek_end_ < write_hole_.this_end) {
+                if (seek_end_ > write_.offset && seek_end_ < write_hole_.this_end) {
                     if (write_write_hole(seek_end_, write_hole_) == boost::uint64_t(-1))
                         data_end_ = write_.offset;
                     write_hole_.this_end = seek_end_;

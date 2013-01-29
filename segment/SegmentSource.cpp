@@ -497,6 +497,12 @@ namespace ppbox
 
             write_.byte_range.pos = write_range_.pos;  // 记录开始位置
 
+            LOG_DEBUG("[async_open_segment] write_.offset: " << write_range_.big_pos() << 
+                " segment: " << write_.index << 
+                " range: " << write_range_.pos << " - " << write_range_.end);
+
+            raise(SegmentStartEvent(write_));
+
             source_.async_open(
                 write_.url, 
                 write_range_.pos, 

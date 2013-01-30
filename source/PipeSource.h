@@ -10,7 +10,15 @@
 typedef boost::asio::posix::stream_descriptor descriptor;
 #else
 #  include <boost/asio/windows/stream_handle.hpp>
+#  if (defined BOOST_ASIO_HAS_WINDOWS_STREAM_HANDLE)
 typedef boost::asio::windows::stream_handle descriptor;
+#  else
+#    define PPBOX_NO_PIPE_SOURCE
+struct descriptor
+{
+	typedef HANDLE native_type;
+};
+#  endif
 #endif
 
 namespace ppbox
@@ -61,7 +69,9 @@ namespace ppbox
             bool is_open_;
         };
 
+#ifndef PPBOX_NO_PIPE_SOURCE
         PPBOX_REGISTER_SOURCE("pipe", PipeSource);
+#endif
 
     } // namespace data
 } // namespace ppbox

@@ -18,11 +18,11 @@ namespace ppbox
             };
 
             namespace detail {
-                class data_source_category
+                class source_category
                     : public boost::system::error_category
                 {
                 public:
-                    data_source_category()
+                    source_category()
                     {
                         register_category(*this);
                     }
@@ -48,7 +48,7 @@ namespace ppbox
 
             inline const boost::system::error_category & get_category()
             {
-                static detail::data_source_category instance;
+                static detail::source_category instance;
                 return instance;
             }
 

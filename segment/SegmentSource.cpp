@@ -67,6 +67,7 @@ namespace ppbox
                 write_range_.end = seek_end_ - write_range_.big_offset;
                 write_tmp_.byte_range = write_range_;
             }
+            source_error_.clear();
             ec.clear();
             return ec;
         }
@@ -342,8 +343,10 @@ namespace ppbox
             range_t & range, 
             boost::system::error_code & ec)
         {
-            if (seg.byte_range.big_end() >= seek_end_ || !strategy_->next_segment(seg, ec)) {
-                ec = source_error::no_more_segment;
+            if (seg.byte_range.big_end() >= seek_end_) {
+                ec = source_error::at_end_point;
+                return false;
+            } else if (!strategy_->next_segment(seg, ec)) {
                 return false;
             }
             seg.byte_range.pos = seg.byte_range.beg;

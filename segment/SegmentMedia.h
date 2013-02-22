@@ -44,9 +44,10 @@ namespace ppbox
                 framework::string::Url & url,
                 boost::system::error_code & ec) const = 0;
 
-            virtual void segment_info(
+            virtual bool segment_info(
                 size_t segment, 
-                SegmentInfo & info) const = 0;
+                SegmentInfo & info,
+                boost::system::error_code & ec) const = 0;
         };
 
     } // namespace data

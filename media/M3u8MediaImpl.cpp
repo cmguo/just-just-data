@@ -28,6 +28,7 @@ namespace ppbox
             framework::string::Url const & url)
             : closed_(true)
             , url_(url)
+            , noshift_(false)
             , source_(NULL)
             , timer_(io_svc)
             , seq_start_(0)
@@ -39,6 +40,8 @@ namespace ppbox
             info_.flags |= MediaBasicInfo::f_smoth;
             info_.flags |= MediaBasicInfo::f_segment_seek;
             info_.format = "ts";
+
+            noshift_ = url_.param("m3u8.noshift") == "true";
         }
 
         M3u8MediaImpl::~M3u8MediaImpl()
@@ -111,7 +114,7 @@ namespace ppbox
         {
             boost::mutex::scoped_lock lc(mutex_);
 
-            return seq_lastest_ + segments_.size();
+            return info_.type == MediaBasicInfo::live ? size_t(-1) : seq_lastest_ + segments_.size();
         }
 
         std::string const M3u8MediaImpl::segment_protocol() const
@@ -137,19 +140,32 @@ namespace ppbox
                 complete_url(url, str);
                 ec.clear();
                 return true;
+            } else if (info_.type == MediaBasicInfo::live && segment >= seq_lastest_) {
+                ec = boost::asio::error::would_block;
+                return false;
+            } else {
+                ec = framework::system::logic_error::out_of_range;
+                return false;
             }
-            ec = framework::system::logic_error::out_of_range;
-            return false;
         }
 
-        void M3u8MediaImpl::segment_info(
+        bool M3u8MediaImpl::segment_info(
             size_t segment, 
-            SegmentInfo & info) const
+            SegmentInfo & info,
+            boost::system::error_code & ec) const
         {
             boost::mutex::scoped_lock lc(mutex_);
 
             if (segment >= seq_lastest_ && segment - seq_lastest_ < segments_.size()) {
                 info = segments_[segment - seq_lastest_];
+                ec.clear();
+                return true;
+            } else if (info_.type == MediaBasicInfo::live && segment >= seq_lastest_) {
+                ec = boost::asio::error::would_block;
+                return false;
+            } else {
+                ec = framework::system::logic_error::out_of_range;
+                return false;
             }
         }
 
@@ -206,7 +222,7 @@ namespace ppbox
                 return;
             }
 
-            if (info_.type ==  MediaBasicInfo::live) {
+            if (info_.type == MediaBasicInfo::live) {
                 timer_.expires_from_now(
                     boost::posix_time::seconds(duration_));
                 timer_.async_wait(
@@ -319,12 +335,17 @@ namespace ppbox
                 info_.duration = duration;
             } else {
                 info_.type = MediaInfo::live;
-                info_.current = duration;
-                info_.start_time = time(NULL) - duration / 1000;
                 boost::uint32_t delay = 0;
                 for (size_t i = segments_.size() - 1; i != size_t(-1) && i + 4 > segments_.size(); --i) {
                     delay += (boost::uint32_t)segments_[i].duration;
                 }
+                if (noshift_) {
+                    duration = delay;
+                    size_t k = segments_.size() > 3 ? segments_.size() - 3 : 0;
+                    segments_.erase(segments_.begin(), segments_.begin() + k);
+                }
+                info_.current = duration;
+                info_.start_time = time(NULL) - duration / 1000;
                 info_.delay = delay;
                 info_.shift = duration;
             }

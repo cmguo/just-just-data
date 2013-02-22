@@ -74,7 +74,6 @@ namespace ppbox
             }
 
             boost::uint32_t index;
-            framework::string::Url url;
             SegmentRange byte_range;
             SegmentRange time_range;
             void * item_context;    // 树、列表的节点信息

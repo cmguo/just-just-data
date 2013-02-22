@@ -51,14 +51,6 @@ namespace ppbox
             close_segment(ec);
             close_all_request(ec);
             write_ = segment;
-            if (!segment.url.is_valid()) {
-                segment_t tmp = segment;
-                // 这里 byte_seek 只会补充 url
-                if (!strategy_->byte_seek(tmp.byte_range.big_beg(), tmp, ec)) {
-                    return ec;
-                }
-                write_.url = tmp.url;
-            }
             write_tmp_ = write_;
             write_range_ = write_.byte_range;
             seek_end_ = (size == invalid_size) ? invalid_size : write_.byte_range.big_pos() + size;
@@ -374,8 +366,10 @@ namespace ppbox
                 }
                 LOG_TRACE("[open_request] segment: " << write_tmp_.index << " sended_req: " << sended_req_ << "/" << max_req_);
                 ++sended_req_;
+                framework::string::Url url;
+                strategy_->get_url(write_tmp_, url, ec);
                 source_.open(
-                    write_tmp_.url, 
+                    url, 
                     write_tmp_.byte_range.pos, 
                     write_tmp_.byte_range.end == write_tmp_.size ? invalid_size : write_tmp_.byte_range.end, ec);
                 if (ec) {
@@ -410,7 +404,6 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             write_tmp_ = write_;
-            write_tmp_.url.protocol("");
             while (sended_req_) {
                 source_.close(ec);
                 --sended_req_;
@@ -461,7 +454,7 @@ namespace ppbox
 
             if (is_next_segment) {
                 if (!next_segment(write_, write_range_, ec)) {
-                    assert(0);
+                    //assert(0);
                     return false;
                 }
             }
@@ -506,8 +499,10 @@ namespace ppbox
 
             raise(SegmentStartEvent(write_));
 
+            framework::string::Url url;
+            strategy_->get_url(write_, url, ec);
             source_.async_open(
-                write_.url, 
+                url, 
                 write_range_.pos, 
                 write_range_.end == write_.size ? invalid_size : write_range_.end, 
                 resp);

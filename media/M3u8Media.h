@@ -63,9 +63,10 @@ namespace ppbox
                 framework::string::Url & url,
                 boost::system::error_code & ec) const;
 
-            virtual void segment_info(
+            virtual bool segment_info(
                 size_t segment, 
-                SegmentInfo & info) const;
+                SegmentInfo & info,
+                boost::system::error_code & ec) const;
 
         private:
             M3u8MediaImpl * impl_;

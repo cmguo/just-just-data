@@ -32,9 +32,11 @@ namespace ppbox
                 ec = source_error::no_more_segment;
                 return false;
             }
-            media_.segment_info(pos.index, pos);
-            if (pos.url.is_valid())
-                media_.segment_url(pos.index, pos.url, ec);
+            
+            if (!media_.segment_info(pos.index, pos, ec)) {
+                --pos.index;
+                return false;
+            }
 
             pos.byte_range.before_next();
             byte_range(pos, pos.byte_range);
@@ -53,8 +55,6 @@ namespace ppbox
             SegmentPosition & pos, 
             boost::system::error_code & ec)
         {
-            pos.url.protocol("");
-
             if (offset < pos.byte_range.big_beg()) {
                 pos = SegmentPosition();
                 if (!next_segment(pos, ec)) {
@@ -64,7 +64,6 @@ namespace ppbox
             }
 
             while (offset >= pos.byte_range.big_end()) {
-                pos.url.protocol("");
                 if (!next_segment(pos, ec)) {
                     return false;
                 }
@@ -72,7 +71,7 @@ namespace ppbox
 
             pos.byte_range.pos = offset - pos.byte_range.big_offset;
 
-            return get_url(pos, ec);
+            return true;
         }
 
         bool SegmentStrategy::time_seek(
@@ -80,8 +79,6 @@ namespace ppbox
             SegmentPosition & pos, 
             boost::system::error_code & ec)
         {
-            pos.url.protocol("");
-
             if (offset < pos.time_range.big_beg()) {
                 pos = SegmentPosition();
                 if (!next_segment(pos, ec)) {
@@ -98,14 +95,15 @@ namespace ppbox
 
             pos.time_range.pos = offset - pos.time_range.big_offset;
 
-            return get_url(pos, ec);
+            return true;
         }
 
         bool SegmentStrategy::get_url(
-            SegmentPosition & pos, 
+            SegmentPosition const & pos, 
+            framework::string::Url & url, 
             boost::system::error_code & ec)
         {
-            return media_.segment_url(pos.index, pos.url, ec);
+            return media_.segment_url(pos.index, url, ec);
         }
 
         boost::uint64_t SegmentStrategy::byte_size()

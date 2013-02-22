@@ -79,11 +79,12 @@ namespace ppbox
             return impl_->segment_url(segment, url, ec);
         }
 
-        void M3u8Media::segment_info(
+        bool M3u8Media::segment_info(
             size_t segment, 
-            SegmentInfo & info) const
+            SegmentInfo & info,
+                boost::system::error_code & ec) const
         {
-            return impl_->segment_info(segment, info);
+            return impl_->segment_info(segment, info, ec);
         }
 
     } // data

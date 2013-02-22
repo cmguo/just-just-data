@@ -49,11 +49,12 @@ namespace ppbox
         }
 
         bool ListStrategy::get_url(
-            SegmentPosition & pos, 
+            SegmentPosition const & pos, 
+            framework::string::Url & url, 
             boost::system::error_code & ec)
         {
             ListItem * item = (ListItem *)pos.item_context;
-            return item->strategy->get_url(pos, ec);
+            return item->strategy->get_url(pos, url, ec);
         }
 
         void ListStrategy::on_error(

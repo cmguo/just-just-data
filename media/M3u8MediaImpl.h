@@ -59,9 +59,10 @@ namespace ppbox
                 framework::string::Url & url,
                 boost::system::error_code & ec) const;
 
-            void segment_info(
+            bool segment_info(
                 size_t segment, 
-                SegmentInfo & info) const;
+                SegmentInfo & info,
+                boost::system::error_code & ec) const;
 
         private:
             void handle_open(
@@ -85,6 +86,8 @@ namespace ppbox
             bool closed_;
 
             framework::string::Url url_;
+            bool noshift_;
+
             MediaInfo info_;
             SourceBase * source_;
             boost::asio::deadline_timer timer_;

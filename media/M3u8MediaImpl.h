@@ -97,6 +97,7 @@ namespace ppbox
 
             size_t seq_start_;
             size_t seq_lastest_;
+            mutable size_t seq_play_;
             boost::uint64_t duration_;
             std::vector<StreamInfo> streams_;
             std::vector<std::string> stream_urls_;

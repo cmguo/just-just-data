@@ -33,6 +33,7 @@ namespace ppbox
             , timer_(io_svc)
             , seq_start_(0)
             , seq_lastest_(0)
+            , seq_play_(0)
             , segment_url_subpos_(std::string::npos)
         {
             source_ = SourceBase::create(io_svc, url.protocol());
@@ -138,6 +139,7 @@ namespace ppbox
                 std::string const & str = segment_urls_[segment - seq_lastest_];
                 LOG_DEBUG("[segment_url] segment: " << segment << ", seq_lastest: " << seq_lastest_ << ", url: " << str);
                 complete_url(url, str);
+                seq_play_ = segment;
                 ec.clear();
                 return true;
             } else if (info_.type == MediaBasicInfo::live && segment >= seq_lastest_) {
@@ -275,10 +277,9 @@ namespace ppbox
             bool end = false;
             size_t line_num = 0;
             boost::uint64_t duration = 0;
+            size_t sequence = 0;
             streams_.clear();
             stream_urls_.clear();
-            segments_.clear();
-            segment_urls_.clear();
             while (std::getline(is, line)) {
                 framework::string::trim(line);
                 ++line_num;
@@ -296,11 +297,11 @@ namespace ppbox
                 } else if (token == M3U8_TARGETDURATION) {
                     iss >> duration_;
                 } else if (token == M3U8_SEQUENCE) {
-                    if (iss >> seq_lastest_) {
+                    if (iss >> sequence) {
                         if (seq_start_ == 0) {
-                            seq_start_ = seq_lastest_;
+                            seq_start_ = sequence;
                         }
-                        seq_lastest_ -= seq_start_;
+                        sequence -= seq_start_;
                     }
                 } else if (token == M3U8_EXTSTREAMINF) {
                     StreamInfo info;
@@ -319,8 +320,12 @@ namespace ppbox
                         LOG_WARN("[parse_m3u8] no url at line: " << line_num); 
                     }
                     framework::string::trim(line);
-                    segments_.push_back(info);
-                    segment_urls_.push_back(line);
+                    if (sequence < seq_lastest_ + segments_.size()) {
+                    } else {
+                        segments_.push_back(info);
+                        segment_urls_.push_back(line);
+                    }
+                    ++sequence;
                 }
             }
 
@@ -329,6 +334,15 @@ namespace ppbox
                 segments_.clear();
                 segment_urls_.clear();
                 return;
+            }
+
+            if (sequence > seq_play_) {
+                sequence = seq_play_;
+            }
+            if (seq_lastest_ < sequence) {
+                segments_.erase(segments_.begin(), segments_.begin() + (sequence - seq_lastest_));
+                segment_urls_.erase(segment_urls_.begin(), segment_urls_.begin() + (sequence - seq_lastest_));
+                seq_lastest_ = seq_play_;
             }
 
             if (end) {

@@ -1,7 +1,7 @@
 // SegmentMedia.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data//segment/SegmentMedia.h"
+#include "ppbox/data/segment/SegmentMedia.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>

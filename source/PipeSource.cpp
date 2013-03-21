@@ -12,7 +12,7 @@ namespace ppbox
 
         PipeSource::PipeSource(
             boost::asio::io_service & io_svc)
-            : SourceBase(io_svc)
+            : UrlSource(io_svc)
             , descriptor_(io_svc)
             , is_open_(false)
         {

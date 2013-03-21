@@ -3,7 +3,7 @@
 #ifndef _PPBOX_DATA_SINK_FILE_SINK_H_
 #define _PPBOX_DATA_SINK_FILE_SINK_H_
 
-#include "ppbox/data/base/SinkBase.h"
+#include "ppbox/data/base/UrlSink.h"
 
 #include <fstream>
 
@@ -13,7 +13,7 @@ namespace ppbox
     {
 
         class FileSink
-            : public SinkBase
+            : public UrlSink
         {
         public:
             FileSink(
@@ -24,7 +24,11 @@ namespace ppbox
         public:
             virtual boost::system::error_code open(
                 framework::string::Url const & url,
+                boost::uint64_t beg, 
+                boost::uint64_t end, 
                 boost::system::error_code & ec);
+
+            using UrlSink::open;
 
             virtual bool is_open(
                 boost::system::error_code & ec);

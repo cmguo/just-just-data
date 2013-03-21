@@ -3,7 +3,7 @@
 #ifndef _PPBOX_DATA_SOURCE_HTTP_SOURCE_H_
 #define _PPBOX_DATA_SOURCE_HTTP_SOURCE_H_
 
-#include "ppbox/data/base/SourceBase.h"
+#include "ppbox/data/base/UrlSource.h"
 
 #include <util/protocol/http/HttpClient.h>
 
@@ -13,7 +13,7 @@ namespace ppbox
     {
 
         class HttpSource
-            : public SourceBase
+            : public UrlSource
         {
         public:
             HttpSource(
@@ -76,7 +76,7 @@ namespace ppbox
             util::protocol::HttpClient http_;
         };
 
-        PPBOX_REGISTER_SOURCE("http", HttpSource);
+        PPBOX_REGISTER_URL_SOURCE("http", HttpSource);
 
     } // namespace data
 } // namespace ppbox

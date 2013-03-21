@@ -14,7 +14,7 @@ namespace ppbox
 
         FileSource::FileSource(
             boost::asio::io_service & io_svc)
-            : SourceBase(io_svc)
+            : UrlSource(io_svc)
             , is_open_(false)
         {
         }

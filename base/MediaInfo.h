@@ -27,12 +27,18 @@ namespace ppbox
             enum FlagEnum
             {
                 f_seekable      = 1, 
-                f_segment       = 2, 
+                f_pauseable     = 2, 
+                f_is_live       = 4, 
+
+                f_extend        = 0xf00, 
+                f_segment       = 0x100, 
+                f_packet        = 0x200, 
+
                 // ∑÷∂Œ Ù–‘
-                f_smoth         = 0x10, 
-                f_time_smoth    = 0x20, 
-                f_fix_duration  = 0x40, 
-                f_segment_seek  = 0x80, 
+                f_smoth         = 0x1000, 
+                f_time_smoth    = 0x2000, 
+                f_fix_duration  = 0x4000, 
+                f_segment_seek  = 0x8000, 
             };
 
             TypeEnum type;

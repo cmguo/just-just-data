@@ -1,10 +1,9 @@
 // SourceStream.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/base/SourceStream.h"
+#include "ppbox/data/single/SourceStream.h"
 
-#include <ppbox/data/base/SingleSource.h>
-#include <ppbox/data/base/SourceEvent.h>
+#include <ppbox/data/single/SingleSource.h>
 #include <ppbox/data/base/SourceError.h>
 
 #include <framework/system/LogicError.h>

@@ -3,7 +3,7 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/media/M3u8MediaImpl.h"
-#include "ppbox/data/base/SourceBase.h"
+#include "ppbox/data/base/UrlSource.h"
 #include "ppbox/data/base/SourceError.h"
 
 #include <framework/logger/Logger.h>
@@ -36,7 +36,7 @@ namespace ppbox
             , seq_play_(0)
             , segment_url_subpos_(std::string::npos)
         {
-            source_ = SourceBase::create(io_svc, url.protocol());
+            source_ = UrlSource::create(io_svc, url.protocol());
             info_.flags = MediaBasicInfo::f_segment;
             info_.flags |= MediaBasicInfo::f_smoth;
             info_.flags |= MediaBasicInfo::f_segment_seek;

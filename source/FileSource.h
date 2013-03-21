@@ -3,7 +3,7 @@
 #ifndef _PPBOX_DATA_SOURCE_FILE_SOURCE_H_
 #define _PPBOX_DATA_SOURCE_FILE_SOURCE_H_
 
-#include "ppbox/data/base/SourceBase.h"
+#include "ppbox/data/base/UrlSource.h"
 
 #include <fstream>
 
@@ -13,7 +13,7 @@ namespace ppbox
     {
 
         class FileSource
-            : public SourceBase
+            : public UrlSource
         {
         public:
             FileSource(
@@ -48,7 +48,7 @@ namespace ppbox
             bool is_open_;
         };
 
-        PPBOX_REGISTER_SOURCE("file", FileSource);
+        PPBOX_REGISTER_URL_SOURCE("file", FileSource);
 
     } // namespace demux
 } // namespace ppbox

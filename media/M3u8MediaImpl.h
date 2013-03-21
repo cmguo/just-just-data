@@ -15,7 +15,7 @@ namespace ppbox
     namespace data
     {
 
-        class SourceBase;
+        class UrlSource;
 
         class M3u8MediaImpl
         {
@@ -89,7 +89,7 @@ namespace ppbox
             bool noshift_;
 
             MediaInfo info_;
-            SourceBase * source_;
+            UrlSource * source_;
             boost::asio::deadline_timer timer_;
             boost::asio::streambuf buf_;
 

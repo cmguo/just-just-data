@@ -1,9 +1,8 @@
 // SingleSource.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/base/SingleSource.h"
+#include "ppbox/data/single/SingleSource.h"
 #include "ppbox/data/base/SourceError.h"
-#include "ppbox/data/base/SourceEvent.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
@@ -20,7 +19,7 @@ namespace ppbox
 
         SingleSource::SingleSource(
             framework::string::Url const & url, 
-            ppbox::data::SourceBase & source, 
+            UrlSource & source, 
             size_t total_req)
             : util::stream::Source(source.get_io_service())
             , max_try_(size_t(-1))
@@ -327,7 +326,7 @@ namespace ppbox
         }
 
         void SingleSource::async_open_segment(
-            SourceBase::response_type const & resp)
+            UrlSource::response_type const & resp)
         {
             boost::system::error_code ec;
 

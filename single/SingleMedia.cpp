@@ -1,7 +1,7 @@
 // SingleMedia.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/base/SingleMedia.h"
+#include "ppbox/data/single/SingleMedia.h"
 
 #include <boost/bind.hpp>
 

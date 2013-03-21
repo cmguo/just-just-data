@@ -14,7 +14,7 @@ namespace ppbox
 
         FileSink::FileSink(
             boost::asio::io_service & io_svc)
-            : SinkBase(io_svc)
+            : UrlSink(io_svc)
             , is_open_(false)
         {
         }
@@ -25,6 +25,8 @@ namespace ppbox
 
         boost::system::error_code FileSink::open(
             framework::string::Url const & url,
+            boost::uint64_t beg, 
+            boost::uint64_t end, 
             boost::system::error_code & ec)
         {
             if (is_open_)
@@ -37,6 +39,11 @@ namespace ppbox
                 if (!ec) {
                     ec = framework::system::logic_error::unknown_error;
                 }
+            } else {
+                if (beg > 0)
+                    file_.seekp(beg, std::ios_base::beg);
+                assert(file_);
+                assert((boost::uint64_t)file_.tellp() == beg);
             }
             return ec;
         }

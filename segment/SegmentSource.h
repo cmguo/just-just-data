@@ -6,7 +6,7 @@
 #include "ppbox/data/base/DataStatistic.h"
 #include "ppbox/data/segment/SegmentStrategy.h"
 
-#include <ppbox/data/base/SourceBase.h>
+#include <ppbox/data/base/UrlSource.h>
 
 #include <util/stream/Source.h>
 #include <util/event/Observable.h>
@@ -29,7 +29,7 @@ namespace ppbox
         public:
             SegmentSource(
                 SegmentStrategy & strategy, 
-                SourceBase & source, 
+                UrlSource & source, 
                 size_t total_req = 1);
 
             ~SegmentSource();
@@ -65,7 +65,7 @@ namespace ppbox
                 boost::uint32_t time = 0);
 
         public:
-            ppbox::data::SourceBase const & source() const
+            ppbox::data::UrlSource const & source() const
             {
                 return source_;
             }
@@ -129,7 +129,7 @@ namespace ppbox
 
             void async_open_segment(
                 bool is_next_segment, 
-                ppbox::data::SourceBase::response_type const & resp);
+                UrlSource::response_type const & resp);
 
             void response(
                 handler_t const & handler, 
@@ -179,7 +179,7 @@ namespace ppbox
             boost::uint32_t time_out_;      // 配置值：超时时间（秒）
 
             SegmentStrategy * strategy_;
-            SourceBase & source_;
+            UrlSource & source_;
 
             size_t num_try_;                // 当前分段尝试次数
             size_t sended_req_;             // 当前队列串行请求数

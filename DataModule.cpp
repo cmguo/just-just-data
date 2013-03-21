@@ -2,9 +2,8 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/DataModule.h"
-#include "ppbox/data/base/SourceTypes.h"
-#include "ppbox/data/base/SinkTypes.h"
-#include "ppbox/data/base/MediaTypes.h"
+#include "ppbox/data/source/SourceTypes.h"
+#include "ppbox/data/sink/SinkTypes.h"
 
 namespace ppbox
 {

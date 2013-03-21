@@ -5,7 +5,7 @@
 #include "ppbox/data/segment/SegmentStream.h"
 
 #include <ppbox/data/segment/SegmentSource.h>
-#include <ppbox/data/base/SourceEvent.h>
+#include <ppbox/data/segment/SourceEvent.h>
 #include <ppbox/data/base/SourceError.h>
 
 #include <framework/system/LogicError.h>
@@ -142,7 +142,6 @@ namespace ppbox
             size_t amount, 
             boost::system::error_code & ec)
         {
-            ec = last_ec_;
             size_t n = 0;
             do {
                 n += prepare_some(amount - n, ec);

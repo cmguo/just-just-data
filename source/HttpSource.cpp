@@ -21,7 +21,7 @@ namespace ppbox
 
         HttpSource::HttpSource(
             boost::asio::io_service & io_svc)
-            : SourceBase(io_svc)
+            : UrlSource(io_svc)
             , http_(io_svc)
         {
         }

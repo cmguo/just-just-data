@@ -4,7 +4,7 @@
 #define _PPBOX_DATA_BASE_SINGLE_SOURCE_H_
 
 #include "ppbox/data/base/DataStatistic.h"
-#include "ppbox/data/base/SourceBase.h"
+#include "ppbox/data/base/UrlSource.h"
 #include "ppbox/data/segment/SegmentPosition.h" // for SegmentRange
 
 #include <util/stream/Source.h>
@@ -26,7 +26,7 @@ namespace ppbox
         public:
             SingleSource(
                 framework::string::Url const & url, 
-                SourceBase & source, 
+                UrlSource & source, 
                 size_t total_req = 1);
 
             ~SingleSource();
@@ -103,7 +103,7 @@ namespace ppbox
                 size_t bytes_transferred);
 
             void async_open_segment(
-                SourceBase::response_type const & resp);
+                UrlSource::response_type const & resp);
 
             void response(
                 handler_t const & handler, 
@@ -137,7 +137,7 @@ namespace ppbox
             boost::uint32_t time_out_;      // 配置值：超时时间（秒）
 
             framework::string::Url const & url_;
-            SourceBase & source_;
+            UrlSource & source_;
 
             size_t num_try_;                // 当前分段尝试次数
             bool source_open_;

@@ -2,8 +2,8 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/segment/SegmentSource.h"
+#include "ppbox/data/segment/SourceEvent.h"
 #include "ppbox/data/base/SourceError.h"
-#include "ppbox/data/base/SourceEvent.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
@@ -19,8 +19,8 @@ namespace ppbox
         FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.SegmentSource", framework::logger::Debug);
 
         SegmentSource::SegmentSource(
-            ppbox::data::SegmentStrategy & strategy, 
-            ppbox::data::SourceBase & source, 
+            SegmentStrategy & strategy, 
+            UrlSource & source, 
             size_t total_req)
             : util::stream::Source(source.get_io_service())
             , max_try_(size_t(-1))
@@ -470,7 +470,7 @@ namespace ppbox
 
         void SegmentSource::async_open_segment(
             bool is_next_segment, 
-            ppbox::data::SourceBase::response_type const & resp)
+            UrlSource::response_type const & resp)
         {
             boost::system::error_code ec;
 

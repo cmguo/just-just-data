@@ -3,7 +3,7 @@
 #ifndef _PPBOX_DATA_SOURCE_PIPE_SOURCE_H_
 #define _PPBOX_DATA_SOURCE_PIPE_SOURCE_H_
 
-#include <ppbox/data/base/SourceBase.h>
+#include <ppbox/data/base/UrlSource.h>
 
 #ifndef BOOST_WINDOWS_API
 #  include <boost/asio/posix/stream_descriptor.hpp>
@@ -27,7 +27,7 @@ namespace ppbox
     {
 
         class PipeSource
-            : public SourceBase
+            : public UrlSource
         {
         public:
             typedef descriptor::native_type native_descriptor;
@@ -70,7 +70,7 @@ namespace ppbox
         };
 
 #ifndef PPBOX_NO_PIPE_SOURCE
-        PPBOX_REGISTER_SOURCE("pipe", PipeSource);
+        PPBOX_REGISTER_URL_SOURCE("pipe", PipeSource);
 #endif
 
     } // namespace data

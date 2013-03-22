@@ -4,6 +4,7 @@
 #include "ppbox/data/DataModule.h"
 #include "ppbox/data/source/SourceTypes.h"
 #include "ppbox/data/sink/SinkTypes.h"
+#include "ppbox/data/media/MediaTypes.h"
 
 namespace ppbox
 {

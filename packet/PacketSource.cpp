@@ -113,8 +113,10 @@ namespace ppbox
                 if (ec || prepare(ec) == 0) {
                     return NULL;
                 }
+            } else {
+                ec.clear();
             }
-            return PacketBuffer::fetch(size_out, blocks, ec);
+            return PacketBuffer::fetch(size_out, blocks);
         }
 
     } // namespace data

@@ -45,8 +45,7 @@ namespace ppbox
 
         void * PacketBuffer::fetch(
             boost::uint32_t & size_out, 
-            blocks_t & blocks, 
-            boost::system::error_code & ec)
+            blocks_t & blocks)
         {
             assert(!packets_.empty());
             Packet * pkt = packets_.first();

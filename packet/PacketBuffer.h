@@ -33,8 +33,7 @@ namespace ppbox
             // get Memory Lock
             void * fetch(
                 boost::uint32_t & size_out, 
-                blocks_t & blocks, 
-                boost::system::error_code & ec);
+                blocks_t & blocks);
 
             void putback(
                 void * mem);

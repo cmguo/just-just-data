@@ -78,9 +78,9 @@ namespace ppbox
                 async_prepare(amount > prepare_size_ ? amount : prepare_size_, resp);
             }
 
-            bool fetch(
-                boost::uint64_t offset, 
-                boost::uint32_t size, 
+            MemoryLock * fetch(
+                boost::uint32_t track, 
+                std::vector<DataBlock> & blocks, 
                 std::deque<boost::asio::const_buffer> & data, 
                 boost::system::error_code & ec);
 

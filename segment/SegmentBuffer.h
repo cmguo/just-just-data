@@ -98,25 +98,26 @@ namespace ppbox
                 async_prepare(amount > prepare_size_ ? amount : prepare_size_, resp);
             }
 
-            bool fetch(
+            MemoryLock * fetch(
+                boost::uint32_t track, 
                 boost::uint64_t offset, 
                 boost::uint32_t size, 
                 bool merge, 
                 std::deque<boost::asio::const_buffer> & data, 
                 boost::system::error_code & ec);
 
-            bool drop(
-                boost::system::error_code & ec);
-
-            bool drop_to(
-                boost::uint64_t offset, 
+            MemoryLock * fetch(
+                boost::uint32_t track, 
+                std::vector<DataBlock> & blocks, 
+                bool merge, 
+                std::deque<boost::asio::const_buffer> & data, 
                 boost::system::error_code & ec);
 
             /**
                 drop_all 
                 丢弃当前分段的所有剩余数据，并且更新当前分段信息
              */
-            bool drop_all(
+            bool read_next(
                 boost::uint64_t duration, 
                 boost::system::error_code & ec);
 

@@ -29,8 +29,47 @@ namespace ppbox
 
         Buffer::~Buffer()
         {
+            clear();
+            for (size_t i = 0; i < tracks_.size(); ++i) {
+                delete tracks_[i];
+            }
+            tracks_.clear();
+            while (!free_locks_.empty()) {
+                delete free_locks_.first();
+            }
             if (buffer_)
                 memory_.free_block(buffer_, buffer_size_);
+        }
+
+        void Buffer::set_track_count(
+            boost::uint32_t n)
+        {
+            assert(tracks_.empty());
+            while (n) {
+                tracks_.push_back(new MemoryTrack);
+                --n;
+            }
+        }
+
+        void Buffer::putback(
+            MemoryLock * mlock)
+        {
+            while (!mlock->join.empty()) {
+                MemoryLock * l = mlock->join.first();
+                l->unlink();
+                free_lock(l);
+            }
+            mlock->unlink();
+            free_lock(mlock);
+
+            boost::uint64_t min_offset = data_end_;
+            for (size_t i = 0; i < tracks_.size(); ++i) {
+                if (min_offset > tracks_[i]->min_offset())
+                    min_offset = tracks_[i]->min_offset();
+            }
+            if (min_offset > read_.offset) {
+                move_front_to(read_, min_offset);
+            }
         }
 
         void Buffer::clear()
@@ -54,6 +93,16 @@ namespace ppbox
             data_beg_ = offset;
             data_end_ = offset;
             seek_end_ = size == invalid_size ? invalid_size : offset + size;
+
+            for (size_t i = 0; i < tracks_.size(); ++i) {
+                assert(tracks_[i]->locks.empty());
+                while (!tracks_[i]->locks.empty()) {
+                    MemoryLock * l = tracks_[i]->locks.first();
+                    tracks_[i]->locks.pop_front();
+                    free_locks_.push_back(l);
+                    tracks_[i]->position = offset;
+                }
+            }
         }
 
         bool Buffer::seek(
@@ -178,6 +227,17 @@ namespace ppbox
             }
             LOG_TRACE("after seek " << offset);
             dump();
+
+            for (size_t i = 0; i < tracks_.size(); ++i) {
+                assert(tracks_[i]->locks.empty());
+                while (!tracks_[i]->locks.empty()) {
+                    MemoryLock * l = tracks_[i]->locks.first();
+                    tracks_[i]->locks.pop_front();
+                    free_locks_.push_back(l);
+                    tracks_[i]->position = read_.offset;
+                }
+            }
+
             return write_offset != write_.offset || seek_end != seek_end_;
         }
 
@@ -234,6 +294,23 @@ namespace ppbox
                     break;
                 offset = read_write_hole(hole.next_beg, hole);
             }
+        }
+
+        MemoryLock * Buffer::alloc_lock()
+        {
+            if (free_locks_.empty()) {
+                return new MemoryLock;
+            } else {
+                MemoryLock * lock = free_locks_.first();
+                free_locks_.pop_front();
+                return lock;
+            }
+        }
+
+        void Buffer::free_lock(
+            MemoryLock * lock)
+        {
+            free_locks_.push_front(lock);
         }
 
         boost::uint64_t Buffer::read_write_hole(

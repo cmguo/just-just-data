@@ -23,7 +23,7 @@ namespace ppbox
                 boost::asio::io_service & io_svc,
                 framework::string::Url const & url);
 
-            ~SingleMedia();
+            virtual ~SingleMedia();
 
         public:
             virtual void async_open(

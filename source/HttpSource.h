@@ -19,7 +19,7 @@ namespace ppbox
             HttpSource(
                 boost::asio::io_service & io_svc);
 
-            ~HttpSource();
+            virtual ~HttpSource();
 
         public:
             virtual boost::system::error_code open(

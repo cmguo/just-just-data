@@ -24,7 +24,7 @@ namespace ppbox
                 boost::asio::io_service & io_svc,
                 framework::string::Url const & url);
 
-            ~MediaBase();
+            virtual ~MediaBase();
 
         public:
             static MediaBase * create(

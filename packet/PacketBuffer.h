@@ -4,8 +4,7 @@
 #define _PPBOX_DATA_PACKET_PACKET_BUFFER_H_
 
 #include "ppbox/data/packet/PacketFeature.h"
-
-#include <ppbox/avformat/Format.h>
+#include "ppbox/data/base/MemoryLock.h"
 
 #include <util/stream/StreamBuffers.h>
 
@@ -21,7 +20,6 @@ namespace ppbox
         {
         public:
             typedef util::stream::StreamMutableBuffers buffers_t;
-            typedef std::deque<boost::asio::const_buffer> blocks_t;
 
         public:
             PacketBuffer(
@@ -31,12 +29,34 @@ namespace ppbox
 
         public:
             // get Memory Lock
-            void * fetch(
+            template <
+                typename BufferSequence
+            >
+            MemoryLock * fetch(
                 boost::uint32_t & size_out, 
-                blocks_t & blocks);
+                BufferSequence & buffers)
+            {
+                assert(!packets_.empty());
+                Packet * pkt = packets_.first();
+                packets_.pop_front();
+                PieceHeader * ph = pkt->pieces;
+                size_t size = size_out = pkt->size;
+                while (ph && size) {
+                    if (size > feature_.piece_size) {
+                        buffers.push_back(boost::asio::buffer(ph + 1, feature_.piece_size));
+                        size -= feature_.piece_size;
+                    } else {
+                        buffers.push_back(boost::asio::buffer(ph + 1, size));
+                        size = 0;
+                    }
+                    ph = ph->next_piece;
+                }
+                locked_packets_.push_back(pkt);
+                return (MemoryLock *)ph;
+            }
 
             void putback(
-                void * mem);
+                MemoryLock * mlock);
 
             bool empty() const
             {

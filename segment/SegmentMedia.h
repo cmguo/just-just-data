@@ -24,7 +24,7 @@ namespace ppbox
                 boost::asio::io_service & io_svc,
                 framework::string::Url const & url);
 
-            ~SegmentMedia();
+            virtual ~SegmentMedia();
 
         public:
             virtual bool get_basic_info(

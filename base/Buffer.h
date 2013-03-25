@@ -3,9 +3,13 @@
 #ifndef _PPBOX_DATA_BASE_BUFFER_H_
 #define _PPBOX_DATA_BASE_BUFFER_H_
 
+#include "ppbox/data/base/MemoryLock.h"
+#include "ppbox/data/base/DataBlock.h"
+
 #include <util/buffers/Buffers.h>
 
 #include <framework/memory/PrivateMemory.h>
+#include <framework/container/OrderedUnidirList.h>
 
 #include <boost/asio/buffer.hpp>
 
@@ -58,6 +62,22 @@ namespace ppbox
                                         |              |
                                     seg_beg=400     seg_end=600
             */
+
+            struct MemoryTrack
+            {
+                MemoryTrack()
+                    : position(0)
+                {
+                }
+
+                framework::container::List<MemoryLock> locks;
+                boost::uint64_t position;
+
+                boost::uint64_t min_offset() const
+                {
+                    return locks.empty() ? position : locks.first()->offset;
+                }
+            };
 
         public:
             Buffer(
@@ -173,6 +193,52 @@ namespace ppbox
             }
 
         public:
+            void set_track_count(
+                boost::uint32_t n);
+
+            template <
+                typename BufferSequence
+            >
+            MemoryLock * fetch(
+                boost::uint32_t track, 
+                std::vector<DataBlock> const & blocks, 
+                BufferSequence & buffers)
+            {
+                MemoryTrack * t = tracks_[track];
+                MemoryLock * l = alloc_lock();
+                l->pointer = t;
+                l->offset = blocks.front().offset;
+                t->position = blocks.back().end();
+                t->locks.push_back(l);
+                for (size_t i = 0; i < blocks.size(); ++i) {
+                    read_buffer(blocks[i].offset, blocks[i].end(), buffers);
+                }
+                return l;
+            }
+
+            template <
+                typename BufferSequence
+            >
+            MemoryLock * fetch(
+                boost::uint32_t track, 
+                boost::uint64_t offset, 
+                boost::uint32_t size, 
+                BufferSequence & buffers)
+            {
+                MemoryTrack * t = tracks_[track];
+                MemoryLock * l = alloc_lock();
+                l->pointer = t;
+                l->offset = offset;
+                t->position = offset + size;
+                t->locks.push_back(l);
+                read_buffer(offset, offset + size, buffers);
+                return l;
+            }
+
+            void putback(
+                MemoryLock * mlock);
+
+        public:
             boost::uint64_t data_begin() const
             {
                 return data_beg_;
@@ -188,6 +254,7 @@ namespace ppbox
                 return seek_end_;
             }
 
+        protected:
             bool check_hole(
                 boost::system::error_code & ec)
             {
@@ -246,6 +313,11 @@ namespace ppbox
             {
                 return buffer_ + buffer_size_;
             }
+
+            MemoryLock * alloc_lock();
+
+            void free_lock(
+                MemoryLock * lock);
 
         protected:
             char const * read_buffer(
@@ -436,6 +508,9 @@ namespace ppbox
             Hole read_hole_;
             Position write_;
             Hole write_hole_;
+
+            std::vector<MemoryTrack *> tracks_; // indexd by itrack
+            framework::container::List<MemoryLock> free_locks_;
         };
 
     } // namespace data

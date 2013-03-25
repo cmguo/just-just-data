@@ -45,9 +45,9 @@ namespace ppbox
 
             void resume_stream();
 
-            void * fetch(
+            MemoryLock * fetch(
                 boost::uint32_t & size_out, 
-                blocks_t & blocks, 
+                std::deque<boost::asio::const_buffer> & data, 
                 boost::system::error_code & ec);
 
         public:

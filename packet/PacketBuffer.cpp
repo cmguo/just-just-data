@@ -43,34 +43,16 @@ namespace ppbox
             blocks_.clear();
         }
 
-        void * PacketBuffer::fetch(
-            boost::uint32_t & size_out, 
-            blocks_t & blocks)
-        {
-            assert(!packets_.empty());
-            Packet * pkt = packets_.first();
-            packets_.pop_front();
-            PieceHeader * ph = pkt->pieces;
-            size_t size = size_out = pkt->size;
-            while (ph && size) {
-                if (size > feature_.piece_size) {
-                    blocks.push_back(boost::asio::buffer(ph + 1, feature_.piece_size));
-                    size -= feature_.piece_size;
-                } else {
-                    blocks.push_back(boost::asio::buffer(ph + 1, size));
-                    size = 0;
-                }
-                ph = ph->next_piece;
-            }
-            locked_packets_.push_back(pkt);
-            return ph;
-        }
-
         void PacketBuffer::putback(
-            void * mem)
+            MemoryLock * mlock)
         {
-            Packet * pkt = (Packet *)mem;
-            free_packet(pkt);
+            while (!mlock->join.empty()) {
+                MemoryLock * l = mlock->join.first();
+                l->unlink();
+                free_packet((Packet *)l);
+            }
+            mlock->unlink();
+            free_packet((Packet *)mlock);
         }
 
         void PacketBuffer::clear()
@@ -168,7 +150,6 @@ namespace ppbox
         void PacketBuffer::free_packet(
             Packet * pkt)
         {
-            pkt->unlink();
             free_packets_.push_front(pkt);
         }
 

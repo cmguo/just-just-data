@@ -132,12 +132,14 @@ namespace ppbox
             resp(ec, 0);
         }
 
-        bool SourceStream::fetch(
-            boost::uint64_t offset, 
-            boost::uint32_t size, 
+        MemoryLock * SourceStream::fetch(
+            boost::uint32_t track, 
+            std::vector<DataBlock> & blocks, 
             std::deque<boost::asio::const_buffer> & data, 
             boost::system::error_code & ec)
         {
+            boost::uint64_t offset = blocks.front().offset;
+            boost::uint32_t size = blocks.front().end() - offset;
             assert(offset >= in_position() && offset + size <= total_size_);
             if (offset < in_position()) {
                 ec = framework::system::logic_error::out_of_range;
@@ -151,11 +153,11 @@ namespace ppbox
                     }
                 }
                 if (offset + size <= out_position()) {
-                    Buffer::read_buffer(offset, offset + size, data);
                     ec.clear();
+                    return Buffer::fetch(track, blocks, data);
                 }
             }
-            return !ec;
+            return NULL;
         }
 
         bool SourceStream::drop(

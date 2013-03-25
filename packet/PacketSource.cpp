@@ -103,9 +103,9 @@ namespace ppbox
                 last_ec_.clear();
         }
 
-        void * PacketSource::fetch(
+        MemoryLock * PacketSource::fetch(
             boost::uint32_t & size_out, 
-            blocks_t & blocks, 
+            std::deque<boost::asio::const_buffer> & data, 
             boost::system::error_code & ec)
         {
             if (empty()) {
@@ -113,10 +113,8 @@ namespace ppbox
                 if (ec || prepare(ec) == 0) {
                     return NULL;
                 }
-            } else {
-                ec.clear();
             }
-            return PacketBuffer::fetch(size_out, blocks);
+            return PacketBuffer::fetch(size_out, data);
         }
 
     } // namespace data

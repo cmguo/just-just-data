@@ -184,15 +184,17 @@ namespace ppbox
             resp(ec, 0);
         }
 
-        bool SegmentBuffer::fetch(
+        MemoryLock * SegmentBuffer::fetch(
+            boost::uint32_t track, 
             boost::uint64_t offset, 
             boost::uint32_t size, 
             bool merge, 
             std::deque<boost::asio::const_buffer> & data, 
             boost::system::error_code & ec)
         {
-            if (!merge)
+            if (!merge) {
                 offset += read_.byte_range.big_offset;
+            }
             assert(offset >= in_position() && (merge || offset + size <= read_.byte_range.big_end()));
             if (offset < in_position()) {
                 ec = framework::system::logic_error::out_of_range;
@@ -206,47 +208,45 @@ namespace ppbox
                     }
                 }
                 if (offset + size <= out_position()) {
-                    Buffer::read_buffer(offset, offset + size, data);
                     ec.clear();
+                    return Buffer::fetch(track, offset, size, data);
                 }
             }
-            return !ec;
+            return NULL;
         }
 
-        bool SegmentBuffer::drop(
+        MemoryLock * SegmentBuffer::fetch(
+            boost::uint32_t track, 
+            std::vector<DataBlock> & blocks, 
+            bool merge, 
+            std::deque<boost::asio::const_buffer> & data, 
             boost::system::error_code & ec)
         {
-            read_.byte_range.pos = read_stream_->position();
-            if (consume((size_t)(read_.byte_range.big_pos() - in_position()))) {
-                if (read_stream_)
-                    read_stream_->update();
-                if (read_ == write_ && write_stream_)
-                    write_stream_->update();
-                ec.clear();
-            } else {
-                ec = framework::system::logic_error::out_of_range;
+            if (!merge) {
+                for (size_t i = 0; i < blocks.size(); ++i) {
+                    blocks[i].offset += read_.byte_range.big_offset;
+                }
             }
-            return !ec;
-        }
-
-        bool SegmentBuffer::drop_to(
-            boost::uint64_t offset, 
-            boost::system::error_code & ec)
-        {
-            if (read_.byte_range.big_offset + offset < in_position()) {
-                ec = framework::system::logic_error::invalid_argument;
-                return false;
-            } else if (consume((size_t)(read_.byte_range.big_offset + offset - in_position()))) {
-                if (read_stream_)
-                    read_stream_->update();
-                if (read_ == write_ && write_stream_)
-                    write_stream_->update();
-                ec.clear();
-                return true;
-            } else {
+            boost::uint64_t offset = blocks.front().offset;
+            boost::uint32_t size = blocks.front().end() - offset;
+            assert(offset >= in_position() && (merge || offset + size <= read_.byte_range.big_end()));
+            if (offset < in_position()) {
                 ec = framework::system::logic_error::out_of_range;
-                return false;
+            } else if (!merge && offset + size > read_.byte_range.big_end()) {
+                ec = boost::asio::error::eof;
+            } else {
+                if (offset + size > out_position()) {
+                    ec = last_ec_;
+                    if (!ec) {
+                        prepare_at_least((boost::uint32_t)(offset + size - out_position()), ec);
+                    }
+                }
+                if (offset + size <= out_position()) {
+                    ec.clear();
+                    return Buffer::fetch(track, blocks, data);
+                }
             }
+            return NULL;
         }
 
         /**
@@ -254,7 +254,7 @@ namespace ppbox
         丢弃当前分段的所有剩余数据，并且更新当前分段信息
         */
         // TO BE FIXED
-        bool SegmentBuffer::drop_all(
+        bool SegmentBuffer::read_next(
             boost::uint64_t duration, 
             boost::system::error_code & ec)
         {

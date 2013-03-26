@@ -152,9 +152,9 @@ namespace ppbox
                 return read_.offset;
             }
 
-            boost::uint64_t in_avail() const
+            size_t in_avail() const
             {
-                return write_.offset- read_.offset;
+                return (size_t)(write_.offset- read_.offset);
             }
 
             template <
@@ -235,7 +235,7 @@ namespace ppbox
                 return l;
             }
 
-            void putback(
+            bool putback(
                 MemoryLock * mlock);
 
         public:

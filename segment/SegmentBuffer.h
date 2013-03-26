@@ -113,8 +113,11 @@ namespace ppbox
                 std::deque<boost::asio::const_buffer> & data, 
                 boost::system::error_code & ec);
 
+            void putback(
+                MemoryLock * mlock);
+
             /**
-                drop_all 
+                read_next 
                 丢弃当前分段的所有剩余数据，并且更新当前分段信息
              */
             bool read_next(

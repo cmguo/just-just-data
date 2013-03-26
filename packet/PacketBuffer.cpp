@@ -20,6 +20,8 @@ namespace ppbox
             PacketFeature const & feature)
             : feature_(feature)
             , free_pieces_(NULL)
+            , write_offset_(0)
+            , read_offset_(0)
         {
             boost::system::error_code ec;
             if (feature_.piece_num == 0) {
@@ -30,13 +32,16 @@ namespace ppbox
             } else {
                 feature_.block_size = memory_.align_page(feature_.block_size);
             }
+            if (feature_.prepare_size == 0) {
+                feature_.prepare_size = 1024 * 10;
+            }
         }
 
         PacketBuffer::~PacketBuffer()
         {
-            packets_.clear();
-            locked_packets_.clear();
+            clear();
             free_packets_.clear();
+            buffers_.clear();
             for (size_t i = 0; i < blocks_.size(); ++i) {
                 memory_.free_block(blocks_[i], feature_.block_size);
             }
@@ -57,7 +62,10 @@ namespace ppbox
 
         void PacketBuffer::clear()
         {
-            buffers_.clear();
+            packets_.clear();
+            assert(locked_packets_.empty());
+            locked_packets_.clear();
+            read_offset_ = write_offset_ = 0;
         }
 
         bool PacketBuffer::prepare(
@@ -94,6 +102,7 @@ namespace ppbox
             }
             *pph = NULL;
             packets_.push_back(pkt);
+            write_offset_ += pkt->size;
         }
 
         PacketBuffer::PieceHeader * PacketBuffer::alloc_piece()
@@ -150,6 +159,11 @@ namespace ppbox
         void PacketBuffer::free_packet(
             Packet * pkt)
         {
+            while (pkt->pieces) {
+                PieceHeader * p = pkt->pieces;
+                pkt->pieces = p->next_piece;
+                free_piece(p);
+            }
             free_packets_.push_front(pkt);
         }
 

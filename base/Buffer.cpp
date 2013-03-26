@@ -51,7 +51,7 @@ namespace ppbox
             }
         }
 
-        void Buffer::putback(
+        bool Buffer::putback(
             MemoryLock * mlock)
         {
             while (!mlock->join.empty()) {
@@ -69,6 +69,9 @@ namespace ppbox
             }
             if (min_offset > read_.offset) {
                 move_front_to(read_, min_offset);
+                return true;
+            } else {
+                return false;
             }
         }
 

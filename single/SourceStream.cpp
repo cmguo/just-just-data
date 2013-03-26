@@ -160,32 +160,12 @@ namespace ppbox
             return NULL;
         }
 
-        bool SourceStream::drop(
-            boost::system::error_code & ec)
+        void SourceStream::putback(
+            MemoryLock * mlock)
         {
-            if (consume((size_t)(position() - in_position()))) {
-                stream_pos_ = in_position();
-                setg(gptr(), gptr(), egptr());
-                ec.clear();
-            } else {
-                ec = framework::system::logic_error::out_of_range;
-            }
-            return !ec;
-        }
-
-        bool SourceStream::drop_to(
-            boost::uint64_t offset, 
-            boost::system::error_code & ec)
-        {
-            if (offset < in_position()) {
-                ec = framework::system::logic_error::invalid_argument;
-                return false;
-            } else if (consume((size_t)(offset - in_position()))) {
-                read_seek(offset, ec);
-                return true;
-            } else {
-                ec = framework::system::logic_error::out_of_range;
-                return false;
+            if (Buffer::putback(mlock)) {
+                boost::system::error_code ec;
+                read_seek(position(), ec);
             }
         }
 
@@ -197,10 +177,12 @@ namespace ppbox
             boost::uint64_t end = out_position();
             if (pos < beg) {
                 pos = beg;
+                //assert(false); // mp4 demuxer 有可能读指针停留在靠前位置
                 ec = framework::system::logic_error::out_of_range;
             } else if (pos >= end) {
                 if (pos > total_size_) {
                     pos = total_size_;
+                    assert(false);
                     ec = framework::system::logic_error::out_of_range;
                 }
                 if (pos >= out_position()) {

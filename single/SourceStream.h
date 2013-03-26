@@ -84,16 +84,8 @@ namespace ppbox
                 std::deque<boost::asio::const_buffer> & data, 
                 boost::system::error_code & ec);
 
-            bool drop(
-                boost::system::error_code & ec);
-
-            bool drop_to(
-                boost::uint64_t offset, 
-                boost::system::error_code & ec);
-
-            bool read_seek(
-                boost::uint64_t pos, 
-                boost::system::error_code & ec);
+            void putback(
+                MemoryLock * mlock);
 
         public:
             ppbox::data::SingleSource const & source() const
@@ -122,6 +114,10 @@ namespace ppbox
             void handle_async(
                 boost::system::error_code const & ecc, 
                 size_t bytes_transferred);
+
+            bool read_seek(
+                boost::uint64_t pos, 
+                boost::system::error_code & ec);
 
         private:
             boost::uint64_t position();

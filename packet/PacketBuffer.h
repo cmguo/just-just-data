@@ -28,6 +28,28 @@ namespace ppbox
             ~PacketBuffer();
 
         public:
+            boost::uint64_t out_position() const
+            {
+                return write_offset_;
+            }
+
+            size_t out_avail() const
+            {
+                return feature_.buffer_size - in_avail();
+            }
+
+            // ∂¡÷∏’Î∆´“∆
+            boost::uint64_t in_position() const
+            {
+                return read_offset_;
+            }
+
+            size_t in_avail() const
+            {
+                return (size_t)(in_position() - in_position());
+            }
+
+        public:
             // get Memory Lock
             template <
                 typename BufferSequence
@@ -39,24 +61,38 @@ namespace ppbox
                 assert(!packets_.empty());
                 Packet * pkt = packets_.first();
                 packets_.pop_front();
-                PieceHeader * ph = pkt->pieces;
-                size_t size = size_out = pkt->size;
-                while (ph && size) {
-                    if (size > feature_.piece_size) {
-                        buffers.push_back(boost::asio::buffer(ph + 1, feature_.piece_size));
-                        size -= feature_.piece_size;
-                    } else {
-                        buffers.push_back(boost::asio::buffer(ph + 1, size));
-                        size = 0;
-                    }
-                    ph = ph->next_piece;
-                }
+                pkt_out(pkt, size_out, buffers);
                 locked_packets_.push_back(pkt);
-                return (MemoryLock *)ph;
+                read_offset_ += pkt->size;
+                return (MemoryLock *)pkt;
             }
 
             void putback(
                 MemoryLock * mlock);
+
+            template <
+                typename BufferSequence
+            >
+            void peek_next(
+                boost::uint32_t & size_out, 
+                BufferSequence & buffers)
+            {
+                assert(!packets_.empty());
+                Packet * pkt = packets_.first();
+                pkt_out(pkt, size_out, buffers);
+            }
+
+            template <
+                typename BufferSequence
+            >
+            void peek_last(
+                boost::uint32_t & size_out, 
+                BufferSequence & buffers)
+            {
+                assert(!packets_.empty());
+                Packet * pkt = packets_.last();
+                pkt_out(pkt, size_out, buffers);
+            }
 
             bool empty() const
             {
@@ -96,6 +132,29 @@ namespace ppbox
             };
 
         private:
+            template <
+                typename BufferSequence
+            >
+            void pkt_out(
+                Packet * pkt, 
+                boost::uint32_t & size_out, 
+                BufferSequence & buffers)
+            {
+                PieceHeader * ph = pkt->pieces;
+                size_t size = size_out = pkt->size;
+                while (ph && size) {
+                    if (size > feature_.piece_size) {
+                        buffers.push_back(boost::asio::buffer(ph + 1, feature_.piece_size));
+                        size -= feature_.piece_size;
+                    } else {
+                        buffers.push_back(boost::asio::buffer(ph + 1, size));
+                        size = 0;
+                    }
+                    ph = ph->next_piece;
+                }
+            }
+
+        private:
             PieceHeader * alloc_piece();
 
             void free_piece(
@@ -120,6 +179,8 @@ namespace ppbox
             PieceHeader * free_pieces_;
             util::stream::StreamMutableBuffers buffers_;
             framework::container::List<Packet> packets_;
+            boost::uint64_t write_offset_;
+            boost::uint64_t read_offset_;
             framework::container::List<Packet> locked_packets_;
             framework::container::List<Packet> free_packets_;
         };

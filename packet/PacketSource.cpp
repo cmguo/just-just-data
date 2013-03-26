@@ -16,20 +16,11 @@ namespace ppbox
 
         FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.PacketSource", framework::logger::Debug);
 
-        static PacketFeature get_feature(
-            PacketMedia & media)
-        {
-            PacketFeature feature;
-            boost::system::error_code ec;
-            media.get_packet_feature(feature, ec);
-            assert(!ec);
-            return feature;
-        }
-
         PacketSource::PacketSource(
-            PacketMedia & media)
-            : PacketBuffer(get_feature(media))
-            , source_(media.source())
+            PacketFeature const & feature, 
+            SourceBase & source)
+            : PacketBuffer(feature)
+            , source_(source)
         {
         }
 
@@ -51,6 +42,7 @@ namespace ppbox
             } else {
                 last_ec_ = ec;
             }
+            increase_bytes(size);
             return size;
         }
 
@@ -115,6 +107,36 @@ namespace ppbox
                 }
             }
             return PacketBuffer::fetch(size_out, data);
+        }
+
+        bool PacketSource::peek_next(
+            boost::uint32_t & size_out, 
+            std::deque<boost::asio::const_buffer> & data, 
+            boost::system::error_code & ec)
+        {
+            if (empty()) {
+                ec = last_ec_;
+                if (ec || prepare(ec) == 0) {
+                    return false;
+                }
+            }
+            PacketBuffer::peek_last(size_out, data);
+            return true;
+        }
+
+        bool PacketSource::peek_last(
+            boost::uint32_t & size_out, 
+            std::deque<boost::asio::const_buffer> & data, 
+            boost::system::error_code & ec)
+        {
+            if (empty()) {
+                ec = last_ec_;
+                if (ec || prepare(ec) == 0) {
+                    return false;
+                }
+            }
+            PacketBuffer::peek_last(size_out, data);
+            return true;
         }
 
     } // namespace data

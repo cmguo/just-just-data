@@ -249,6 +249,17 @@ namespace ppbox
             return NULL;
         }
 
+        void SegmentBuffer::putback(
+            MemoryLock * mlock)
+        {
+            if (Buffer::putback(mlock)) {
+                if (read_stream_)
+                    read_stream_->update();
+                if (read_ == write_ && write_stream_)
+                    write_stream_->update();
+            }
+        }
+
         /**
         drop_all 
         丢弃当前分段的所有剩余数据，并且更新当前分段信息
@@ -385,12 +396,14 @@ namespace ppbox
                 pos += beg;
                 if (pos > end) {
                     pos = end;
+                    assert(false);
                     ec = framework::system::logic_error::out_of_range;
                 }
             } else if (pos_type == PositionType::end) {
                 pos = end - pos;
                 if (pos < beg) {
                     pos = beg;
+                    assert(false);
                     ec = framework::system::logic_error::out_of_range;
                 }
             } else {
@@ -398,10 +411,12 @@ namespace ppbox
                     pos += segment.byte_range.big_offset;
                 if (pos < beg) {
                    pos = beg;
+                   //assert(false); // mp4 demuxer 有可能读指针停留在靠前位置
                    ec = framework::system::logic_error::out_of_range;
                 } else if (pos >= end) {
                     if (!merge && pos > segment.byte_range.big_end()) {
                         pos = segment.byte_range.big_end();
+                        assert(false);
                         ec = framework::system::logic_error::out_of_range;
                     }
                     if (pos >= out_position()) {

@@ -4,12 +4,7 @@
 #define _PPBOX_DATA_PACKET_PACKET_SOURCE_H_
 
 #include "ppbox/data/packet/PacketBuffer.h"
-#include "ppbox/data/packet/PacketMedia.h"
-
-#include <util/stream/StreamBuffers.h>
-
-#include <framework/memory/PrivateMemory.h>
-#include <framework/container/List.h>
+#include "ppbox/data/base/DataStatistic.h"
 
 namespace ppbox
 {
@@ -18,6 +13,7 @@ namespace ppbox
 
         class PacketSource
             : public PacketBuffer
+            , public DataObserver
         {
         public:
             typedef boost::function<void (
@@ -27,7 +23,8 @@ namespace ppbox
 
         public:
             PacketSource(
-                PacketMedia & media);
+                PacketFeature const & feature, 
+                SourceBase & source);
 
             ~PacketSource();
 
@@ -50,10 +47,25 @@ namespace ppbox
                 std::deque<boost::asio::const_buffer> & data, 
                 boost::system::error_code & ec);
 
+            bool peek_next(
+                boost::uint32_t & size_out, 
+                std::deque<boost::asio::const_buffer> & data, 
+                boost::system::error_code & ec);
+
+            bool peek_last(
+                boost::uint32_t & size_out, 
+                std::deque<boost::asio::const_buffer> & data, 
+                boost::system::error_code & ec);
+
         public:
             SourceBase & source() const
             {
                 return source_;
+            }
+
+            boost::system::error_code last_error() const
+            {
+                return last_ec_;
             }
 
         private:

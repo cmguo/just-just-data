@@ -7,14 +7,14 @@
 
 #ifndef BOOST_WINDOWS_API
 #  include <boost/asio/posix/stream_descriptor.hpp>
-typedef boost::asio::posix::stream_descriptor descriptor;
+typedef boost::asio::posix::stream_descriptor sink_descriptor;
 #else
 #  include <boost/asio/windows/stream_handle.hpp>
 #  if (defined BOOST_ASIO_HAS_WINDOWS_STREAM_HANDLE)
-typedef boost::asio::windows::stream_handle descriptor;
+typedef boost::asio::windows::stream_handle sink_descriptor;
 #  else
 #    define PPBOX_NO_PIPE_SINK
-struct descriptor
+struct sink_descriptor
 {
     typedef HANDLE native_type;
 };
@@ -30,7 +30,7 @@ namespace ppbox
             : public UrlSink
         {
         public:
-            typedef descriptor::native_type native_descriptor;
+            typedef sink_descriptor::native_type native_descriptor;
 
         public:
             PipeSink(
@@ -68,7 +68,7 @@ namespace ppbox
                 boost::system::error_code & ec);
 
         private:
-            descriptor descriptor_;
+            sink_descriptor descriptor_;
             bool is_open_;
         };
 

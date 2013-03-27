@@ -45,17 +45,25 @@ namespace ppbox
                 boost::uint64_t end, 
                 boost::system::error_code & ec) = 0;
 
+            virtual boost::system::error_code open(
+                framework::string::Url const & url,
+                boost::system::error_code & ec);
+
             virtual void async_open(
                 framework::string::Url const & url,
                 boost::uint64_t beg, 
                 boost::uint64_t end, 
                 response_type const & resp);
 
+            virtual void async_open(
+                framework::string::Url const & url,
+                response_type const & resp);
+
             virtual bool is_open(
-                boost::system::error_code & ec)= 0;
+                boost::system::error_code & ec) = 0;
 
             virtual boost::system::error_code close(
-                boost::system::error_code & ec)= 0;
+                boost::system::error_code & ec) = 0;
 
             virtual boost::uint64_t total(
                 boost::system::error_code & ec);

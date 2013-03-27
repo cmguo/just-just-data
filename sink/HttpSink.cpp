@@ -1,5 +1,5 @@
 #include "ppbox/data/Common.h"
-#include "ppbox/data/source/HttpSource.h"
+#include "ppbox/data/sink/HttpSink.h"
 
 #include <util/protocol/http/HttpSocket.hpp>
 
@@ -12,18 +12,18 @@ namespace ppbox
     namespace data
     {
 
-        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.HttpSource", framework::logger::Debug);
+        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.HttpSink", framework::logger::Debug);
 
-        HttpSource::HttpSource(
+        HttpSink::HttpSink(
             boost::asio::io_service & io_svc)
-            : UrlSource(io_svc)
+            : UrlSink(io_svc)
             , http_(io_svc)
         {
         }
 
-        HttpSource::~HttpSource() {}
+        HttpSink::~HttpSink() {}
 
-        boost::system::error_code HttpSource::open(
+        boost::system::error_code HttpSink::open(
             framework::string::Url const & url,
             boost::uint64_t beg, 
             boost::uint64_t end, 
@@ -33,6 +33,7 @@ namespace ppbox
 
             util::protocol::HttpRequest request;
             util::protocol::HttpRequestHead & head = request.head();
+            head.method = head.post;
             head.path = url.path_all();
             head["Accept"] = "{*.*}";
             head.host = url.host_svc();
@@ -51,7 +52,7 @@ namespace ppbox
             return ec;
         }
 
-        void HttpSource::async_open(
+        void HttpSink::async_open(
             framework::string::Url const & url,
             boost::uint64_t beg, 
             boost::uint64_t end, 
@@ -62,6 +63,7 @@ namespace ppbox
             boost::system::error_code ec;
             util::protocol::HttpRequest request;
             util::protocol::HttpRequestHead & head = request.head();
+            head.method = head.post;
             head.path = url.path_all();
             head["Accept"] = "{*.*}";
             head.host = url.host_svc();
@@ -78,7 +80,7 @@ namespace ppbox
             http_.async_open(request, resp);
         }
 
-        bool HttpSource::is_open(
+        bool HttpSink::is_open(
             boost::system::error_code & ec)
         {
             bool result = http_.is_open(ec);
@@ -92,19 +94,19 @@ namespace ppbox
             return result;
         }
 
-        boost::system::error_code HttpSource::cancel(
+        boost::system::error_code HttpSink::cancel(
             boost::system::error_code & ec)
         {
             return http_.cancel_forever(ec);
         }
 
-        boost::system::error_code HttpSource::close(
+        boost::system::error_code HttpSink::close(
             boost::system::error_code & ec)
         {
             return http_.close(ec);
         }
 
-        std::size_t HttpSource::private_read_some(
+        std::size_t HttpSink::private_read_some(
             util::stream::StreamMutableBuffers const & buffers, 
             boost::system::error_code & ec)
         {
@@ -112,54 +114,37 @@ namespace ppbox
             return http_.read_some(buffers, ec);
         }
 
-        void HttpSource::private_async_read_some(
+        void HttpSink::private_async_read_some(
             util::stream::StreamMutableBuffers const & buffers, 
             util::stream::StreamHandler const & handler)
         {
             boost::system::error_code ec;
             (void)ec;
             assert(http_.is_open(ec));
-            http_.async_read_some(buffers, handler);
+            http_.async_write_some(buffers, handler);
         }
 
-        boost::uint64_t HttpSource::total(
-            boost::system::error_code & ec)
-        {
-            boost::uint64_t n = 0;
-            if (http_.is_open(ec)) {
-                if (http_.response_head().content_range.is_initialized()) {
-                    n = http_.response_head().content_range.get().total();
-                } else if (http_.response_head().content_length.is_initialized()) {
-                    n = http_.response_head().content_length.get();
-                } else{
-                    ec = framework::system::logic_error::no_data;
-                }
-            }
-
-            return n;
-        }
-
-        boost::system::error_code HttpSource::set_non_block(
+        boost::system::error_code HttpSink::set_non_block(
             bool non_block, 
             boost::system::error_code & ec)
         {
             return http_.set_non_block(non_block, ec);
         }
 
-        boost::system::error_code HttpSource::set_time_out(
+        boost::system::error_code HttpSink::set_time_out(
             boost::uint32_t time_out, 
             boost::system::error_code & ec)
         {
             return http_.set_time_out(time_out, ec);
         }
 
-        bool HttpSource::continuable(
+        bool HttpSink::continuable(
             boost::system::error_code const & ec)
         {
             return ec == boost::asio::error::would_block;
         }
 
-        bool HttpSource::recoverable(
+        bool HttpSink::recoverable(
             boost::system::error_code const & ec)
         {
             return util::protocol::HttpClient::recoverable(ec);

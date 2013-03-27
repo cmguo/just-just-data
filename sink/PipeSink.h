@@ -1,9 +1,9 @@
-// PipeSource.h
+// PipeSink.h
 
-#ifndef _PPBOX_DATA_SOURCE_PIPE_SOURCE_H_
-#define _PPBOX_DATA_SOURCE_PIPE_SOURCE_H_
+#ifndef _PPBOX_DATA_SINK_PIPE_SINK_H_
+#define _PPBOX_DATA_SINK_PIPE_SINK_H_
 
-#include <ppbox/data/base/UrlSource.h>
+#include "ppbox/data/base/UrlSink.h"
 
 #ifndef BOOST_WINDOWS_API
 #  include <boost/asio/posix/stream_descriptor.hpp>
@@ -13,10 +13,10 @@ typedef boost::asio::posix::stream_descriptor descriptor;
 #  if (defined BOOST_ASIO_HAS_WINDOWS_STREAM_HANDLE)
 typedef boost::asio::windows::stream_handle descriptor;
 #  else
-#    define PPBOX_NO_PIPE_SOURCE
+#    define PPBOX_NO_PIPE_SINK
 struct descriptor
 {
-	typedef HANDLE native_type;
+    typedef HANDLE native_type;
 };
 #  endif
 #endif
@@ -26,17 +26,17 @@ namespace ppbox
     namespace data
     {
 
-        class PipeSource
-            : public UrlSource
+        class PipeSink
+            : public UrlSink
         {
         public:
             typedef descriptor::native_type native_descriptor;
 
         public:
-            PipeSource(
+            PipeSink(
                 boost::asio::io_service & io_svc);
 
-            virtual ~PipeSource();
+            virtual ~PipeSink();
 
         public:
             virtual boost::system::error_code open(
@@ -44,6 +44,8 @@ namespace ppbox
                 boost::uint64_t beg, 
                 boost::uint64_t end, 
                 boost::system::error_code & ec);
+
+            using UrlSink::open;
 
             virtual bool is_open(
                 boost::system::error_code & ec);
@@ -60,8 +62,8 @@ namespace ppbox
                 boost::system::error_code const & ec);
 
         private:
-            // implement util::stream::Source
-            virtual std::size_t private_read_some(
+            // implement util::stream::Sink
+            virtual std::size_t private_write_some(
                 buffers_t const & buffers,
                 boost::system::error_code & ec);
 
@@ -70,11 +72,11 @@ namespace ppbox
             bool is_open_;
         };
 
-#ifndef PPBOX_NO_PIPE_SOURCE
-        PPBOX_REGISTER_URL_SOURCE("pipe", PipeSource);
+#ifndef PPBOX_NO_PIPE_SINK
+        PPBOX_REGISTER_SINK("pipe", PipeSink);
 #endif
 
-    } // namespace data
+    } // namespace demux
 } // namespace ppbox
 
-#endif // _PPBOX_DATA_SOURCE_PIPE_SOURCE_H_
+#endif // _PPBOX_DATA_SINK_PIPE_SINK_H_

@@ -1,7 +1,7 @@
-// PipeSource.h
+// PipeSink.h
 
 #include <ppbox/data/Common.h>
-#include <ppbox/data/source/PipeSource.h>
+#include <ppbox/data/sink/PipeSink.h>
 
 #include <framework/system/ErrorCode.h>
 
@@ -10,19 +10,19 @@ namespace ppbox
     namespace data
     {
 
-        PipeSource::PipeSource(
+        PipeSink::PipeSink(
             boost::asio::io_service & io_svc)
-            : UrlSource(io_svc)
+            : UrlSink(io_svc)
             , descriptor_(io_svc)
             , is_open_(false)
         {
         }
 
-        PipeSource::~PipeSource()
+        PipeSink::~PipeSink()
         {
         }
 
-        boost::system::error_code PipeSource::open(
+        boost::system::error_code PipeSink::open(
             framework::string::Url const & url,
             boost::uint64_t beg, 
             boost::uint64_t end, 
@@ -46,13 +46,13 @@ namespace ppbox
             return ec;
         }
 
-        bool PipeSource::is_open(
+        bool PipeSink::is_open(
             boost::system::error_code & ec)
         {
             return is_open_;
         }
 
-        boost::system::error_code PipeSource::close(
+        boost::system::error_code PipeSink::close(
             boost::system::error_code & ec)
         {
             descriptor_.close();
@@ -60,14 +60,14 @@ namespace ppbox
             return ec = boost::system::error_code();
         }
 
-        std::size_t PipeSource::private_read_some(
+        std::size_t PipeSink::private_write_some(
             buffers_t const & buffers,
             boost::system::error_code & ec)
         {
-            return descriptor_.read_some(buffers, ec);
+            return descriptor_.write_some(buffers, ec);
         }
 
-        boost::system::error_code PipeSource::set_non_block(
+        boost::system::error_code PipeSink::set_non_block(
             bool non_block, 
             boost::system::error_code & ec)
         {
@@ -79,7 +79,7 @@ namespace ppbox
 #endif    
         }
 
-        bool PipeSource::continuable(
+        bool PipeSink::continuable(
             boost::system::error_code const & ec)
         {
             return ec == boost::asio::error::would_block;

@@ -1,9 +1,9 @@
-// HttpSource.h
+// HttpSink.h
 
-#ifndef _PPBOX_DATA_SOURCE_HTTP_SOURCE_H_
-#define _PPBOX_DATA_SOURCE_HTTP_SOURCE_H_
+#ifndef _PPBOX_DATA_SINK_HTTP_SINK_H_
+#define _PPBOX_DATA_SINK_HTTP_SINK_H_
 
-#include "ppbox/data/base/UrlSource.h"
+#include "ppbox/data/base/UrlSink.h"
 
 #include <util/protocol/http/HttpClient.h>
 
@@ -12,14 +12,14 @@ namespace ppbox
     namespace data
     {
 
-        class HttpSource
-            : public UrlSource
+        class HttpSink
+            : public UrlSink
         {
         public:
-            HttpSource(
+            HttpSink(
                 boost::asio::io_service & io_svc);
 
-            virtual ~HttpSource();
+            virtual ~HttpSink();
 
         public:
             virtual boost::system::error_code open(
@@ -38,9 +38,6 @@ namespace ppbox
                 boost::system::error_code & ec);
 
             virtual boost::system::error_code close(
-                boost::system::error_code & ec);
-
-            virtual boost::uint64_t total(
                 boost::system::error_code & ec);
 
         public:
@@ -78,9 +75,9 @@ namespace ppbox
             util::protocol::HttpClient http_;
         };
 
-        PPBOX_REGISTER_URL_SOURCE("http", HttpSource);
+        PPBOX_REGISTER_URL_SINK("http", HttpSink);
 
     } // namespace data
 } // namespace ppbox
 
-#endif // _PPBOX_DATA_SOURCE_HTTP_SOURCE_H_
+#endif // _PPBOX_DATA_SINK_HTTP_SINK_H_

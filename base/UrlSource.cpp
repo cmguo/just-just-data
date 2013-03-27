@@ -28,6 +28,13 @@ namespace ppbox
         {
         }
 
+        boost::system::error_code UrlSource::open(
+            framework::string::Url const & url,
+            boost::system::error_code & ec)
+        {
+            return open(url, 0, invalid_size, ec);
+        }
+
         void UrlSource::async_open(
             framework::string::Url const & url,
             boost::uint64_t beg, 
@@ -37,6 +44,13 @@ namespace ppbox
             boost::system::error_code ec;
             open(url, beg, end, ec);
             get_io_service().post(boost::bind(resp, ec));
+        }
+
+        void UrlSource::async_open(
+            framework::string::Url const & url,
+            response_type const & resp)
+        {
+            async_open(url, 0, invalid_size, resp);
         }
 
         boost::uint64_t UrlSource::total(

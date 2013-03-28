@@ -124,12 +124,7 @@ namespace ppbox
                 PieceHeader * next_piece;
             };
 
-            struct Packet
-                : framework::container::ListHook<Packet>::type
-            {
-                PieceHeader * pieces;
-                size_t size;
-            };
+            typedef MemoryLock Packet;
 
         private:
             template <
@@ -140,7 +135,7 @@ namespace ppbox
                 boost::uint32_t & size_out, 
                 BufferSequence & buffers)
             {
-                PieceHeader * ph = pkt->pieces;
+                PieceHeader * ph = (PieceHeader *)pkt->pointer;
                 size_t size = size_out = pkt->size;
                 while (ph && size) {
                     if (size > feature_.piece_size) {

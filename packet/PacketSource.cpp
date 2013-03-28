@@ -105,6 +105,8 @@ namespace ppbox
                 if (ec || prepare(ec) == 0) {
                     return NULL;
                 }
+            } else {
+                ec.clear();
             }
             return PacketBuffer::fetch(size_out, data);
         }
@@ -119,8 +121,10 @@ namespace ppbox
                 if (ec || prepare(ec) == 0) {
                     return false;
                 }
+            } else {
+                ec.clear();
             }
-            PacketBuffer::peek_last(size_out, data);
+            PacketBuffer::peek_next(size_out, data);
             return true;
         }
 
@@ -134,6 +138,8 @@ namespace ppbox
                 if (ec || prepare(ec) == 0) {
                     return false;
                 }
+            } else {
+                ec.clear();
             }
             PacketBuffer::peek_last(size_out, data);
             return true;

@@ -54,10 +54,10 @@ namespace ppbox
             while (!mlock->join.empty()) {
                 MemoryLock * l = mlock->join.first();
                 l->unlink();
-                free_packet((Packet *)l);
+                free_packet(l);
             }
             mlock->unlink();
-            free_packet((Packet *)mlock);
+            free_packet(mlock);
         }
 
         void PacketBuffer::clear()
@@ -87,7 +87,7 @@ namespace ppbox
         {
             Packet * pkt = alloc_packet();
             pkt->size = size;
-            PieceHeader ** pph = &pkt->pieces;
+            PieceHeader ** pph = (PieceHeader **)&pkt->pointer;
             while (size) {
                 PieceHeader * ph = 
                     boost::asio::buffer_cast<PieceHeader *>(*buffers_.begin()) - 1;
@@ -146,7 +146,7 @@ namespace ppbox
                 blocks_.push_back(ptr);
                 void * end = (char *)ptr + feature_.block_size - sizeof(Packet);
                 while (ptr <= end) {
-                    Packet * pkt = (Packet *)ptr;
+                    Packet * pkt = new (ptr) Packet;
                     free_packets_.push_back(pkt);
                     ptr = ++pkt;
                 }
@@ -159,9 +159,9 @@ namespace ppbox
         void PacketBuffer::free_packet(
             Packet * pkt)
         {
-            while (pkt->pieces) {
-                PieceHeader * p = pkt->pieces;
-                pkt->pieces = p->next_piece;
+            while (pkt->pointer) {
+                PieceHeader * p = (PieceHeader *)pkt->pointer;
+                pkt->pointer = p->next_piece;
                 free_piece(p);
             }
             free_packets_.push_front(pkt);

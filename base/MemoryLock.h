@@ -14,13 +14,15 @@ namespace ppbox
             : framework::container::ListHook<MemoryLock>::type
         {
             MemoryLock()
-                : pointer(NULL)
-                , offset(0)
+                : offset(0)
+                , size(0)
+                , pointer(NULL)
             {
             }
 
-            void * pointer;
             boost::uint64_t offset;
+            size_t size;
+            void * pointer;
             framework::container::List<MemoryLock> join;
         };
 

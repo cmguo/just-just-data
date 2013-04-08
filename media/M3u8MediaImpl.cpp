@@ -39,6 +39,7 @@ namespace ppbox
             source_ = UrlSource::create(io_svc, url.protocol());
             info_.flags = MediaBasicInfo::f_segment;
             info_.flags |= MediaBasicInfo::f_smoth;
+            info_.flags |= MediaBasicInfo::f_time_smoth;
             info_.flags |= MediaBasicInfo::f_segment_seek;
             info_.format = "ts";
 

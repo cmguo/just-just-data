@@ -82,7 +82,7 @@ namespace ppbox
                 SegmentPosition const & l, 
                 SegmentPosition const & r)
             {
-                return l.byte_range.big_beg() == r.byte_range.big_beg();
+                return l.is_same_segment(r);
             }
 
             friend bool operator!=(

@@ -32,7 +32,7 @@ namespace ppbox
             , read_stream_(NULL)
             , write_stream_(NULL)
         {
-            base_.index = 1; //
+            //base_.index = 1; //
             source_.on<ppbox::data::SegmentStartEvent>(boost::bind(&SegmentBuffer::on_event, this, _1));
             source_.on<ppbox::data::SegmentStopEvent>(boost::bind(&SegmentBuffer::on_event, this, _1));
         }
@@ -75,7 +75,8 @@ namespace ppbox
                 read_stream_->seek(read_.byte_range.pos);
             }
 
-            last_ec_ = ec;
+            if (last_ec_ != boost::asio::error::would_block)
+                last_ec_ = ec;
 
             return !ec;
         }
@@ -228,7 +229,7 @@ namespace ppbox
                 }
             }
             boost::uint64_t offset = blocks.front().offset;
-            boost::uint32_t size = blocks.front().end() - offset;
+            boost::uint32_t size = blocks.back().end() - offset;
             assert(offset >= in_position() && (merge || offset + size <= read_.byte_range.big_end()));
             if (offset < in_position()) {
                 ec = framework::system::logic_error::out_of_range;
@@ -269,15 +270,28 @@ namespace ppbox
             boost::uint64_t duration, 
             boost::system::error_code & ec)
         {
+            return read_next(duration, read_.byte_range.end, ec);
+        }
+
+        /**
+        drop_all 
+        丢弃当前分段的所有剩余数据，并且更新当前分段信息
+        */
+        // TO BE FIXED
+        bool SegmentBuffer::read_next(
+            boost::uint64_t duration, 
+            boost::uint64_t min_offset, 
+            boost::system::error_code & ec)
+        {
             // TODO
             //if (read_.segment == write_.segment) {
             // source_.drop_all();
             //}
-            if (consume((size_t)(read_.byte_range.big_end() - in_position()))) {
+            if (try_drop_to(read_.byte_range.big_offset + min_offset)) {
                 clear_segments();
                 read_.time_range.end = duration;
                 insert_segment(true, read_);
-                find_segment(in_position(), read_);
+                find_segment(read_.byte_range.big_end(), read_);
                 // 读缓冲DropAll
                 if (read_stream_)
                     read_stream_->drop_all();
@@ -292,8 +306,7 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             insert_segment(true, segment);
-            if (segment.byte_range.big_end() == invalid_size)
-                find_segment(segment.byte_range.big_beg(), segment);
+            find_segment(segment.byte_range.big_beg(), segment); // 外部保存的 end 位置不一定准确，先更新到准确值
             find_segment(segment.byte_range.big_end(), segment);
             ec.clear();
             return true;
@@ -372,6 +385,9 @@ namespace ppbox
                 read.byte_range.pos = pos;
             }
             boost::system::error_code ec;
+            if (read.byte_range.big_pos() >= in_position() && read.byte_range.big_pos() <= out_position()) {
+                return true;
+            }
             return seek(read, ec);
         }
 
@@ -416,7 +432,7 @@ namespace ppbox
                 } else if (pos >= end) {
                     if (!merge && pos > segment.byte_range.big_end()) {
                         pos = segment.byte_range.big_end();
-                        assert(false);
+                        //assert(false);
                         ec = framework::system::logic_error::out_of_range;
                     }
                     if (pos >= out_position()) {
@@ -515,7 +531,8 @@ namespace ppbox
                 std::lower_bound(segments_.begin(), segments_.end(), seg, comp_big_beg());
             if (iter != segments_.end() && !comp_big_beg()(seg, *iter)) { // 相等
                 SegmentPosition & segment = *iter;
-                if (!is_read && segment.byte_range.end == invalid_size) {
+                if (!is_read && (segment.byte_range.end == invalid_size 
+                    || (segment.byte_range.end > seg.byte_range.end && segment.byte_range.big_end() == (++iter)->byte_range.big_beg()))) {
                     segment.byte_range = seg.byte_range;
                     if (read_ == seg) {
                         read_.byte_range.end = seg.byte_range.end;
@@ -549,6 +566,10 @@ namespace ppbox
                     }
                 }
             } else {
+                if (seg.byte_range.big_end() == invalid_size && iter != segments_.end()) {
+                    // 拖回到前面同一点，已经下载的数据还是有效，但是前面分段信息丢失了
+                    seg.byte_range.end = iter->byte_range.big_beg() - seg.byte_range.big_offset;
+                }
                 assert(iter == segments_.end() || seg.byte_range.big_end() <= iter->byte_range.big_beg());
                 if (iter != segments_.begin()) {
                     SegmentPosition & segment = *--iter;

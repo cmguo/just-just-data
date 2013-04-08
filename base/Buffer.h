@@ -238,6 +238,9 @@ namespace ppbox
             bool putback(
                 MemoryLock * mlock);
 
+            bool try_drop_to(
+                boost::uint64_t offset);
+
         public:
             boost::uint64_t data_begin() const
             {
@@ -392,10 +395,10 @@ namespace ppbox
                 boost::uint64_t offset) const
             {
                 buffer += offset;
-                if ((long)buffer >= (long)buffer_end()) {
+                if ((intptr_t)buffer >= (intptr_t)buffer_end()) {
                     buffer -= buffer_size_;
                 }
-                assert((long)buffer >= (long)buffer_beg() && (long)buffer < (long)buffer_end());
+                assert(buffer >= buffer_beg() && buffer < buffer_end());
                 return buffer;
             }
 
@@ -405,10 +408,10 @@ namespace ppbox
                 boost::uint64_t offset) const
             {
                 buffer -= offset;
-                if ((long)buffer < (long)buffer_beg()) {
+                if ((intptr_t)buffer < (intptr_t)buffer_beg()) {
                     buffer += buffer_size_;
                 }
-                assert((long)buffer >= (long)buffer_beg() && (long)buffer < (long)buffer_end());
+                assert(buffer >= buffer_beg() && buffer < buffer_end());
                 return buffer;
             }
 

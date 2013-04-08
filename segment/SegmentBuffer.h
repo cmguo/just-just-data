@@ -124,6 +124,11 @@ namespace ppbox
                 boost::uint64_t duration, 
                 boost::system::error_code & ec);
 
+            bool read_next(
+                boost::uint64_t duration, 
+                boost::uint64_t min_offset, 
+                boost::system::error_code & ec);
+
             bool write_next(
                 SegmentPosition & segment, 
                 boost::system::error_code & ec);

@@ -62,7 +62,7 @@ namespace ppbox
             mlock->unlink();
             free_lock(mlock);
 
-            boost::uint64_t min_offset = data_end_;
+            boost::uint64_t min_offset = write_.offset;
             for (size_t i = 0; i < tracks_.size(); ++i) {
                 if (min_offset > tracks_[i]->min_offset())
                     min_offset = tracks_[i]->min_offset();
@@ -73,6 +73,24 @@ namespace ppbox
             } else {
                 return false;
             }
+        }
+
+        bool Buffer::try_drop_to(
+            boost::uint64_t offset)
+        {
+            if (offset > write_.offset) {
+                return false;
+            }
+            boost::uint64_t min_offset = offset;
+            for (size_t i = 0; i < tracks_.size(); ++i) {
+                tracks_[i]->position = offset;
+                if (min_offset > tracks_[i]->min_offset())
+                    min_offset = tracks_[i]->min_offset();
+            }
+            if (min_offset > read_.offset) {
+                move_front_to(read_, min_offset);
+            }
+            return true;
         }
 
         void Buffer::clear()
@@ -103,8 +121,8 @@ namespace ppbox
                     MemoryLock * l = tracks_[i]->locks.first();
                     tracks_[i]->locks.pop_front();
                     free_locks_.push_back(l);
-                    tracks_[i]->position = offset;
                 }
+                tracks_[i]->position = offset;
             }
         }
 
@@ -237,8 +255,8 @@ namespace ppbox
                     MemoryLock * l = tracks_[i]->locks.first();
                     tracks_[i]->locks.pop_front();
                     free_locks_.push_back(l);
-                    tracks_[i]->position = read_.offset;
                 }
+                tracks_[i]->position = read_.offset;
             }
 
             return write_offset != write_.offset || seek_end != seek_end_;

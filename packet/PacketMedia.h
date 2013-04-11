@@ -6,6 +6,8 @@
 #include "ppbox/data/base/MediaBase.h"
 #include "ppbox/data/packet/PacketFeature.h"
 
+#include <framework/timer/ClockTime.h>
+
 namespace ppbox 
 {
     namespace data 
@@ -33,12 +35,19 @@ namespace ppbox
                 MediaBasicInfo & info,
                 boost::system::error_code & ec) const;
 
+            virtual bool get_info(
+                MediaInfo & info,
+                boost::system::error_code & ec) const;
+
         public:
             virtual bool get_packet_feature(
                 PacketFeature & feature,
                 boost::system::error_code & ec) const;
 
             virtual SourceBase & source() = 0;
+
+        private:
+            framework::timer::Time start_time_;
         };
 
     } // namespace data

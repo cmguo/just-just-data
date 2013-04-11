@@ -33,6 +33,16 @@ namespace ppbox
             return true;
         }
 
+        bool PacketMedia::get_info(
+            MediaInfo & info, 
+            boost::system::error_code & ec) const
+        {
+            if (info.type == info.live) {
+                info.current = (framework::timer::Time::now() - start_time_).total_milliseconds();
+            }
+            return true;
+        }
+
         bool PacketMedia::get_packet_feature(
             PacketFeature & feature,
             boost::system::error_code & ec) const

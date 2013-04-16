@@ -120,7 +120,7 @@ namespace ppbox
             if (check_hole(ec)) {
                 if (ec == boost::asio::error::eof) {
                     boost::uint64_t hole_size = next_write_hole();
-                    find_segment(out_position(), write_);
+                    //find_segment(out_position(), write_);
                     source_.seek(write_, hole_size, ec);
                     if (hole_size == 0) {
                         ec = ppbox::data::source_error::at_end_point;
@@ -159,7 +159,7 @@ namespace ppbox
             if (check_hole(ec)) {
                 if (ec == boost::asio::error::eof) {
                     boost::uint64_t hole_size = next_write_hole();
-                    find_segment(out_position(), write_);
+                    //find_segment(out_position(), write_);
                     source_.seek(write_, hole_size, ec);
                 }
             }
@@ -229,7 +229,7 @@ namespace ppbox
                 }
             }
             boost::uint64_t offset = blocks.front().offset;
-            boost::uint32_t size = blocks.back().end() - offset;
+            boost::uint32_t size = (boost::uint32_t)(blocks.back().end() - offset);
             assert(offset >= in_position() && (merge || offset + size <= read_.byte_range.big_end()));
             if (offset < in_position()) {
                 ec = framework::system::logic_error::out_of_range;
@@ -302,12 +302,14 @@ namespace ppbox
         }
 
         bool SegmentBuffer::write_next(
-            SegmentPosition & segment, 
+            boost::uint64_t duration, 
             boost::system::error_code & ec)
         {
-            insert_segment(true, segment);
-            find_segment(segment.byte_range.big_beg(), segment); // 外部保存的 end 位置不一定准确，先更新到准确值
-            find_segment(segment.byte_range.big_end(), segment);
+            write_.time_range.end = duration;
+            insert_segment(true, write_);
+            find_segment(write_.byte_range.big_end(), write_);
+            if (write_stream_)
+                write_stream_->drop_all();
             ec.clear();
             return true;
         }
@@ -345,6 +347,16 @@ namespace ppbox
             write_.shard_end    -= offset;
         }
 */
+        bool SegmentBuffer::read_has_more() const
+        {
+            return read_ != source_.write_segment();
+        }
+
+        bool SegmentBuffer::write_has_more() const
+        {
+            return write_ != source_.write_segment();
+        }
+
         void SegmentBuffer::attach_stream(
             SegmentStream & stream, 
             bool read)
@@ -466,7 +478,7 @@ namespace ppbox
         {
             if (ppbox::data::SegmentStartEvent const * event = e.as<ppbox::data::SegmentStartEvent>()) {
                 insert_segment(false, (SegmentPosition const &)event->segment);
-                find_segment(out_position(), write_);
+                //find_segment(out_position(), write_);
             } else if (ppbox::data::SegmentStopEvent const * event = e.as<ppbox::data::SegmentStopEvent>()) {
                 insert_segment(false, (SegmentPosition const &)event->segment);
                 clear_segments();
@@ -484,14 +496,14 @@ namespace ppbox
             SegmentPosition const & base, 
             SegmentPosition const & pos)
         {
-            base_.assign_without_url(base);
+            base_ = base;
             Buffer::reset(pos.byte_range.big_pos());
             segments_.clear();
             
             insert_segment(false, pos);
 
-            read_.assign_without_url(pos);
-            write_.assign_without_url(pos);
+            read_ = pos;
+            write_ = pos;
 
             if (read_stream_)
                 read_stream_->seek(pos.byte_range.pos);
@@ -525,8 +537,7 @@ namespace ppbox
             bool is_read, 
             SegmentPosition const & seg1)
         {
-            SegmentPosition seg;
-            seg.assign_without_url(seg1);
+            SegmentPosition seg = seg1;
             std::deque<SegmentPosition>::iterator iter = 
                 std::lower_bound(segments_.begin(), segments_.end(), seg, comp_big_beg());
             if (iter != segments_.end() && !comp_big_beg()(seg, *iter)) { // 相等

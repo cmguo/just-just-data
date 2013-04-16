@@ -103,16 +103,6 @@ namespace ppbox
                 return (this->item_context == r.item_context 
                     && this->index == r.index);
             }
-
-            void assign_without_url(
-                SegmentPosition const & r)
-            {
-                (SegmentInfo &)(*this) = r;
-                index = r.index;
-                byte_range = r.byte_range;
-                time_range = r.time_range;
-                item_context = r.item_context;
-            }
         };
 
     } // namespace data

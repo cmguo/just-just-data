@@ -75,6 +75,11 @@ namespace ppbox
                 return num_try_;
             }
 
+            segment_t const & write_segment() const
+            {
+                return write_;
+            }
+
         public:
             virtual boost::system::error_code cancel(
                 boost::system::error_code & ec);

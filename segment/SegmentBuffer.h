@@ -130,7 +130,7 @@ namespace ppbox
                 boost::system::error_code & ec);
 
             bool write_next(
-                SegmentPosition & segment, 
+                boost::uint64_t duration, 
                 boost::system::error_code & ec);
 
             void clear();
@@ -170,6 +170,10 @@ namespace ppbox
             {
                 return write_;
             }
+
+            bool read_has_more() const;
+
+            bool write_has_more() const;
 
         public:
             void detach_stream(

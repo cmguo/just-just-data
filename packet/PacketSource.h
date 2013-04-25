@@ -38,10 +38,12 @@ namespace ppbox
             void async_prepare(
                 prepare_response_type const & resp);
 
+        public:
             void pause_stream();
 
             void resume_stream();
 
+        public:
             MemoryLock * fetch(
                 boost::uint32_t & size_out, 
                 std::deque<boost::asio::const_buffer> & data, 

@@ -38,9 +38,9 @@ namespace ppbox
         {
             source_ = UrlSource::create(io_svc, url.protocol());
             info_.flags = MediaBasicInfo::f_segment;
-            info_.flags |= MediaBasicInfo::f_smoth;
-            info_.flags |= MediaBasicInfo::f_time_smoth;
-            info_.flags |= MediaBasicInfo::f_segment_seek;
+            info_.flags |= SegmentMediaFlags::f_smoth;
+            info_.flags |= SegmentMediaFlags::f_time_smoth;
+            info_.flags |= SegmentMediaFlags::f_segment_seek;
             info_.format = "ts";
 
             noshift_ = url_.param("m3u8.noshift") == "true";

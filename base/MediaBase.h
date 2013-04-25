@@ -82,8 +82,9 @@ namespace ppbox
                 std::string, 
                 MediaBase * (
                     boost::asio::io_service &,
-                    framework::string::Url const &)
-                >
+                    framework::string::Url const &), 
+                MediaProtocolFactory
+            >
         {
         };
 
@@ -93,7 +94,8 @@ namespace ppbox
                 std::string, 
                 MediaBase * (
                     boost::asio::io_service &,
-                    framework::string::Url const &)
+                    framework::string::Url const &), 
+                MediaFormatFactory
             >
         {
         };

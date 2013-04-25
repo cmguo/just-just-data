@@ -10,6 +10,18 @@ namespace ppbox
     namespace data 
     {
 
+        struct SegmentMediaFlags
+        {
+            enum Enum
+            {
+                // ∑÷∂Œ Ù–‘
+                f_smoth         = 0x1000, 
+                f_time_smoth    = 0x2000, 
+                f_fix_duration  = 0x4000, 
+                f_segment_seek  = 0x8000, 
+            };
+        };
+
         struct SegmentInfo
         {
             SegmentInfo()

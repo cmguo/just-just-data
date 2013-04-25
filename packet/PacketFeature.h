@@ -10,6 +10,13 @@ namespace ppbox
     namespace data 
     {
 
+        struct PacketMediaFlags
+        {
+            enum Enum
+            {
+            };
+        };
+
         struct PacketFeature 
         {
             boost::uint32_t buffer_size;

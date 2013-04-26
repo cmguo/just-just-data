@@ -22,6 +22,10 @@ namespace ppbox
             , free_pieces_(NULL)
             , write_offset_(0)
             , read_offset_(0)
+            , write_index_(0)
+            , read_index_(0)
+            , locked_count_(0)
+            , free_count_(0)
         {
             boost::system::error_code ec;
             if (feature_.piece_num == 0) {
@@ -54,10 +58,11 @@ namespace ppbox
             while (!mlock->join.empty()) {
                 MemoryLock * l = mlock->join.first();
                 l->unlink();
-                free_packet(l);
+                putback(l);
             }
             mlock->unlink();
             free_packet(mlock);
+            --locked_count_;
         }
 
         void PacketBuffer::clear()
@@ -103,6 +108,7 @@ namespace ppbox
             *pph = NULL;
             packets_.push_back(pkt);
             write_offset_ += pkt->size;
+            ++write_index_;
         }
 
         PacketBuffer::PieceHeader * PacketBuffer::alloc_piece()
@@ -148,11 +154,13 @@ namespace ppbox
                 while (ptr <= end) {
                     Packet * pkt = new (ptr) Packet;
                     free_packets_.push_back(pkt);
+                    ++free_count_;
                     ptr = ++pkt;
                 }
             }
             Packet * pkt = free_packets_.first();
             free_packets_.pop_front();
+            --free_count_;
             return pkt;
         }
 
@@ -165,6 +173,7 @@ namespace ppbox
                 free_piece(p);
             }
             free_packets_.push_front(pkt);
+            ++free_count_;
         }
 
     } // namespace data

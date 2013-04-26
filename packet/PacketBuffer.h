@@ -64,6 +64,8 @@ namespace ppbox
                 pkt_out(pkt, size_out, buffers);
                 locked_packets_.push_back(pkt);
                 read_offset_ += pkt->size;
+                ++read_index_;
+                ++locked_count_;
                 return (MemoryLock *)pkt;
             }
 
@@ -176,8 +178,12 @@ namespace ppbox
             framework::container::List<Packet> packets_;
             boost::uint64_t write_offset_;
             boost::uint64_t read_offset_;
+            boost::uint64_t write_index_;
+            boost::uint64_t read_index_;
             framework::container::List<Packet> locked_packets_;
             framework::container::List<Packet> free_packets_;
+            boost::uint32_t locked_count_;
+            boost::uint32_t free_count_;
         };
 
     } // namespace data

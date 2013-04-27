@@ -34,7 +34,6 @@ namespace ppbox
             , seq_start_(0)
             , seq_lastest_(0)
             , seq_play_(0)
-            , noshift_adjust_(0)
             , segment_url_subpos_(std::string::npos)
         {
             source_ = UrlSource::create(io_svc, url.protocol());
@@ -117,7 +116,7 @@ namespace ppbox
         {
             boost::mutex::scoped_lock lc(mutex_);
 
-            return info_.type == MediaBasicInfo::live ? size_t(-1) : seq_lastest_ + segments_.size();
+            return info_.type == MediaBasicInfo::live ? size_t(-1) : segments_.size();
         }
 
         std::string const M3u8MediaImpl::segment_protocol() const
@@ -137,7 +136,7 @@ namespace ppbox
         {
             boost::mutex::scoped_lock lc(mutex_);
 
-            segment += noshift_adjust_;
+            segment += seq_start_;
             if (segment >= seq_lastest_ && segment - seq_lastest_ < segments_.size()) {
                 std::string const & str = segment_urls_[segment - seq_lastest_];
                 LOG_DEBUG("[segment_url] segment: " << segment << ", seq_lastest: " << seq_lastest_ << ", url: " << str);
@@ -161,7 +160,7 @@ namespace ppbox
         {
             boost::mutex::scoped_lock lc(mutex_);
 
-            segment += noshift_adjust_;
+            segment += seq_start_;
             if (segment >= seq_lastest_ && segment - seq_lastest_ < segments_.size()) {
                 info = segments_[segment - seq_lastest_];
                 ec.clear();
@@ -306,8 +305,8 @@ namespace ppbox
                     if (iss >> sequence) {
                         if (first) {
                             seq_start_ = sequence;
+                            seq_lastest_ = sequence;
                         }
-                        sequence -= seq_start_;
                         sequence_url = sequence;
                     }
                 } else if (token == M3U8_EXTSTREAMINF) {
@@ -363,7 +362,7 @@ namespace ppbox
                 }
                 if (noshift_) {
                     duration = delay;
-                    noshift_adjust_ = segments_.size() > 3 ? segments_.size() - 3 : 0;
+                    seq_start_ += segments_.size() > 3 ? segments_.size() - 3 : 0;
                 }
                 info_.current = duration;
                 info_.start_time = time(NULL) - duration / 1000;

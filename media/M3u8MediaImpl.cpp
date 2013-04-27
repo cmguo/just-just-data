@@ -34,6 +34,7 @@ namespace ppbox
             , seq_start_(0)
             , seq_lastest_(0)
             , seq_play_(0)
+            , noshift_adjust_(0)
             , segment_url_subpos_(std::string::npos)
         {
             source_ = UrlSource::create(io_svc, url.protocol());
@@ -136,6 +137,7 @@ namespace ppbox
         {
             boost::mutex::scoped_lock lc(mutex_);
 
+            segment += noshift_adjust_;
             if (segment >= seq_lastest_ && segment - seq_lastest_ < segments_.size()) {
                 std::string const & str = segment_urls_[segment - seq_lastest_];
                 LOG_DEBUG("[segment_url] segment: " << segment << ", seq_lastest: " << seq_lastest_ << ", url: " << str);
@@ -159,6 +161,7 @@ namespace ppbox
         {
             boost::mutex::scoped_lock lc(mutex_);
 
+            segment += noshift_adjust_;
             if (segment >= seq_lastest_ && segment - seq_lastest_ < segments_.size()) {
                 info = segments_[segment - seq_lastest_];
                 ec.clear();
@@ -276,9 +279,11 @@ namespace ppbox
             std::istream is(&buf_);
             bool begin = false;
             bool end = false;
+            bool first = (seq_start_ == 0);
             size_t line_num = 0;
             boost::uint64_t duration = 0;
             size_t sequence = 0;
+            size_t sequence_url = 0;
             streams_.clear();
             stream_urls_.clear();
             while (std::getline(is, line)) {
@@ -299,10 +304,11 @@ namespace ppbox
                     iss >> duration_;
                 } else if (token == M3U8_SEQUENCE) {
                     if (iss >> sequence) {
-                        if (seq_start_ == 0) {
+                        if (first) {
                             seq_start_ = sequence;
                         }
                         sequence -= seq_start_;
+                        sequence_url = sequence;
                     }
                 } else if (token == M3U8_EXTSTREAMINF) {
                     StreamInfo info;
@@ -316,17 +322,18 @@ namespace ppbox
                     SegmentInfo info;
                     if (iss >> info.duration)
                         info.duration *= 1000;
-                    duration += info.duration;
                     if (!std::getline(is, line)) {
                         LOG_WARN("[parse_m3u8] no url at line: " << line_num); 
                     }
                     framework::string::trim(line);
-                    if (sequence < seq_lastest_ + segments_.size()) {
+                    if (sequence_url < seq_lastest_ + segments_.size()) {
                     } else {
                         segments_.push_back(info);
                         segment_urls_.push_back(line);
+                        duration += info.duration;
+                        LOG_INFO("[parse_m3u8] new url: (" << sequence_url << ") " << line); 
                     }
-                    ++sequence;
+                    ++sequence_url;
                 }
             }
 
@@ -343,12 +350,12 @@ namespace ppbox
             if (seq_lastest_ < sequence) {
                 segments_.erase(segments_.begin(), segments_.begin() + (sequence - seq_lastest_));
                 segment_urls_.erase(segment_urls_.begin(), segment_urls_.begin() + (sequence - seq_lastest_));
-                seq_lastest_ = seq_play_;
+                seq_lastest_ = sequence;
             }
 
             if (end) {
                 info_.duration = duration;
-            } else {
+            } else if (first) {
                 info_.type = MediaInfo::live;
                 boost::uint32_t delay = 0;
                 for (size_t i = segments_.size() - 1; i != size_t(-1) && i + 4 > segments_.size(); --i) {
@@ -356,13 +363,14 @@ namespace ppbox
                 }
                 if (noshift_) {
                     duration = delay;
-                    size_t k = segments_.size() > 3 ? segments_.size() - 3 : 0;
-                    segments_.erase(segments_.begin(), segments_.begin() + k);
+                    noshift_adjust_ = segments_.size() > 3 ? segments_.size() - 3 : 0;
                 }
                 info_.current = duration;
                 info_.start_time = time(NULL) - duration / 1000;
                 info_.delay = delay;
                 info_.shift = duration;
+            } else {
+                info_.current += duration;
             }
         }
 

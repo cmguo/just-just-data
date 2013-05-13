@@ -38,10 +38,7 @@ namespace ppbox
         {
             source_ = UrlSource::create(io_svc, url.protocol());
             info_.flags = MediaBasicInfo::f_segment;
-            info_.flags |= SegmentMediaFlags::f_smoth;
-            info_.flags |= SegmentMediaFlags::f_time_smoth;
             info_.flags |= SegmentMediaFlags::f_segment_seek;
-            info_.format = "ts";
 
             noshift_ = url_.param("m3u8.noshift") == "true";
         }
@@ -67,6 +64,7 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             source_->cancel(ec);
+            timer_.cancel(ec);
         }
 
         void M3u8MediaImpl::close(
@@ -222,8 +220,15 @@ namespace ppbox
             }
 
             if (!ec && segments_.empty()) {
-                source_->async_open(url_, 0, invalid_size, 
-                    boost::bind(&M3u8MediaImpl::handle_open, this, _1));
+                if (streams_.empty()) {
+                    timer_.expires_from_now(
+                        boost::posix_time::seconds(1));
+                    timer_.async_wait(
+                        boost::bind(&M3u8MediaImpl::handle_timer, this, _1));
+                } else {
+                    source_->async_open(url_, 0, invalid_size, 
+                        boost::bind(&M3u8MediaImpl::handle_open, this, _1));
+                }
                 return;
             }
 
@@ -341,6 +346,22 @@ namespace ppbox
                 segments_.clear();
                 segment_urls_.clear();
                 return;
+            }
+
+            if (segments_.empty()) {
+                seq_start_ = 0;
+                return;
+            }
+
+            if (info_.format.empty()) {
+                std::string::size_type pos = segment_urls_.front().find('.');
+                if (pos != std::string::npos) {
+                    info_.format = segment_urls_.front().substr(pos + 1);
+                }
+                if (info_.format == "ts") {
+                    info_.flags |= SegmentMediaFlags::f_smoth;
+                    info_.flags |= SegmentMediaFlags::f_time_smoth;
+                }
             }
 
             if (sequence > seq_play_) {

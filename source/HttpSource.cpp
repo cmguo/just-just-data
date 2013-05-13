@@ -153,12 +153,6 @@ namespace ppbox
             return http_.set_time_out(time_out, ec);
         }
 
-        bool HttpSource::continuable(
-            boost::system::error_code const & ec)
-        {
-            return ec == boost::asio::error::would_block;
-        }
-
         bool HttpSource::recoverable(
             boost::system::error_code const & ec)
         {

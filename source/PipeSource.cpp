@@ -79,11 +79,5 @@ namespace ppbox
 #endif    
         }
 
-        bool PipeSource::continuable(
-            boost::system::error_code const & ec)
-        {
-            return ec == boost::asio::error::would_block;
-        }
-
     } // namespace data
 } // namespace ppbox

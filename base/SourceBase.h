@@ -33,9 +33,6 @@ namespace ppbox
             virtual boost::system::error_code set_time_out(
                 boost::uint32_t time_out, 
                 boost::system::error_code & ec);
-
-            virtual bool continuable(
-                boost::system::error_code const & ec);
         };
 
     } // namespace data

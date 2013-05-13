@@ -41,11 +41,5 @@ namespace ppbox
             return ec;
         }
 
-        bool SourceBase::continuable(
-            boost::system::error_code const & ec)
-        {
-            return false;
-        }
-
     } // namespace data
 } // namespace ppbox

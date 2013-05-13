@@ -56,9 +56,6 @@ namespace ppbox
                 bool non_block, 
                 boost::system::error_code & ec);
 
-            virtual bool continuable(
-                boost::system::error_code const & ec);
-
         private:
             // implement util::stream::Source
             virtual std::size_t private_read_some(

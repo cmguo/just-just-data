@@ -130,7 +130,7 @@ namespace ppbox
                     }
                     increase_bytes(bytes_transferred);
                     write_range_.pos += bytes_transferred;
-                    if (ec && !source_.continuable(ec)) {
+                    if (ec && ec != boost::asio::error::would_block) {
                         LOG_WARN("[prepare] read_some: " << ec.message() << 
                             " --- failed " << num_try_ << " times");
                         if (ec == boost::asio::error::eof) {
@@ -139,7 +139,7 @@ namespace ppbox
                         }
                     }
                 } else {
-                    if (!source_.continuable(ec)) {
+                    if (ec != boost::asio::error::would_block) {
                         LOG_WARN("[prepare] open_source: ec: " << ec.message() << 
                             " --- failed " << num_try_ << " times");
                     } else {
@@ -167,7 +167,7 @@ namespace ppbox
         bool SingleSource::handle_error(
             boost::system::error_code& ec)
         {
-            if (source_.continuable(ec)) {
+            if (ec == boost::asio::error::would_block) {
                 boost::uint32_t time_block_ = get_zero_interval();
                 if (time_out_ > 0 && time_block_ > time_out_) {
                     LOG_WARN("source.read_some: timeout" << 
@@ -197,7 +197,7 @@ namespace ppbox
             }
             if (ec == boost::asio::error::would_block) {
                 pause(5000);
-                ec.clear();
+                return false;
             }
             if (ec)
                 source_error_ = ec;
@@ -223,7 +223,7 @@ namespace ppbox
                 is_open_callback = true;
                 bytes_transferred = 0;
             }
-            if (ec && !source_.continuable(ec)) {
+            if (ec && ec != boost::asio::error::would_block) {
                 if (is_open_callback) {
                     if (ec != source_error::no_more_segment) {
                         LOG_WARN("[handle_async] open_source: ec: " << ec.message() << 
@@ -314,7 +314,7 @@ namespace ppbox
                 write_range_.pos, 
                 write_range_.big_offset == write_range_.end ? invalid_size : write_range_.end, ec);
 
-            if (ec && !source_.continuable(ec)) {
+            if (ec && ec != boost::asio::error::would_block) {
                 LOG_WARN("[open_source] ec: " << ec.message() << 
                     " --- failed " << num_try_ << " times");
                 return false;

@@ -138,7 +138,7 @@ namespace ppbox
                     }
                     increase_bytes(bytes_transferred);
                     write_range_.pos += bytes_transferred;
-                    if (ec && !source_.continuable(ec)) {
+                    if (ec && ec != boost::asio::error::would_block) {
                         LOG_WARN("[prepare] read_some: " << ec.message() << 
                             " --- failed " << num_try_ << " times");
                         if (ec == boost::asio::error::eof) {
@@ -147,7 +147,7 @@ namespace ppbox
                         }
                     }
                 } else {
-                    if (!source_.continuable(ec)) {
+                    if (ec != boost::asio::error::would_block) {
                         LOG_WARN("[prepare] open_segment: " << write_.index << " ec: " << ec.message() << 
                             " --- failed " << num_try_ << " times");
                     } else {
@@ -179,7 +179,7 @@ namespace ppbox
         bool SegmentSource::handle_error(
             boost::system::error_code& ec)
         {
-            if (source_.continuable(ec)) {
+            if (ec == boost::asio::error::would_block) {
                 time_block_ = get_zero_interval();
                 if (time_out_ > 0 && time_block_ > time_out_) {
                     LOG_WARN("source.read_some: timeout" << 
@@ -211,7 +211,7 @@ namespace ppbox
             if (ec == boost::asio::error::would_block) {
                 LOG_DEBUG("[handle_error] pause");
                 pause(5000);
-                ec.clear();
+                return false;
             }
             if (ec)
                 source_error_ = ec;
@@ -237,7 +237,7 @@ namespace ppbox
                 is_open_callback = true;
                 bytes_transferred = 0;
             }
-            if (ec && !source_.continuable(ec)) {
+            if (ec && ec != boost::asio::error::would_block) {
                 if (is_open_callback) {
                     if (ec != source_error::no_more_segment) {
                         LOG_WARN("[handle_async] open_segment: " << write_.index << " ec: " << ec.message() << 
@@ -373,7 +373,7 @@ namespace ppbox
                     write_tmp_.byte_range.pos, 
                     write_tmp_.byte_range.end == write_tmp_.size ? invalid_size : write_tmp_.byte_range.end, ec);
                 if (ec) {
-                    if (source_.continuable(ec)) {
+                    if (ec == boost::asio::error::would_block) {
                         if (sended_req_) // 如果已经发过一个请求
                             ec.clear();
                     } else {
@@ -444,7 +444,7 @@ namespace ppbox
 
             open_request(is_next_segment, ec);
 
-            if (ec && !source_.continuable(ec)) {
+            if (ec && ec != boost::asio::error::would_block) {
                 if (ec != source_error::no_more_segment) {
                     LOG_WARN("[open_segment] segment: " << write_.index << " ec: " << ec.message() << 
                         " --- failed " << num_try_ << " times");

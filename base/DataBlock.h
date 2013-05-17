@@ -10,6 +10,12 @@ namespace ppbox
 
         struct DataBlock
         {
+            DataBlock()
+                : offset(0)
+                , size(0)
+            {
+            }
+
             DataBlock(
                 boost::uint64_t o, 
                 boost::uint32_t s)

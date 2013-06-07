@@ -114,6 +114,8 @@ namespace ppbox
         PacketBuffer::PieceHeader * PacketBuffer::alloc_piece()
         {
             if (free_pieces_ == NULL) {
+                if (feature_.block_size * (blocks_.size() + 1) > feature_.buffer_size)
+                    return NULL;
                 void * ptr = memory_.alloc_block(feature_.block_size);
                 if (ptr == NULL) {
                     assert(false);
@@ -144,6 +146,8 @@ namespace ppbox
         PacketBuffer::Packet * PacketBuffer::alloc_packet()
         {
             if (free_packets_.empty()) {
+                if (feature_.block_size * (blocks_.size() + 1) > feature_.buffer_size)
+                    return NULL;
                 void * ptr = memory_.alloc_block(feature_.block_size);
                 if (ptr == NULL) {
                     assert(false);

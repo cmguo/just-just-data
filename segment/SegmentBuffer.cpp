@@ -120,8 +120,9 @@ namespace ppbox
             if (check_hole(ec)) {
                 if (ec == boost::asio::error::eof) {
                     boost::uint64_t hole_size = next_write_hole();
-                    //find_segment(out_position(), write_);
-                    source_.seek(write_, hole_size, ec);
+                    SegmentPosition pos;
+                    find_segment(out_position(), pos);
+                    source_.seek(pos, hole_size, ec);
                     if (hole_size == 0) {
                         ec = ppbox::data::source_error::at_end_point;
                     }
@@ -159,8 +160,9 @@ namespace ppbox
             if (check_hole(ec)) {
                 if (ec == boost::asio::error::eof) {
                     boost::uint64_t hole_size = next_write_hole();
-                    //find_segment(out_position(), write_);
-                    source_.seek(write_, hole_size, ec);
+                    SegmentPosition pos;
+                    find_segment(out_position(), pos);
+                    source_.seek(pos, hole_size, ec);
                 }
             }
             if (ec) {
@@ -398,6 +400,9 @@ namespace ppbox
             }
             boost::system::error_code ec;
             if (read.byte_range.big_pos() >= in_position() && read.byte_range.big_pos() <= out_position()) {
+                // clear Buffer::seek_end_
+                Buffer::seek(read.byte_range.big_pos());
+                ec.clear();
                 return true;
             }
             return seek(read, ec);

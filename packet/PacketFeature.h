@@ -14,6 +14,7 @@ namespace ppbox
         {
             enum Enum
             {
+                f_non_ordered   = 0x1000, 
             };
         };
 

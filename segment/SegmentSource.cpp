@@ -28,7 +28,6 @@ namespace ppbox
             , time_out_(0)
             , strategy_(&strategy)
             , source_(source)
-            , num_try_(0)
             , sended_req_(0)
             , source_closed_(true)
             , time_block_(0)
@@ -140,7 +139,7 @@ namespace ppbox
                     write_range_.pos += bytes_transferred;
                     if (ec && ec != boost::asio::error::would_block) {
                         LOG_WARN("[prepare] read_some: " << ec.message() << 
-                            " --- failed " << num_try_ << " times");
+                            " --- failed " << num_try() << " times");
                         if (ec == boost::asio::error::eof) {
                             LOG_DEBUG("[prepare] read eof, write_.offset: " << write_range_.pos
                                 << " write_hole_.this_end: " << write_range_.end);
@@ -149,7 +148,7 @@ namespace ppbox
                 } else {
                     if (ec != boost::asio::error::would_block) {
                         LOG_WARN("[prepare] open_segment: " << write_.index << " ec: " << ec.message() << 
-                            " --- failed " << num_try_ << " times");
+                            " --- failed " << num_try() << " times");
                     } else {
                         increase_bytes(0);
                     }
@@ -183,9 +182,9 @@ namespace ppbox
                 time_block_ = get_zero_interval();
                 if (time_out_ > 0 && time_block_ > time_out_) {
                     LOG_WARN("source.read_some: timeout" << 
-                        " --- failed " << num_try_ << " times");
+                        " --- failed " << num_try() << " times");
                     ec = boost::asio::error::timed_out;
-                    if (num_try_ < max_try_) {
+                    if (num_try() < max_try_) {
                         return true;
                     }
                 } else {
@@ -198,12 +197,12 @@ namespace ppbox
                     write_.size = write_range_.end = write_range_.pos;
                     LOG_INFO("[handle_error] guess segment size " << write_.size);
                     return true;
-                } else if (num_try_ < max_try_) {
+                } else if (num_try() < max_try_) {
                     ec = boost::asio::error::connection_aborted;
                     return true;
                 }
             } else if(source_.recoverable(ec)) {
-                if (num_try_ < max_try_) {
+                if (num_try() < max_try_) {
                     return true;
                 }
             }
@@ -241,12 +240,12 @@ namespace ppbox
                 if (is_open_callback) {
                     if (ec != source_error::no_more_segment) {
                         LOG_WARN("[handle_async] open_segment: " << write_.index << " ec: " << ec.message() << 
-                            " --- failed " << num_try_ << " times");
+                            " --- failed " << num_try() << " times");
                     }
                 }
                 if (!source_closed_) {
                     LOG_WARN("[handle_async] read_some: " << ec.message() << 
-                        " --- failed " << num_try_ << " times");
+                        " --- failed " << num_try() << " times");
                     if (ec == boost::asio::error::eof) {
                         LOG_DEBUG("[handle_async] read eof, write_.offset: " << write_range_.pos
                             << " write_hole_.this_end: " << write_range_.end);
@@ -426,7 +425,7 @@ namespace ppbox
             if (is_next_segment) {
                 reset_zero_interval();
                 close_request(ec);
-                num_try_ = 0;
+                on_next();
                 time_block_ = 0;
             } else {
                 reset_zero_interval();
@@ -438,16 +437,16 @@ namespace ppbox
                 return false;
             }
 
-            ++num_try_;
-
             write_.byte_range.pos = write_range_.pos;  // 记录开始位置
+
+            on_open();
 
             open_request(is_next_segment, ec);
 
             if (ec && ec != boost::asio::error::would_block) {
                 if (ec != source_error::no_more_segment) {
                     LOG_WARN("[open_segment] segment: " << write_.index << " ec: " << ec.message() << 
-                        " --- failed " << num_try_ << " times");
+                        " --- failed " << num_try() << " times");
                 }
                 return false;
             }
@@ -482,14 +481,15 @@ namespace ppbox
                     resp(ec);
                     return;
                 }
-                num_try_ = 0;
+                on_next();
             } else {
                 reset_zero_interval();
                 close_request(ec);
             }
 
             ++sended_req_;
-            ++num_try_;
+
+            on_open();
 
             write_.byte_range.pos = write_range_.pos;  // 记录开始位置
 
@@ -514,6 +514,8 @@ namespace ppbox
             if (source_closed_ && source_.is_open(ec)) {
                 update_segment(ec);
                 source_closed_ = false;
+                on_opened();
+                raise(SegmentOpenedEvent(write_));
             }
             return !source_closed_;
         }
@@ -526,7 +528,7 @@ namespace ppbox
                     " segment: " << write_.index << 
                     " range: " << write_.byte_range.pos << " - "<< write_range_.end);
                 source_closed_ = true;
-
+                on_close();
                 raise(SegmentStopEvent(write_));
             }
             ec.clear();

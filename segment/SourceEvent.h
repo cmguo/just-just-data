@@ -25,7 +25,18 @@ namespace ppbox
             }
         };
 
-        // 定期发出的缓存状态
+        class SegmentOpenedEvent
+            : public util::event::EventBase<SegmentOpenedEvent>
+        {
+        public:
+            SegmentPosition const & segment;
+
+            SegmentOpenedEvent(
+                SegmentPosition const & segment)
+                : segment(segment)
+            {
+            }
+        };
 
         class SegmentStopEvent
             : public util::event::EventBase<SegmentStopEvent>

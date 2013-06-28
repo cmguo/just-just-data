@@ -13,12 +13,14 @@ namespace ppbox
         DataStatistic::DataStatistic()
             : start_time(time(NULL))
             , total_bytes(0)
+            , connection_status(DataConnectionStatus::closed)
+            , num_try(0)
             , zero_time(0)
         {
-            speeds[0].interval = ONE_REG;
-            speeds[1].interval = FIVE_REG;
-            speeds[2].interval = TWENTY_REG;
-            speeds[3].interval = SIXTY_REG;
+            speeds[0].interval = ONE_SECOND;
+            speeds[1].interval = FIVE_SECONDS;
+            speeds[2].interval = TWENTY_SECONDS;
+            speeds[3].interval = SIXTY_SECONDS;
             for (boost::uint32_t i = 0; i < sizeof(speeds) / sizeof(SpeedStatistics); i++) {
                 speeds[i].time_left = speeds[i].interval;
             }
@@ -33,6 +35,27 @@ namespace ppbox
         {
             delete ticker_;
             ticker_ = NULL;
+        }
+
+        void DataObserver::on_next()
+        {
+            DataStatistic::num_try = 0;
+        }
+
+        void DataObserver::on_open()
+        {
+            connection_status = DataConnectionStatus::opening;
+            ++DataStatistic::num_try;
+        }
+
+        void DataObserver::on_opened()
+        {
+            connection_status = DataConnectionStatus::receiving;
+        }
+
+        void DataObserver::on_close()
+        {
+            connection_status = DataConnectionStatus::closed;
         }
 
         boost::uint32_t DataObserver::get_zero_interval()

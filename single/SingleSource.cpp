@@ -27,7 +27,6 @@ namespace ppbox
             , time_out_(0)
             , url_(url)
             , source_(source)
-            , num_try_(0)
             , source_open_(false)
             , source_is_open_(false)
             , seek_end_(0)
@@ -132,7 +131,7 @@ namespace ppbox
                     write_range_.pos += bytes_transferred;
                     if (ec && ec != boost::asio::error::would_block) {
                         LOG_WARN("[prepare] read_some: " << ec.message() << 
-                            " --- failed " << num_try_ << " times");
+                            " --- failed " << num_try() << " times");
                         if (ec == boost::asio::error::eof) {
                             LOG_DEBUG("[prepare] read eof, offset: " << write_range_.pos
                                 << " end: " << write_range_.end);
@@ -141,7 +140,7 @@ namespace ppbox
                 } else {
                     if (ec != boost::asio::error::would_block) {
                         LOG_WARN("[prepare] open_source: ec: " << ec.message() << 
-                            " --- failed " << num_try_ << " times");
+                            " --- failed " << num_try() << " times");
                     } else {
                         increase_bytes(0);
                     }
@@ -171,9 +170,9 @@ namespace ppbox
                 boost::uint32_t time_block_ = get_zero_interval();
                 if (time_out_ > 0 && time_block_ > time_out_) {
                     LOG_WARN("source.read_some: timeout" << 
-                        " --- failed " << num_try_ << " times");
+                        " --- failed " << num_try() << " times");
                     ec = boost::asio::error::timed_out;
-                    if (num_try_ < max_try_) {
+                    if (num_try() < max_try_) {
                         return true;
                     }
                 } else {
@@ -186,12 +185,12 @@ namespace ppbox
                     write_range_.big_offset = write_range_.end = write_range_.pos;
                     LOG_INFO("[handle_error] guess segment size " << write_range_.big_offset);
                     return false;
-                } else if (num_try_ < max_try_) {
+                } else if (num_try() < max_try_) {
                     ec = boost::asio::error::connection_aborted;
                     return true;
                 }
             } else if(source_.recoverable(ec)) {
-                if (num_try_ < max_try_) {
+                if (num_try() < max_try_) {
                     return true;
                 }
             }
@@ -227,12 +226,12 @@ namespace ppbox
                 if (is_open_callback) {
                     if (ec != source_error::no_more_segment) {
                         LOG_WARN("[handle_async] open_source: ec: " << ec.message() << 
-                            " --- failed " << num_try_ << " times");
+                            " --- failed " << num_try() << " times");
                     }
                 }
                 if (source_is_open_) {
                     LOG_WARN("[handle_async] read_some: " << ec.message() << 
-                        " --- failed " << num_try_ << " times");
+                        " --- failed " << num_try() << " times");
                     if (ec == boost::asio::error::eof) {
                         LOG_DEBUG("[handle_async] read eof, offset: " << write_range_.pos
                             << " end: " << write_range_.end);
@@ -303,7 +302,7 @@ namespace ppbox
                 return false;
             }
 
-            ++num_try_;
+            on_open();
 
             write_range_.beg = write_range_.pos; // 记录开始位置
 
@@ -316,7 +315,7 @@ namespace ppbox
 
             if (ec && ec != boost::asio::error::would_block) {
                 LOG_WARN("[open_source] ec: " << ec.message() << 
-                    " --- failed " << num_try_ << " times");
+                    " --- failed " << num_try() << " times");
                 return false;
             }
 
@@ -334,7 +333,7 @@ namespace ppbox
 
             reset_zero_interval();
 
-            ++num_try_;
+            on_open();
 
             write_range_.beg = write_range_.pos; // 记录开始位置
 
@@ -353,6 +352,7 @@ namespace ppbox
             if (!source_is_open_ && source_.is_open(ec)) {
                 update_size(ec);
                 source_is_open_ = true;
+                on_opened();
             }
             return source_is_open_;
         }
@@ -365,6 +365,7 @@ namespace ppbox
                 source_.close(ec);
                 source_open_ = false;
                 source_is_open_ = false;
+                on_close();
             }
             ec.clear();
             return true;

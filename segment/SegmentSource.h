@@ -70,11 +70,6 @@ namespace ppbox
                 return source_;
             }
 
-            size_t num_try() const
-            {
-                return num_try_;
-            }
-
             segment_t const & write_segment() const
             {
                 return write_;
@@ -186,7 +181,6 @@ namespace ppbox
             SegmentStrategy * strategy_;
             UrlSource & source_;
 
-            size_t num_try_;                // 当前分段尝试次数
             size_t sended_req_;             // 当前队列串行请求数
             bool source_closed_;            // ture，可以调用 open_segment(), 调用 source_->open_segment()如果失败，为false
             boost::uint32_t time_block_;    // 阻塞次数（秒）

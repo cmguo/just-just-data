@@ -30,18 +30,30 @@ namespace ppbox
             boost::uint32_t peak_speed;
         };
 
+        struct DataConnectionStatus
+        {
+            enum Enum
+            {
+                closed = 0, 
+                opening, 
+                receiving, 
+            };
+        };
+
         struct DataStatistic
         {
             DataStatistic();
 
             //定义采样集中需要采样的时间
-            static const boost::uint32_t ONE_REG = 1;
-            static const boost::uint32_t FIVE_REG = 5;
-            static const boost::uint32_t TWENTY_REG = 20;
-            static const boost::uint32_t SIXTY_REG = 60;
+            static const boost::uint32_t ONE_SECOND = 1;
+            static const boost::uint32_t FIVE_SECONDS = 5;
+            static const boost::uint32_t TWENTY_SECONDS = 20;
+            static const boost::uint32_t SIXTY_SECONDS = 60;
 
             time_t start_time;
             boost::uint64_t total_bytes;        // 记录下载总字节
+            boost::uint32_t connection_status;
+            boost::uint32_t num_try;            // 当前分段尝试次数
             boost::uint64_t zero_time;
             SpeedStatistics speeds[4];          // 定义4个采样数据统计集
         };
@@ -55,6 +67,19 @@ namespace ppbox
             ~DataObserver();
 
         public: 
+            void on_next();
+
+            void on_open();
+
+            void on_opened();
+
+            void on_close();
+
+            boost::uint32_t num_try() const
+            {
+                return DataStatistic::num_try;
+            }
+
             boost::uint32_t get_zero_interval();
 
             void reset_zero_interval();

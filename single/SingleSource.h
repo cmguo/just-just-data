@@ -55,11 +55,6 @@ namespace ppbox
                 return source_;
             }
 
-            size_t num_try() const
-            {
-                return num_try_;
-            }
-
         public:
             virtual boost::system::error_code cancel(
                 boost::system::error_code & ec);
@@ -139,7 +134,6 @@ namespace ppbox
             framework::string::Url const & url_;
             UrlSource & source_;
 
-            size_t num_try_;                // 当前分段尝试次数
             bool source_open_;
             bool source_is_open_;
 

@@ -284,8 +284,6 @@ namespace ppbox
                     write_range_.big_offset = invalid_size; // source_.total()失败时返回0，需要重置
                 } else {
                     write_range_.end = write_range_.big_offset;
-                    if (write_range_.end > write_range_.big_offset)
-                        write_range_.end = write_range_.big_offset;
                 }
             }
         }

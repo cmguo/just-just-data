@@ -55,6 +55,11 @@ namespace ppbox
                 return source_;
             }
 
+            boost::uint64_t total_size() const
+            {
+                return write_range_.end;
+            }
+
         public:
             virtual boost::system::error_code cancel(
                 boost::system::error_code & ec);

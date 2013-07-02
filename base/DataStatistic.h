@@ -3,8 +3,6 @@
 #ifndef _PPBOX_DATA_BASE_DATA_STATISTIC_H_
 #define _PPBOX_DATA_BASE_DATA_STATISTIC_H_
 
-namespace framework { namespace timer { class Ticker; } }
-
 namespace ppbox
 {
     namespace data
@@ -14,18 +12,12 @@ namespace ppbox
         {
             SpeedStatistics()
                 : interval(0)
-                , time_left(0)
-                , last_milli_sec(0)
-                , last_bytes(0)
                 , cur_speed(0)
                 , peak_speed(0)
             { 
             }
 
             boost::uint32_t interval;           // 采样集的类型（秒为单位）
-            boost::uint32_t time_left;
-            boost::uint64_t last_milli_sec;     // 上一次的采样的时间
-            boost::uint64_t last_bytes;
             boost::uint32_t cur_speed;
             boost::uint32_t peak_speed;
         };
@@ -89,7 +81,8 @@ namespace ppbox
                 boost::uint32_t byte_size);
 
         private:
-            framework::timer::Ticker * ticker_;
+            struct Impl;
+            Impl * impl_;
         };
 
     } // namespace data

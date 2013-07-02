@@ -4,6 +4,7 @@
 #include "ppbox/data/base/DataStatistic.h"
 
 #include <framework/timer/Ticker.h>
+#include <framework/container/SafeCycle.h>
 
 namespace ppbox
 {
@@ -21,20 +22,44 @@ namespace ppbox
             speeds[1].interval = FIVE_SECONDS;
             speeds[2].interval = TWENTY_SECONDS;
             speeds[3].interval = SIXTY_SECONDS;
-            for (boost::uint32_t i = 0; i < sizeof(speeds) / sizeof(SpeedStatistics); i++) {
-                speeds[i].time_left = speeds[i].interval;
-            }
         }
+
+        struct IntervalRecord
+        {
+            IntervalRecord(
+                boost::uint64_t milli_sec = 0, 
+                boost::uint64_t bytes = 0)
+                : milli_sec(milli_sec)
+                , bytes(bytes)
+            {
+            }
+            boost::uint64_t milli_sec;     // 上一次的采样的时间
+            boost::uint64_t bytes;
+        };
+
+        struct DataObserver::Impl
+        {
+            Impl()
+                : ticker(1000)
+                , cycle(60)
+            {
+                IntervalRecord r;
+                while (!cycle.full())
+                    cycle.push(r);
+            }
+            framework::timer::Ticker ticker;
+            framework::container::SafeCycle<IntervalRecord> cycle;
+        };
 
         DataObserver::DataObserver()
         {
-            ticker_ = new framework::timer::Ticker(1000);
+            impl_ = new Impl();
         }
 
         DataObserver::~DataObserver()
         {
-            delete ticker_;
-            ticker_ = NULL;
+            delete impl_;
+            impl_ = NULL;
         }
 
         void DataObserver::on_next()
@@ -63,7 +88,7 @@ namespace ppbox
             if (zero_time == 0) {
                 return 0;
             } else {
-                return (boost::uint32_t)((ticker_->elapse() - zero_time) / 1000);
+                return (boost::uint32_t)((impl_->ticker.elapse() - zero_time) / 1000);
             }
         }
 
@@ -77,27 +102,26 @@ namespace ppbox
         {
             total_bytes += byte_size; //记录总下载字节数
             boost::uint64_t milli_sec = 0;
-            if (ticker_->check(milli_sec)) {
-                if ((boost::uint32_t)total_bytes == speeds[0].last_bytes) {
+            if (impl_->ticker.check(milli_sec)) {
+                if ((boost::uint32_t)total_bytes == impl_->cycle.back().bytes) {
                     if (zero_time == 0)
                         zero_time = milli_sec;
                 } else {
                     zero_time = 0;
                 }
-                for (size_t i = 0;i< sizeof(speeds)/sizeof(SpeedStatistics);i++) {
-                    if (--speeds[i].time_left == 0) {
-                        speeds[i].time_left = speeds[i].interval;
-                        if (milli_sec != speeds[i].last_milli_sec) {
-                            speeds[i].cur_speed = 
-                                (boost::uint32_t)((total_bytes - speeds[i].last_bytes) * 1000 / (milli_sec - speeds[i].last_milli_sec));
-                            if (speeds[i].cur_speed > speeds[i].peak_speed) {
-                                speeds[i].peak_speed = speeds[i].cur_speed;
-                            }
+                for (size_t i = 0; i < sizeof(speeds) / sizeof(SpeedStatistics); i++) {
+                    IntervalRecord const & r2 = impl_->cycle[60 - speeds[i].interval];
+                    if (milli_sec != r2.milli_sec) {
+                        speeds[i].cur_speed = 
+                            (boost::uint32_t)((total_bytes - r2.bytes) * 1000 / (milli_sec - r2.milli_sec));
+                        if (speeds[i].cur_speed > speeds[i].peak_speed) {
+                            speeds[i].peak_speed = speeds[i].cur_speed;
                         }
-                        speeds[i].last_milli_sec = milli_sec;
-                        speeds[i].last_bytes = total_bytes;
                     }
                 }
+                IntervalRecord r(milli_sec, total_bytes);
+                impl_->cycle.pop();
+                impl_->cycle.push(r);
             }
         }
      

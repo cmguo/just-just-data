@@ -3,13 +3,12 @@
 #ifndef _PPBOX_DATA_SEGMENT_SEGMENT_SOURCE_H_
 #define _PPBOX_DATA_SEGMENT_SEGMENT_SOURCE_H_
 
-#include "ppbox/data/base/DataStatistic.h"
 #include "ppbox/data/segment/SegmentStrategy.h"
-
-#include <ppbox/data/base/UrlSource.h>
+#include "ppbox/data/segment/SegmentEvent.h"
+#include "ppbox/data/base/SourceStatistic.h"
+#include "ppbox/data/base/UrlSource.h"
 
 #include <util/stream/Source.h>
-#include <util/event/Observable.h>
 
 namespace ppbox
 {
@@ -18,8 +17,7 @@ namespace ppbox
 
         class SegmentSource
             : public util::stream::Source
-            , public DataObserver
-            , public util::event::Observable
+            , public SourceStatistic
         {
         public:
             typedef SegmentPosition segment_t;
@@ -63,6 +61,11 @@ namespace ppbox
 
             void pause(
                 boost::uint32_t time = 0);
+
+        public:
+            SegmentEvent segment_open;
+            SegmentEvent segment_opened;
+            SegmentEvent segment_close;
 
         public:
             ppbox::data::UrlSource const & source() const

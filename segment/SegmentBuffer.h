@@ -215,6 +215,7 @@ namespace ppbox
 
         private:
             void on_event(
+                util::event::Observable const & sender, 
                 util::event::Event const & event);
 
         private:

@@ -1,7 +1,7 @@
-// BufferStatistic.cpp
+// SourceStatistic.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/base/DataStatistic.h"
+#include "ppbox/data/base/SourceStatistic.h"
 
 #include <framework/timer/Ticker.h>
 #include <framework/container/SafeCycle.h>
@@ -11,10 +11,10 @@ namespace ppbox
     namespace data
     {
 
-        DataStatistic::DataStatistic()
+        SourceStatisticData::SourceStatisticData()
             : start_time(time(NULL))
             , total_bytes(0)
-            , connection_status(DataConnectionStatus::closed)
+            , connection_status(ConnectionStatus::closed)
             , num_try(0)
             , zero_time(0)
         {
@@ -37,7 +37,7 @@ namespace ppbox
             boost::uint64_t bytes;
         };
 
-        struct DataObserver::Impl
+        struct SourceStatistic::Impl
         {
             Impl()
                 : ticker(1000)
@@ -51,39 +51,40 @@ namespace ppbox
             framework::container::SafeCycle<IntervalRecord> cycle;
         };
 
-        DataObserver::DataObserver()
+        SourceStatistic::SourceStatistic()
+            : stat_update(*this)
         {
             impl_ = new Impl();
         }
 
-        DataObserver::~DataObserver()
+        SourceStatistic::~SourceStatistic()
         {
             delete impl_;
             impl_ = NULL;
         }
 
-        void DataObserver::on_next()
+        void SourceStatistic::on_next()
         {
-            DataStatistic::num_try = 0;
+            SourceStatisticData::num_try = 0;
         }
 
-        void DataObserver::on_open()
+        void SourceStatistic::on_open()
         {
-            connection_status = DataConnectionStatus::opening;
-            ++DataStatistic::num_try;
+            connection_status = ConnectionStatus::opening;
+            ++SourceStatisticData::num_try;
         }
 
-        void DataObserver::on_opened()
+        void SourceStatistic::on_opened()
         {
-            connection_status = DataConnectionStatus::receiving;
+            connection_status = ConnectionStatus::receiving;
         }
 
-        void DataObserver::on_close()
+        void SourceStatistic::on_close()
         {
-            connection_status = DataConnectionStatus::closed;
+            connection_status = ConnectionStatus::closed;
         }
 
-        boost::uint32_t DataObserver::get_zero_interval()
+        boost::uint32_t SourceStatistic::get_zero_interval()
         {
             if (zero_time == 0) {
                 return 0;
@@ -92,12 +93,12 @@ namespace ppbox
             }
         }
 
-        void DataObserver::reset_zero_interval()
+        void SourceStatistic::reset_zero_interval()
         {
             zero_time = 0;
         }
 
-        void DataObserver::increase_bytes(
+        void SourceStatistic::increase_bytes(
             boost::uint32_t byte_size)
         {
             total_bytes += byte_size; //记录总下载字节数
@@ -122,6 +123,8 @@ namespace ppbox
                 IntervalRecord r(milli_sec, total_bytes);
                 impl_->cycle.pop();
                 impl_->cycle.push(r);
+
+                raise(stat_update);
             }
         }
      

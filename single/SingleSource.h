@@ -3,12 +3,11 @@
 #ifndef _PPBOX_DATA_BASE_SINGLE_SOURCE_H_
 #define _PPBOX_DATA_BASE_SINGLE_SOURCE_H_
 
-#include "ppbox/data/base/DataStatistic.h"
 #include "ppbox/data/base/UrlSource.h"
+#include "ppbox/data/base/SourceStatistic.h"
 #include "ppbox/data/segment/SegmentPosition.h" // for SegmentRange
 
 #include <util/stream/Source.h>
-#include <util/event/Observable.h>
 
 namespace ppbox
 {
@@ -17,8 +16,7 @@ namespace ppbox
 
         class SingleSource
             : public util::stream::Source
-            , public DataObserver
-            , public util::event::Observable
+            , public SourceStatistic
         {
         public:
             typedef SegmentRange range_t;

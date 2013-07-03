@@ -1,7 +1,11 @@
-// DataStatistic.h
+// SourceStatistic.h
 
-#ifndef _PPBOX_DATA_BASE_DATA_STATISTIC_H_
-#define _PPBOX_DATA_BASE_DATA_STATISTIC_H_
+#ifndef _PPBOX_DATA_BASE_SOURCE_STATISTIC_H_
+#define _PPBOX_DATA_BASE_SOURCE_STATISTIC_H_
+
+#include "ppbox/data/base/SourceEvent.h"
+
+#include <util/event/Observable.h>
 
 namespace ppbox
 {
@@ -22,7 +26,7 @@ namespace ppbox
             boost::uint32_t peak_speed;
         };
 
-        struct DataConnectionStatus
+        struct ConnectionStatus
         {
             enum Enum
             {
@@ -32,9 +36,9 @@ namespace ppbox
             };
         };
 
-        struct DataStatistic
+        struct SourceStatisticData
         {
-            DataStatistic();
+            SourceStatisticData();
 
             //定义采样集中需要采样的时间
             static const boost::uint32_t ONE_SECOND = 1;
@@ -50,26 +54,22 @@ namespace ppbox
             SpeedStatistics speeds[4];          // 定义4个采样数据统计集
         };
 
-        class DataObserver
-            : public DataStatistic
+        class SourceStatistic
+            : public SourceStatisticData
+            , public util::event::Observable
         {
         public: 
-            DataObserver();
+            SourceStatistic();
 
-            ~DataObserver();
+            ~SourceStatistic();
 
-        public: 
-            void on_next();
+        public:
+            SourceStatisticEvent stat_update;
 
-            void on_open();
-
-            void on_opened();
-
-            void on_close();
-
+        public:
             boost::uint32_t num_try() const
             {
-                return DataStatistic::num_try;
+                return SourceStatisticData::num_try;
             }
 
             boost::uint32_t get_zero_interval();
@@ -80,6 +80,15 @@ namespace ppbox
             void increase_bytes(
                 boost::uint32_t byte_size);
 
+        protected:
+            void on_next();
+
+            void on_open();
+
+            void on_opened();
+
+            void on_close();
+
         private:
             struct Impl;
             Impl * impl_;
@@ -88,4 +97,4 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#endif // _PPBOX_DATA_BASE_DATA_STATISTIC_H_
+#endif // _PPBOX_DATA_BASE_SOURCE_STATISTIC_H_

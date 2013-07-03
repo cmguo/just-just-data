@@ -5,7 +5,7 @@
 #include "ppbox/data/segment/SegmentStream.h"
 
 #include <ppbox/data/segment/SegmentSource.h>
-#include <ppbox/data/segment/SourceEvent.h>
+#include <ppbox/data/segment/SegmentEvent.h>
 #include <ppbox/data/base/SourceError.h>
 
 #include <framework/system/LogicError.h>
@@ -33,14 +33,14 @@ namespace ppbox
             , write_stream_(NULL)
         {
             //base_.index = 1; //
-            source_.on<ppbox::data::SegmentStartEvent>(boost::bind(&SegmentBuffer::on_event, this, _1));
-            source_.on<ppbox::data::SegmentStopEvent>(boost::bind(&SegmentBuffer::on_event, this, _1));
+            source_.segment_open.on(boost::bind(&SegmentBuffer::on_event, this, _1, _2));
+            source_.segment_close.on(boost::bind(&SegmentBuffer::on_event, this, _1, _2));
         }
 
         SegmentBuffer::~SegmentBuffer()
         {
-            source_.un<ppbox::data::SegmentStartEvent>(boost::bind(&SegmentBuffer::on_event, this, _1));
-            source_.un<ppbox::data::SegmentStopEvent>(boost::bind(&SegmentBuffer::on_event, this, _1));
+            source_.segment_close.un(boost::bind(&SegmentBuffer::on_event, this, _1, _2));
+            source_.segment_open.un(boost::bind(&SegmentBuffer::on_event, this, _1, _2));
         }
 
         // 目前只发生在，seek到一个分段，还没有该分段头部数据时，
@@ -479,13 +479,15 @@ namespace ppbox
         }
 
         void SegmentBuffer::on_event(
-            util::event::Event const & e)
+            util::event::Observable const & sender, 
+            util::event::Event const & event)
         {
-            if (ppbox::data::SegmentStartEvent const * event = e.as<ppbox::data::SegmentStartEvent>()) {
-                insert_segment(false, (SegmentPosition const &)event->segment);
+            assert(sender == source_);
+            if (event == source_.segment_open) {
+                insert_segment(false, source_.segment_open.segment);
                 //find_segment(out_position(), write_);
-            } else if (ppbox::data::SegmentStopEvent const * event = e.as<ppbox::data::SegmentStopEvent>()) {
-                insert_segment(false, (SegmentPosition const &)event->segment);
+            } else if (event == source_.segment_close) {
+                insert_segment(false, source_.segment_close.segment);
                 clear_segments();
             }
         }

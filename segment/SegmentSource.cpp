@@ -2,7 +2,6 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/segment/SegmentSource.h"
-#include "ppbox/data/segment/SourceEvent.h"
 #include "ppbox/data/base/SourceError.h"
 
 #include <framework/logger/Logger.h>
@@ -23,6 +22,9 @@ namespace ppbox
             UrlSource & source, 
             size_t total_req)
             : util::stream::Source(source.get_io_service())
+            , segment_open(write_)
+            , segment_opened(write_)
+            , segment_close(write_)
             , max_try_(size_t(-1))
             , max_req_(total_req)
             , time_out_(0)
@@ -458,7 +460,7 @@ namespace ppbox
                 }
             }
 
-            raise(SegmentStartEvent(write_));
+            raise(segment_open);
 
             LOG_DEBUG("[open_segment] write_.offset: " << write_range_.big_pos() << 
                 " segment: " << write_.index << 
@@ -497,7 +499,7 @@ namespace ppbox
                 " segment: " << write_.index << 
                 " range: " << write_range_.pos << " - " << write_range_.end);
 
-            raise(SegmentStartEvent(write_));
+            raise(segment_open);
 
             framework::string::Url url;
             strategy_->get_url(write_, url, ec);
@@ -515,7 +517,7 @@ namespace ppbox
                 update_segment(ec);
                 source_closed_ = false;
                 on_opened();
-                raise(SegmentOpenedEvent(write_));
+                raise(segment_opened);
             }
             return !source_closed_;
         }
@@ -529,7 +531,7 @@ namespace ppbox
                     " range: " << write_.byte_range.pos << " - "<< write_range_.end);
                 source_closed_ = true;
                 on_close();
-                raise(SegmentStopEvent(write_));
+                raise(segment_close);
             }
             ec.clear();
             return true;

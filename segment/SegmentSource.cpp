@@ -293,8 +293,11 @@ namespace ppbox
             size_t bytes_transferred)
         {
             write_tmp_ = write_;
-            boost::system::error_code ecc;
-            open_request(true, ecc);
+            if (!ec) {
+                // ≤π≥‰«Î«Û
+                boost::system::error_code ecc;
+                open_request(true, ecc);
+            }
             handler(ec, bytes_transferred);
         }
 

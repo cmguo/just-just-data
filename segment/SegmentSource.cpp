@@ -62,6 +62,7 @@ namespace ppbox
             }
             source_error_.clear();
             ec.clear();
+            on_seek();
             return ec;
         }
 

@@ -63,6 +63,11 @@ namespace ppbox
             impl_ = NULL;
         }
 
+        void SourceStatistic::on_seek()
+        {
+            SourceStatisticData::num_try = 0;
+        }
+
         void SourceStatistic::on_next()
         {
             SourceStatisticData::num_try = 0;

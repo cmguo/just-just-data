@@ -81,6 +81,8 @@ namespace ppbox
                 boost::uint32_t byte_size);
 
         protected:
+            void on_seek();
+
             void on_next();
 
             void on_open();

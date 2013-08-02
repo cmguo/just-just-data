@@ -56,6 +56,7 @@ namespace ppbox
                 write_range_.end = seek_end_;
             }
             ec.clear();
+            on_seek();
             return ec;
         }
 

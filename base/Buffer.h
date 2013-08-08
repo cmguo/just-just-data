@@ -92,12 +92,18 @@ namespace ppbox
                 return write_.offset;
             }
 
+            boost::uint64_t out_limit() const
+            {
+                boost::uint64_t n = write_hole_.this_end;
+                if (n > read_.offset + buffer_size_) {
+                     n = read_.offset + buffer_size_;
+                }
+                return n;
+            }
+
             size_t out_avail() const
             {
-                boost::uint64_t end = write_hole_.this_end;
-                if (end > write_.offset + buffer_size_)
-                    end = write_.offset + buffer_size_;
-                return (size_t)(end - write_.offset);
+                return (size_t)(out_limit() - write_.offset);
             }
 
             template <
@@ -146,6 +152,15 @@ namespace ppbox
             }
 
         public:
+            boost::uint64_t in_limit() const
+            {
+                boost::uint64_t n = read_hole_.next_beg;
+                if (n + buffer_size_ < data_end_) {
+                     n = data_end_ - buffer_size_;
+                }
+                return n;
+            }
+
             // ¶ÁÖ¸ÕëÆ«ÒÆ
             boost::uint64_t in_position() const
             {
@@ -154,7 +169,7 @@ namespace ppbox
 
             size_t in_avail() const
             {
-                return (size_t)(write_.offset- read_.offset);
+                return (size_t)(write_.offset - read_.offset);
             }
 
             template <
@@ -241,10 +256,12 @@ namespace ppbox
             bool try_drop_to(
                 boost::uint64_t offset);
 
-        public:
+        protected:
             boost::uint64_t data_begin() const
             {
-                return data_beg_;
+                return data_beg_ + buffer_size_ < data_end_ 
+                    ? data_end_ - buffer_size_
+                    : data_beg_;
             }
 
             boost::uint64_t data_end() const

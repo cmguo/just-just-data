@@ -12,9 +12,14 @@ namespace ppbox
 
         static boost::uint64_t const invalid_size = boost::uint64_t(-1);
 
+        struct MediaInfo;
         class MediaBase;
 
+        struct StreamStatus;
+
+        struct SourceStatisticData;
         class SourceBase;
+
         class SinkBase;
 
         class SegmentMedia;

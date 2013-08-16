@@ -2,7 +2,7 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/segment/SegmentStrategy.h"
-#include "ppbox/data/base/SourceError.h"
+#include "ppbox/data/base/Error.h"
 
 namespace ppbox
 {
@@ -29,7 +29,7 @@ namespace ppbox
             }
             if (++pos.index >= media_.segment_count()) {
                 pos.item_context = NULL;
-                ec = source_error::no_more_segment;
+                ec = error::no_more_segment;
                 return false;
             }
             

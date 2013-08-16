@@ -77,7 +77,7 @@ namespace ppbox
 
             void clear_error()
             {
-                source_error_ = boost::system::error_code();
+                error_ = boost::system::error_code();
             }
 
         private:
@@ -140,7 +140,7 @@ namespace ppbox
             bool source_open_;
             bool source_is_open_;
 
-            boost::system::error_code source_error_;    // 下载的错误码
+            boost::system::error_code error_;    // 下载的错误码
 
             range_t write_range_;
             boost::uint64_t seek_end_;      // 一般在seek操作时，如果获取头部数据，值为当前分段之前的分段总长+当前分段的head_size_；否则为-1

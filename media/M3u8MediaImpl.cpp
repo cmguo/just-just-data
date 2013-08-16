@@ -4,7 +4,7 @@
 #include "ppbox/data/Common.h"
 #include "ppbox/data/media/M3u8MediaImpl.h"
 #include "ppbox/data/base/UrlSource.h"
-#include "ppbox/data/base/SourceError.h"
+#include "ppbox/data/base/Error.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
@@ -36,7 +36,6 @@ namespace ppbox
             , seq_play_(0)
             , segment_url_subpos_(std::string::npos)
         {
-            source_ = UrlSource::create(io_svc, url.protocol());
             info_.flags = MediaBasicInfo::f_segment;
             info_.flags |= SegmentMediaFlags::f_segment_seek;
 
@@ -54,7 +53,13 @@ namespace ppbox
             MediaBase::response_type const & resp)
         {
             closed_ = false;
-
+            boost::system::error_code ec;
+            source_ = UrlSource::create(timer_.get_io_service(), url_.protocol(), ec);
+            if (source_ == NULL) {
+                timer_.get_io_service().post(
+                    boost::bind(resp, ec));
+                return;
+            }
             resp_ = resp;
             source_->async_open(url_, 0, invalid_size, 
                 boost::bind(&M3u8MediaImpl::handle_open, this, _1));
@@ -105,7 +110,7 @@ namespace ppbox
         void M3u8MediaImpl::on_error(
             boost::system::error_code & ec) const
         {
-            if (ec == source_error::no_more_segment && info_.type == MediaBasicInfo::live) {
+            if (ec == error::no_more_segment && info_.type == MediaBasicInfo::live) {
                 ec = boost::asio::error::would_block;
             }
         }

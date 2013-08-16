@@ -28,9 +28,12 @@ namespace ppbox
             > response_type;
 
         public:
+            static boost::system::error_code error_not_found();
+
             static UrlSink * create(
                 boost::asio::io_service & io_svc,
-                std::string const & proto);
+                std::string const & proto, 
+                boost::system::error_code & ec);
 
         public:
             UrlSink(

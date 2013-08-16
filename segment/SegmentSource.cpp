@@ -2,7 +2,7 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/segment/SegmentSource.h"
-#include "ppbox/data/base/SourceError.h"
+#include "ppbox/data/base/Error.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
@@ -60,7 +60,7 @@ namespace ppbox
                 write_range_.end = seek_end_ - write_range_.big_offset;
                 write_tmp_.byte_range = write_range_;
             }
-            source_error_.clear();
+            error_.clear();
             ec.clear();
             on_seek();
             return ec;
@@ -95,7 +95,7 @@ namespace ppbox
         boost::system::error_code SegmentSource::cancel(
             boost::system::error_code & ec)
         {
-            source_error_ = boost::asio::error::operation_aborted;
+            error_ = boost::asio::error::operation_aborted;
             return source_.cancel(ec);
         }
 
@@ -125,7 +125,7 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             size_t bytes_transferred = 0;
-            ec = source_error_;
+            ec = error_;
             while (1) {
                 if (ec) {
                 } else if (write_range_.pos >= write_range_.end) {
@@ -156,8 +156,8 @@ namespace ppbox
                         increase_bytes(0);
                     }
                 }
-                if (source_error_) {
-                    ec = source_error_;
+                if (error_) {
+                    ec = error_;
                 }
                 if (!ec) {
                     break;
@@ -216,7 +216,7 @@ namespace ppbox
                 return false;
             }
             if (ec)
-                source_error_ = ec;
+                error_ = ec;
             return !ec;
         }
 
@@ -241,7 +241,7 @@ namespace ppbox
             }
             if (ec && ec != boost::asio::error::would_block) {
                 if (is_open_callback) {
-                    if (ec != source_error::no_more_segment) {
+                    if (ec != error::no_more_segment) {
                         LOG_WARN("[handle_async] open_segment: " << write_.index << " ec: " << ec.message() << 
                             " --- failed " << num_try() << " times");
                     }
@@ -257,8 +257,8 @@ namespace ppbox
             }
             increase_bytes(bytes_transferred);
             write_range_.pos += bytes_transferred;
-            if (source_error_) {
-                ec = source_error_;
+            if (error_) {
+                ec = error_;
             }
             if (ec) {
                 bool is_error = handle_error(ec);
@@ -341,7 +341,7 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             if (seg.byte_range.big_end() >= seek_end_) {
-                ec = source_error::at_end_point;
+                ec = error::at_end_point;
                 return false;
             } else if (!strategy_->next_segment(seg, ec)) {
                 return false;
@@ -363,7 +363,7 @@ namespace ppbox
                 segment_t write_tmp = write_tmp_;
                 if (is_next_segment) {
                     if (!next_segment(write_tmp_, write_tmp_.byte_range, ec)) {
-                        if (sended_req_ && ec == source_error::no_more_segment) {
+                        if (sended_req_ && ec == error::no_more_segment) {
                             ec.clear();
                         }
                         break;
@@ -450,7 +450,7 @@ namespace ppbox
             open_request(is_next_segment, ec);
 
             if (ec && ec != boost::asio::error::would_block) {
-                if (ec != source_error::no_more_segment) {
+                if (ec != error::no_more_segment) {
                     LOG_WARN("[open_segment] segment: " << write_.index << " ec: " << ec.message() << 
                         " --- failed " << num_try() << " times");
                 }

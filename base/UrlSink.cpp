@@ -2,6 +2,7 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/base/UrlSink.h"
+#include "ppbox/data/base/Error.h"
 
 #include <boost/bind.hpp>
 
@@ -10,11 +11,17 @@ namespace ppbox
     namespace data
     {
 
+        boost::system::error_code UrlSink::error_not_found()
+        {
+            return error::bad_sink_type;
+        }
+
         UrlSink * UrlSink::create(
             boost::asio::io_service & io_svc,
-            std::string const & proto)
+            std::string const & proto, 
+            boost::system::error_code & ec)
         {
-            return factory_type::create(proto, io_svc);
+            return factory_type::create(proto, io_svc, ec);
         }
 
         UrlSink::UrlSink(

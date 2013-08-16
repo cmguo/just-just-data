@@ -107,7 +107,7 @@ namespace ppbox
 
             void clear_error()
             {
-                source_error_ = boost::system::error_code();
+                error_ = boost::system::error_code();
             }
 
         private:
@@ -188,7 +188,7 @@ namespace ppbox
             bool source_closed_;            // ture，可以调用 open_segment(), 调用 source_->open_segment()如果失败，为false
             boost::uint32_t time_block_;    // 阻塞次数（秒）
 
-            boost::system::error_code source_error_;    // 下载的错误码
+            boost::system::error_code error_;    // 下载的错误码
 
             segment_t write_;
             range_t write_range_;

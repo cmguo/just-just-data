@@ -2,7 +2,7 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/strategy/ListStrategy.h"
-#include "ppbox/data/base/SourceError.h"
+#include "ppbox/data/base/Error.h"
 
 namespace ppbox
 {
@@ -38,7 +38,7 @@ namespace ppbox
                 return true;
             }
 
-            if (ec == source_error::no_more_segment && item->next) {
+            if (ec == error::no_more_segment && item->next) {
                 item = item->next;
                 pos.item_context = NULL;
                 item->strategy->next_segment(pos, ec);

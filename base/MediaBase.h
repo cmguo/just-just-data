@@ -20,16 +20,19 @@ namespace ppbox
                 response_type;
 
         public:
+            static boost::system::error_code error_not_found();
+
+            static MediaBase * create(
+                boost::asio::io_service & io_svc,
+                framework::string::Url const & url, 
+                boost::system::error_code & ec);
+
+        public:
             MediaBase(
                 boost::asio::io_service & io_svc,
                 framework::string::Url const & url);
 
             virtual ~MediaBase();
-
-        public:
-            static MediaBase * create(
-                boost::asio::io_service & io_svc,
-                framework::string::Url const & url);
 
         public:
             virtual void async_open(

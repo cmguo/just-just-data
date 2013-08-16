@@ -2,7 +2,7 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/single/SingleSource.h"
-#include "ppbox/data/base/SourceError.h"
+#include "ppbox/data/base/Error.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
@@ -85,7 +85,7 @@ namespace ppbox
         boost::system::error_code SingleSource::cancel(
             boost::system::error_code & ec)
         {
-            source_error_ = boost::asio::error::operation_aborted;
+            error_ = boost::asio::error::operation_aborted;
             return source_.cancel(ec);
         }
 
@@ -115,7 +115,7 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             size_t bytes_transferred = 0;
-            ec = source_error_;
+            ec = error_;
             while (1) {
                 if (ec) {
                 } else if (write_range_.pos >= write_range_.end) {
@@ -146,8 +146,8 @@ namespace ppbox
                         increase_bytes(0);
                     }
                 }
-                if (source_error_) {
-                    ec = source_error_;
+                if (error_) {
+                    ec = error_;
                 }
                 if (!ec) {
                     break;
@@ -200,7 +200,7 @@ namespace ppbox
                 return false;
             }
             if (ec)
-                source_error_ = ec;
+                error_ = ec;
             return !ec;
         }
 
@@ -225,7 +225,7 @@ namespace ppbox
             }
             if (ec && ec != boost::asio::error::would_block) {
                 if (is_open_callback) {
-                    if (ec != source_error::no_more_segment) {
+                    if (ec != error::no_more_segment) {
                         LOG_WARN("[handle_async] open_source: ec: " << ec.message() << 
                             " --- failed " << num_try() << " times");
                     }
@@ -241,8 +241,8 @@ namespace ppbox
             }
             increase_bytes(bytes_transferred);
             write_range_.pos += bytes_transferred;
-            if (source_error_) {
-                ec = source_error_;
+            if (error_) {
+                ec = error_;
             }
             if (ec) {
                 bool is_error = handle_error(ec);

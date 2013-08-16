@@ -2,7 +2,7 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/base/UrlSource.h"
-#include "ppbox/data/base/MediaBase.h"
+#include "ppbox/data/base/Error.h"
 
 #include <boost/bind.hpp>
 
@@ -11,11 +11,17 @@ namespace ppbox
     namespace data
     {
 
+        boost::system::error_code UrlSource::error_not_found()
+        {
+            return error::bad_source_type;
+        }
+
         UrlSource * UrlSource::create(
             boost::asio::io_service & io_svc,
-            std::string const & proto)
+            std::string const & proto, 
+            boost::system::error_code & ec)
         {
-            return factory_type::create(proto, io_svc);
+            return factory_type::create(proto, io_svc, ec);
         }
 
         UrlSource::UrlSource(

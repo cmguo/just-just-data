@@ -2,9 +2,8 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/single/SourceStream.h"
-
 #include <ppbox/data/single/SingleSource.h>
-#include <ppbox/data/base/SourceError.h>
+#include <ppbox/data/base/Error.h>
 
 #include <framework/system/LogicError.h>
 #include <framework/logger/Logger.h>
@@ -223,7 +222,7 @@ namespace ppbox
         {
             boost::uint64_t size = write_hole_size();
             if (size == 0) {
-                ec = source_error::at_end_point;
+                ec = error::at_end_point;
             }
             source_.seek(out_position(), size, ec);
             return !ec;

@@ -3,10 +3,9 @@
 #include "ppbox/data/Common.h"
 #include "ppbox/data/segment/SegmentBuffer.h"
 #include "ppbox/data/segment/SegmentStream.h"
-
-#include <ppbox/data/segment/SegmentSource.h>
-#include <ppbox/data/segment/SegmentEvent.h>
-#include <ppbox/data/base/SourceError.h>
+#include "ppbox/data/segment/SegmentSource.h"
+#include "ppbox/data/segment/SegmentEvent.h"
+#include "ppbox/data/base/Error.h"
 
 #include <framework/system/LogicError.h>
 #include <framework/logger/Logger.h>
@@ -124,7 +123,7 @@ namespace ppbox
                     find_segment(out_position(), pos);
                     source_.seek(pos, hole_size, ec);
                     if (hole_size == 0) {
-                        ec = ppbox::data::source_error::at_end_point;
+                        ec = ppbox::data::error::at_end_point;
                     }
                 }
                 if (ec) {

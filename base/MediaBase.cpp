@@ -2,6 +2,8 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/base/MediaBase.h"
+#include "ppbox/data/base/Error.h"
+
 #include "ppbox/data/single/SingleMedia.h"
 
 #include <framework/logger/Logger.h>
@@ -14,11 +16,17 @@ namespace ppbox
     namespace data
     {
 
+        boost::system::error_code MediaBase::error_not_found()
+        {
+            return error::bad_media_type;
+        }
+
         MediaBase * MediaBase::create(
             boost::asio::io_service & io_svc,
-            framework::string::Url const & url)
+            framework::string::Url const & url, 
+            boost::system::error_code & ec)
         {
-            MediaBase * media = MediaProtocolFactory::create(url.protocol(), io_svc, url);
+            MediaBase * media = MediaProtocolFactory::create(url.protocol(), io_svc, url, ec);
             if (media == NULL) {
                 std::string format = url.param("format");
                 if (format.empty()) {
@@ -28,10 +36,11 @@ namespace ppbox
                     }
                 }
                 if (!format.empty()) {
-                    media = MediaFormatFactory::create(format, io_svc, url);
+                    media = MediaFormatFactory::create(format, io_svc, url, ec);
                 }
             }
             if (media == NULL) {
+                ec.clear();
                 media = new SingleMedia(io_svc, url);
             }
             return media;

@@ -326,11 +326,12 @@ namespace ppbox
                 if (ec) {
                     write_.size = invalid_size; // source_.total()失败时返回0，需要重置
                 } else {
-                    write_.byte_range.end = write_.size;
+                    if (write_.byte_range.end == invalid_size)
+                        write_.byte_range.end = write_.size;
                     if (write_range_.end > write_.size)
                         write_range_.end = write_.size;
                     if (write_tmp_ == write_)
-                        write_tmp_.byte_range.end = write_.size;
+                        write_tmp_.byte_range.end = write_.byte_range.end;
                 }
             }
         }

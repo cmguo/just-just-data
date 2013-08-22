@@ -272,7 +272,6 @@ namespace ppbox
             boost::system::error_code const & ec, 
             size_t bytes_transferred)
         {
-            boost::system::error_code ecc;
             handler(ec, bytes_transferred);
         }
 

@@ -126,6 +126,7 @@ namespace ppbox
         {
             last_ec_ = ec;
             commit(bytes_transferred);
+            pause_stream();
             prepare_response_type resp;
             resp.swap(resp_);
             resp(ec, 0);

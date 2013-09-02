@@ -30,10 +30,8 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             if (is_open_)
-                file_.close();
-            boost::filesystem::path ph = url.path();
-            file_.open(ph.file_string().c_str(), std::ios::binary | std::ios::in);
-            is_open_ = file_.is_open();
+                file_.close(ec);
+            is_open_ = file_.open(url.path(), ec);
             if (!is_open_) {
                 ec = framework::system::last_system_error();
                 if (!ec) {
@@ -41,9 +39,9 @@ namespace ppbox
                 }
             } else {
                 if (beg > 0)
-                    file_.seekg(beg, std::ios_base::beg);
-                assert(file_);
-                assert((boost::uint64_t)file_.tellg() == beg);
+                    file_.seek(file_.beg, beg, ec);
+                assert(!ec);
+                assert(file_.tell(ec) == beg);
             }
             return ec;
         }
@@ -57,8 +55,7 @@ namespace ppbox
         boost::system::error_code FileSource::close(
             boost::system::error_code & ec)
         {
-            file_.clear();
-            file_.close();
+            file_.close(ec);
             is_open_ = false;
             return ec = boost::system::error_code();
         }
@@ -66,13 +63,13 @@ namespace ppbox
         boost::uint64_t FileSource::total(
             boost::system::error_code & ec)
         {
-            size_t cur;
+            boost::uint64_t cur;
             boost::uint64_t file_length;
-            cur = file_.tellg();
-            file_.seekg(0, std::ios_base::end);
+            cur = file_.tell(ec);
+            file_.seek(file_.end, 0, ec);
 
-            file_length = file_.tellg();
-            file_.seekg(cur, std::ios_base::beg);
+            file_length = file_.tell(ec);
+            file_.seek(file_.beg, cur, ec);
 
             return file_length;
         }
@@ -81,20 +78,7 @@ namespace ppbox
             boost::asio::mutable_buffer const & buffer,
             boost::system::error_code & ec)
         {
-            char * buf_ptr = boost::asio::buffer_cast<char *>(buffer);
-            size_t buf_size = boost::asio::buffer_size(buffer);
-            file_.read(buf_ptr, buf_size);
-            std::size_t n = file_.gcount();
-            if (n > 0) {
-                ec.clear();
-            } else if (file_.eof()) {
-                ec = boost::asio::error::eof;
-            } else {
-                ec = framework::system::last_system_error();
-                if (!ec) {
-                    ec = framework::system::logic_error::no_data;
-                }
-            }
+            std::size_t n = file_.read_some(buffer, ec);
             return n;
         }
 

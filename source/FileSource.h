@@ -5,7 +5,7 @@
 
 #include "ppbox/data/base/UrlSource.h"
 
-#include <fstream>
+#include <framework/filesystem/File.h>
 
 namespace ppbox
 {
@@ -44,7 +44,7 @@ namespace ppbox
                 boost::system::error_code & ec);
 
         private:
-            std::ifstream file_;
+            framework::filesystem::File file_;
             bool is_open_;
         };
 

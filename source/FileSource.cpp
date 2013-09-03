@@ -78,8 +78,7 @@ namespace ppbox
             boost::asio::mutable_buffer const & buffer,
             boost::system::error_code & ec)
         {
-            std::size_t n = file_.read_some(buffer, ec);
-            return n;
+            return file_.read_some(buffer, ec);
         }
 
     } // namespace data

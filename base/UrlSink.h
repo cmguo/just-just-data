@@ -68,6 +68,9 @@ namespace ppbox
             virtual boost::system::error_code close(
                 boost::system::error_code & ec) = 0;
 
+            virtual boost::uint64_t total(
+                boost::system::error_code & ec);
+
         public:
             virtual bool recoverable(
                 boost::system::error_code const & ec);

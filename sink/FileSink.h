@@ -5,7 +5,7 @@
 
 #include "ppbox/data/base/UrlSink.h"
 
-#include <fstream>
+#include <framework/filesystem/File.h>
 
 namespace ppbox
 {
@@ -36,11 +36,8 @@ namespace ppbox
             virtual boost::system::error_code close(
                 boost::system::error_code & ec);
 
-        public:
-            std::ofstream & file_stream()
-            {
-                return file_;
-            }
+            virtual boost::uint64_t total(
+                boost::system::error_code & ec);
 
         private:
             // implement util::stream::Sink
@@ -49,7 +46,7 @@ namespace ppbox
                 boost::system::error_code & ec);
 
         private:
-            std::ofstream file_;
+            framework::filesystem::File file_;
             bool is_open_;
         };
 

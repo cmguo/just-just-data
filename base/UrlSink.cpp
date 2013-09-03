@@ -59,6 +59,13 @@ namespace ppbox
             async_open(url, 0, invalid_size, resp);
         }
 
+        boost::uint64_t UrlSink::total(
+            boost::system::error_code & ec)
+        {
+            ec = framework::system::logic_error::no_data;
+            return 0;
+        }
+
         bool UrlSink::recoverable(
             boost::system::error_code const & ec)
         {

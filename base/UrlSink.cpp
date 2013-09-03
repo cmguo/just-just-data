@@ -48,7 +48,7 @@ namespace ppbox
             response_type const & resp)
         {
             boost::system::error_code ec;
-            open(url, ec);
+            open(url, beg, end, ec);
             get_io_service().post(boost::bind(resp, ec));
         }
 

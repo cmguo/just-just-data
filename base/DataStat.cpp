@@ -1,7 +1,7 @@
-// SourceStatistic.cpp
+// DataStat.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/base/SourceStatistic.h"
+#include "ppbox/data/base/DataStat.h"
 
 #include <framework/timer/Ticker.h>
 #include <framework/container/SafeCycle.h>
@@ -11,7 +11,7 @@ namespace ppbox
     namespace data
     {
 
-        SourceStatisticData::SourceStatisticData()
+        DataStat::DataStat()
             : start_time(time(NULL))
             , total_bytes(0)
             , connection_status(ConnectionStatus::closed)
@@ -37,7 +37,7 @@ namespace ppbox
             boost::uint64_t bytes;
         };
 
-        struct SourceStatistic::Impl
+        struct DataWatcher::Impl
         {
             Impl()
                 : ticker(1000)
@@ -51,45 +51,45 @@ namespace ppbox
             framework::container::SafeCycle<IntervalRecord> cycle;
         };
 
-        SourceStatistic::SourceStatistic()
+        DataWatcher::DataWatcher()
             : stat_update(*this)
         {
             impl_ = new Impl();
         }
 
-        SourceStatistic::~SourceStatistic()
+        DataWatcher::~DataWatcher()
         {
             delete impl_;
             impl_ = NULL;
         }
 
-        void SourceStatistic::on_seek()
+        void DataWatcher::on_seek()
         {
-            SourceStatisticData::num_try = 0;
+            DataStat::num_try = 0;
         }
 
-        void SourceStatistic::on_next()
+        void DataWatcher::on_next()
         {
-            SourceStatisticData::num_try = 0;
+            DataStat::num_try = 0;
         }
 
-        void SourceStatistic::on_open()
+        void DataWatcher::on_open()
         {
             connection_status = ConnectionStatus::opening;
-            ++SourceStatisticData::num_try;
+            ++DataStat::num_try;
         }
 
-        void SourceStatistic::on_opened()
+        void DataWatcher::on_opened()
         {
-            connection_status = ConnectionStatus::receiving;
+            connection_status = ConnectionStatus::transfering;
         }
 
-        void SourceStatistic::on_close()
+        void DataWatcher::on_close()
         {
             connection_status = ConnectionStatus::closed;
         }
 
-        boost::uint32_t SourceStatistic::get_zero_interval()
+        boost::uint32_t DataWatcher::get_zero_interval()
         {
             if (zero_time == 0) {
                 return 0;
@@ -98,12 +98,12 @@ namespace ppbox
             }
         }
 
-        void SourceStatistic::reset_zero_interval()
+        void DataWatcher::reset_zero_interval()
         {
             zero_time = 0;
         }
 
-        void SourceStatistic::increase_bytes(
+        void DataWatcher::increase_bytes(
             boost::uint32_t byte_size)
         {
             total_bytes += byte_size; //记录总下载字节数
@@ -115,7 +115,7 @@ namespace ppbox
                 } else {
                     zero_time = 0;
                 }
-                for (size_t i = 0; i < sizeof(speeds) / sizeof(SpeedStatistics); i++) {
+                for (size_t i = 0; i < sizeof(speeds) / sizeof(SpeedStat); i++) {
                     IntervalRecord const & r2 = impl_->cycle[60 - speeds[i].interval];
                     if (milli_sec != r2.milli_sec) {
                         speeds[i].cur_speed = 

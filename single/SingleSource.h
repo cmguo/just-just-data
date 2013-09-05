@@ -4,7 +4,7 @@
 #define _PPBOX_DATA_BASE_SINGLE_SOURCE_H_
 
 #include "ppbox/data/base/UrlSource.h"
-#include "ppbox/data/base/SourceStatistic.h"
+#include "ppbox/data/base/DataStat.h"
 #include "ppbox/data/segment/SegmentPosition.h" // for SegmentRange
 
 #include <util/stream/Source.h>
@@ -16,7 +16,7 @@ namespace ppbox
 
         class SingleSource
             : public util::stream::Source
-            , public SourceStatistic
+            , public DataWatcher
         {
         public:
             typedef SegmentRange range_t;

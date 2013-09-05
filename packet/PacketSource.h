@@ -4,7 +4,7 @@
 #define _PPBOX_DATA_PACKET_PACKET_SOURCE_H_
 
 #include "ppbox/data/packet/PacketBuffer.h"
-#include "ppbox/data/base/SourceStatistic.h"
+#include "ppbox/data/base/DataStat.h"
 
 namespace ppbox
 {
@@ -13,7 +13,7 @@ namespace ppbox
 
         class PacketSource
             : public PacketBuffer
-            , public SourceStatistic
+            , public DataWatcher
         {
         public:
             typedef boost::function<void (

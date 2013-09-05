@@ -5,7 +5,7 @@
 
 #include "ppbox/data/segment/SegmentStrategy.h"
 #include "ppbox/data/segment/SegmentEvent.h"
-#include "ppbox/data/base/SourceStatistic.h"
+#include "ppbox/data/base/DataStat.h"
 #include "ppbox/data/base/UrlSource.h"
 
 #include <util/stream/Source.h>
@@ -17,7 +17,7 @@ namespace ppbox
 
         class SegmentSource
             : public util::stream::Source
-            , public SourceStatistic
+            , public DataWatcher
         {
         public:
             typedef SegmentPosition segment_t;

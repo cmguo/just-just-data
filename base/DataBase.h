@@ -17,7 +17,7 @@ namespace ppbox
 
         struct StreamStatus;
 
-        struct SourceStatisticData;
+        struct DataStat;
         class SourceBase;
 
         class SinkBase;

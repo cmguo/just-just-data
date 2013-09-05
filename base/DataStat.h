@@ -1,9 +1,9 @@
-// SourceStatistic.h
+// DataStat.h
 
-#ifndef _PPBOX_DATA_BASE_SOURCE_STATISTIC_H_
-#define _PPBOX_DATA_BASE_SOURCE_STATISTIC_H_
+#ifndef _PPBOX_DATA_BASE_DATA_STAT_H_
+#define _PPBOX_DATA_BASE_DATA_STAT_H_
 
-#include "ppbox/data/base/SourceEvent.h"
+#include "ppbox/data/base/DataEvent.h"
 
 #include <util/event/Observable.h>
 
@@ -12,9 +12,9 @@ namespace ppbox
     namespace data
     {
 
-        struct SpeedStatistics
+        struct SpeedStat
         {
-            SpeedStatistics()
+            SpeedStat()
                 : interval(0)
                 , cur_speed(0)
                 , peak_speed(0)
@@ -32,13 +32,13 @@ namespace ppbox
             {
                 closed = 0, 
                 opening, 
-                receiving, 
+                transfering, 
             };
         };
 
-        struct SourceStatisticData
+        struct DataStat
         {
-            SourceStatisticData();
+            DataStat();
 
             //定义采样集中需要采样的时间
             static const boost::uint32_t ONE_SECOND = 1;
@@ -51,25 +51,25 @@ namespace ppbox
             boost::uint32_t connection_status;
             boost::uint32_t num_try;            // 当前分段尝试次数
             boost::uint64_t zero_time;
-            SpeedStatistics speeds[4];          // 定义4个采样数据统计集
+            SpeedStat speeds[4];          // 定义4个采样数据统计集
         };
 
-        class SourceStatistic
-            : public SourceStatisticData
+        class DataWatcher
+            : public DataStat
             , public util::event::Observable
         {
         public: 
-            SourceStatistic();
+            DataWatcher();
 
-            ~SourceStatistic();
+            ~DataWatcher();
 
         public:
-            SourceStatisticEvent stat_update;
+            DataStatEvent stat_update;
 
         public:
             boost::uint32_t num_try() const
             {
-                return SourceStatisticData::num_try;
+                return DataStat::num_try;
             }
 
             boost::uint32_t get_zero_interval();
@@ -99,4 +99,4 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#endif // _PPBOX_DATA_BASE_SOURCE_STATISTIC_H_
+#endif // _PPBOX_DATA_BASE_DATA_STAT_H_

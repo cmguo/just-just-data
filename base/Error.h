@@ -13,8 +13,6 @@ namespace ppbox
             enum errors
             {
                 bad_media_type = 1, 
-                bad_source_type, 
-                bad_sink_type, 
                 no_more_segment, 
                 at_end_point, 
             };
@@ -40,10 +38,6 @@ namespace ppbox
                         {
                             case bad_media_type:
                                 return "data: bad media type";
-                            case bad_source_type:
-                                return "data: bad source type";
-                            case bad_sink_type:
-                                return "data: bad sink type";
                             case no_more_segment:
                                 return "data: no more segment";
                             case at_end_point:

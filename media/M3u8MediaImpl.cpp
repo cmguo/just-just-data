@@ -3,8 +3,9 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/media/M3u8MediaImpl.h"
-#include "ppbox/data/base/UrlSource.h"
 #include "ppbox/data/base/Error.h"
+
+#include <util/stream/UrlSource.h>
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
@@ -54,7 +55,7 @@ namespace ppbox
         {
             closed_ = false;
             boost::system::error_code ec;
-            source_ = UrlSource::create(timer_.get_io_service(), url_.protocol(), ec);
+            source_ = util::stream::UrlSource::create(timer_.get_io_service(), url_.protocol(), ec);
             if (source_ == NULL) {
                 timer_.get_io_service().post(
                     boost::bind(resp, ec));

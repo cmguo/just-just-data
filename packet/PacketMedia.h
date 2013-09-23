@@ -8,12 +8,14 @@
 
 #include <framework/timer/ClockTime.h>
 
+namespace util { namespace stream { 
+    class Source;
+}}
+
 namespace ppbox 
 {
     namespace data 
     {
-
-        class SourceBase;
 
         class PacketMedia
             : public MediaBase
@@ -44,7 +46,7 @@ namespace ppbox
                 PacketFeature & feature,
                 boost::system::error_code & ec) const;
 
-            virtual SourceBase & source() = 0;
+            virtual util::stream::Source & source() = 0;
 
         private:
             framework::timer::Time start_time_;

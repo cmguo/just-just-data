@@ -2,7 +2,6 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/packet/PacketBuffer.h"
-#include "ppbox/data/base/SourceBase.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>

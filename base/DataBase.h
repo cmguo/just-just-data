@@ -18,9 +18,6 @@ namespace ppbox
         struct StreamStatus;
 
         struct DataStat;
-        class SourceBase;
-
-        class SinkBase;
 
         class SegmentMedia;
 

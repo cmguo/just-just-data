@@ -6,9 +6,9 @@
 #include "ppbox/data/segment/SegmentStrategy.h"
 #include "ppbox/data/segment/SegmentEvent.h"
 #include "ppbox/data/base/DataStat.h"
-#include "ppbox/data/base/UrlSource.h"
 
 #include <util/stream/Source.h>
+#include <util/stream/UrlSource.h>
 
 namespace ppbox
 {
@@ -24,10 +24,12 @@ namespace ppbox
 
             typedef SegmentRange range_t;
 
+            typedef util::stream::UrlSource::response_type response_t;
+
         public:
             SegmentSource(
                 SegmentStrategy & strategy, 
-                UrlSource & source, 
+                util::stream::UrlSource & source, 
                 size_t total_req = 1);
 
             ~SegmentSource();
@@ -68,7 +70,7 @@ namespace ppbox
             SegmentEvent segment_close;
 
         public:
-            ppbox::data::UrlSource const & source() const
+            util::stream::UrlSource const & source() const
             {
                 return source_;
             }
@@ -79,10 +81,10 @@ namespace ppbox
             }
 
         public:
-            virtual boost::system::error_code cancel(
+            virtual bool cancel(
                 boost::system::error_code & ec);
 
-            virtual boost::system::error_code close(
+            virtual bool close(
                 boost::system::error_code & ec);
 
             // 返回false表示不能再继续了
@@ -132,7 +134,7 @@ namespace ppbox
 
             void async_open_segment(
                 bool is_next_segment, 
-                UrlSource::response_type const & resp);
+                response_t const & resp);
 
             void response(
                 handler_t const & handler, 
@@ -182,7 +184,7 @@ namespace ppbox
             boost::uint32_t time_out_;      // 配置值：超时时间（秒）
 
             SegmentStrategy * strategy_;
-            UrlSource & source_;
+            util::stream::UrlSource & source_;
 
             size_t sended_req_;             // 当前队列串行请求数
             bool source_closed_;            // ture，可以调用 open_segment(), 调用 source_->open_segment()如果失败，为false

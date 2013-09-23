@@ -3,7 +3,7 @@
 #ifndef _PPBOX_DATA_MEDIA_MEDIA_TYPES_H_
 #define _PPBOX_DATA_MEDIA_MEDIA_TYPES_H_
 
-#include <ppbox/common/ClassRegister.h>
+#include <util/tools/ClassRegister.h>
 
 #include "ppbox/data/media/M3u8Media.h"
 

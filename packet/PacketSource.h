@@ -6,6 +6,10 @@
 #include "ppbox/data/packet/PacketBuffer.h"
 #include "ppbox/data/base/DataStat.h"
 
+namespace util { namespace stream { 
+    class Source;
+}}
+
 namespace ppbox
 {
     namespace data
@@ -24,7 +28,7 @@ namespace ppbox
         public:
             PacketSource(
                 PacketFeature const & feature, 
-                SourceBase & source);
+                util::stream::Source & source);
 
             ~PacketSource();
 
@@ -60,7 +64,7 @@ namespace ppbox
                 boost::system::error_code & ec);
 
         public:
-            SourceBase & source() const
+            util::stream::Source & source() const
             {
                 return source_;
             }
@@ -76,7 +80,7 @@ namespace ppbox
                 size_t bytes_transferred);
 
         private:
-            SourceBase & source_;
+            util::stream::Source & source_;
             boost::system::error_code last_ec_;
             prepare_response_type resp_;
         };

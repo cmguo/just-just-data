@@ -19,7 +19,7 @@ namespace ppbox
 
         SingleSource::SingleSource(
             framework::string::Url const & url, 
-            UrlSource & source, 
+            util::stream::UrlSource & source, 
             size_t total_req)
             : util::stream::Source(source.get_io_service())
             , max_try_(size_t(-1))
@@ -82,18 +82,18 @@ namespace ppbox
             source_.set_time_out(time_out, ec);
         }
 
-        boost::system::error_code SingleSource::cancel(
+        bool SingleSource::cancel(
             boost::system::error_code & ec)
         {
             error_ = boost::asio::error::operation_aborted;
             return source_.cancel(ec);
         }
 
-        boost::system::error_code SingleSource::close(
+        bool SingleSource::close(
             boost::system::error_code & ec)
         {
             close_source(ec);
-            return ec;
+            return !ec;
         }
 
         std::size_t SingleSource::private_read_some(
@@ -323,7 +323,7 @@ namespace ppbox
         }
 
         void SingleSource::async_open_segment(
-            UrlSource::response_type const & resp)
+            response_t const & resp)
         {
             boost::system::error_code ec;
 

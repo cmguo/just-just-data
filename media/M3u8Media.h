@@ -12,7 +12,6 @@ namespace ppbox
     namespace data 
     {
 
-        class SourceBase;
         class M3u8MediaImpl;
 
         class M3u8Media

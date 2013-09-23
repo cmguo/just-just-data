@@ -10,12 +10,14 @@
 #include <boost/asio/streambuf.hpp>
 #include <boost/thread/mutex.hpp>
 
+namespace util { namespace stream { 
+    class UrlSource;
+}}
+
 namespace ppbox
 {
     namespace data
     {
-
-        class UrlSource;
 
         class M3u8MediaImpl
         {
@@ -89,7 +91,7 @@ namespace ppbox
             bool noshift_;
 
             MediaInfo info_;
-            UrlSource * source_;
+            util::stream::UrlSource * source_;
             boost::asio::deadline_timer timer_;
             boost::asio::streambuf buf_;
 

@@ -3,11 +3,11 @@
 #ifndef _PPBOX_DATA_BASE_SINGLE_SOURCE_H_
 #define _PPBOX_DATA_BASE_SINGLE_SOURCE_H_
 
-#include "ppbox/data/base/UrlSource.h"
 #include "ppbox/data/base/DataStat.h"
 #include "ppbox/data/segment/SegmentPosition.h" // for SegmentRange
 
 #include <util/stream/Source.h>
+#include <util/stream/UrlSource.h>
 
 namespace ppbox
 {
@@ -21,10 +21,12 @@ namespace ppbox
         public:
             typedef SegmentRange range_t;
 
+            typedef util::stream::UrlSource::response_type response_t;
+
         public:
             SingleSource(
                 framework::string::Url const & url, 
-                UrlSource & source, 
+                util::stream::UrlSource & source, 
                 size_t total_req = 1);
 
             ~SingleSource();
@@ -48,7 +50,7 @@ namespace ppbox
                 boost::uint32_t time = 0);
 
         public:
-            ppbox::data::SourceBase const & source() const
+            util::stream::UrlSource const & source() const
             {
                 return source_;
             }
@@ -59,10 +61,10 @@ namespace ppbox
             }
 
         public:
-            virtual boost::system::error_code cancel(
+            virtual bool cancel(
                 boost::system::error_code & ec);
 
-            virtual boost::system::error_code close(
+            virtual bool close(
                 boost::system::error_code & ec);
 
         public:
@@ -101,7 +103,7 @@ namespace ppbox
                 size_t bytes_transferred);
 
             void async_open_segment(
-                UrlSource::response_type const & resp);
+                response_t const & resp);
 
             void response(
                 handler_t const & handler, 
@@ -135,7 +137,7 @@ namespace ppbox
             boost::uint32_t time_out_;      // 配置值：超时时间（秒）
 
             framework::string::Url const & url_;
-            UrlSource & source_;
+            util::stream::UrlSource & source_;
 
             bool source_open_;
             bool source_is_open_;

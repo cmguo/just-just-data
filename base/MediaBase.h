@@ -5,7 +5,7 @@
 
 #include "ppbox/data/base/MediaInfo.h"
 
-#include <ppbox/common/ClassFactory.h>
+#include <util/tools/ClassFactory.h>
 
 namespace ppbox 
 {
@@ -80,7 +80,7 @@ namespace ppbox
         };
 
         class MediaProtocolFactory
-            : public ppbox::common::ClassFactory<
+            : public util::tools::ClassFactory<
                 MediaBase, 
                 std::string, 
                 MediaBase * (
@@ -92,7 +92,7 @@ namespace ppbox
         };
 
         class MediaFormatFactory
-            : public ppbox::common::ClassFactory<
+            : public util::tools::ClassFactory<
                 MediaBase, 
                 std::string, 
                 MediaBase * (
@@ -106,7 +106,7 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#define PPBOX_REGISTER_MEDIA_BY_PROTOCOL(k, c) PPBOX_REGISTER_CLASS_FACTORY(k, ppbox::data::MediaProtocolFactory, c)
-#define PPBOX_REGISTER_MEDIA_BY_FORMAT(k, c) PPBOX_REGISTER_CLASS_FACTORY(k, ppbox::data::MediaFormatFactory, c)
+#define PPBOX_REGISTER_MEDIA_BY_PROTOCOL(k, c) UTIL_REGISTER_CLASS_FACTORY(k, ppbox::data::MediaProtocolFactory, c)
+#define PPBOX_REGISTER_MEDIA_BY_FORMAT(k, c) UTIL_REGISTER_CLASS_FACTORY(k, ppbox::data::MediaFormatFactory, c)
 
 #endif//_PPBOX_DATA_BASE_MEDIA_BASE_H_

@@ -19,7 +19,7 @@ namespace ppbox
 
         SegmentSource::SegmentSource(
             SegmentStrategy & strategy, 
-            UrlSource & source, 
+            util::stream::UrlSource & source, 
             size_t total_req)
             : util::stream::Source(source.get_io_service())
             , segment_open(write_)
@@ -92,18 +92,18 @@ namespace ppbox
             expire_pause_time_ = framework::timer::Time::now() + framework::timer::Duration::milliseconds(time);
         }
 
-        boost::system::error_code SegmentSource::cancel(
+        bool SegmentSource::cancel(
             boost::system::error_code & ec)
         {
             error_ = boost::asio::error::operation_aborted;
             return source_.cancel(ec);
         }
 
-        boost::system::error_code SegmentSource::close(
+        bool SegmentSource::close(
             boost::system::error_code & ec)
         {
             close_all_request(ec);
-            return ec;
+            return !ec;
         }
 
         std::size_t SegmentSource::private_read_some(
@@ -476,7 +476,7 @@ namespace ppbox
 
         void SegmentSource::async_open_segment(
             bool is_next_segment, 
-            UrlSource::response_type const & resp)
+            response_t const & resp)
         {
             boost::system::error_code ec;
 

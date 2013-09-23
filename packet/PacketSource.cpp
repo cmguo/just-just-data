@@ -2,7 +2,8 @@
 
 #include "ppbox/data/Common.h"
 #include "ppbox/data/packet/PacketSource.h"
-#include "ppbox/data/base/SourceBase.h"
+
+#include <util/stream/Source.h>
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
@@ -18,7 +19,7 @@ namespace ppbox
 
         PacketSource::PacketSource(
             PacketFeature const & feature, 
-            SourceBase & source)
+            util::stream::Source & source)
             : PacketBuffer(feature)
             , source_(source)
         {

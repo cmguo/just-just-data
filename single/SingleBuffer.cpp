@@ -1,7 +1,7 @@
-// SourceStream.cpp
+// SingleBuffer.cpp
 
 #include "ppbox/data/Common.h"
-#include "ppbox/data/single/SourceStream.h"
+#include "ppbox/data/single/SingleBuffer.h"
 #include <ppbox/data/single/SingleSource.h>
 #include <ppbox/data/base/Error.h>
 
@@ -17,9 +17,9 @@ namespace ppbox
     namespace data
     {
 
-        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.SourceStream", framework::logger::Debug);
+        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.SingleBuffer", framework::logger::Debug);
 
-        SourceStream::SourceStream(
+        SingleBuffer::SingleBuffer(
             ppbox::data::SingleSource & source, 
             boost::uint32_t buffer_size, 
             boost::uint32_t prepare_size)
@@ -31,14 +31,14 @@ namespace ppbox
         {
         }
 
-        SourceStream::~SourceStream()
+        SingleBuffer::~SingleBuffer()
         {
         }
 
         // 目前只发生在，seek到一个分段，还没有该分段头部数据时，
         // 此时size为head_size_头部数据大小 
         // TO BE FIXED
-        bool SourceStream::seek(
+        bool SingleBuffer::seek(
             boost::uint64_t pos, 
             boost::uint64_t size, 
             boost::system::error_code & ec)
@@ -56,14 +56,14 @@ namespace ppbox
             return !ec;
         }
 
-        bool SourceStream::seek(
+        bool SingleBuffer::seek(
             boost::uint64_t pos, 
             boost::system::error_code & ec)
         {
             return seek(pos, invalid_size, ec);
         }
 
-        size_t SourceStream::prepare(
+        size_t SingleBuffer::prepare(
             size_t amount, 
             boost::system::error_code & ec)
         {
@@ -85,7 +85,7 @@ namespace ppbox
             return amount;
         }
 
-        size_t SourceStream::prepare_at_least(
+        size_t SingleBuffer::prepare_at_least(
             size_t amount, 
             boost::system::error_code & ec)
         {
@@ -97,7 +97,7 @@ namespace ppbox
             return n;
         }
 
-        void SourceStream::async_prepare(
+        void SingleBuffer::async_prepare(
             size_t amount, 
             prepare_response_type const & resp)
         {
@@ -117,10 +117,10 @@ namespace ppbox
             prepare_buffers_.clear();
             Buffer::prepare(amount, prepare_buffers_);
             source_.async_read_some(prepare_buffers_, 
-                boost::bind(&SourceStream::handle_async, this, _1, _2));
+                boost::bind(&SingleBuffer::handle_async, this, _1, _2));
         }
 
-        void SourceStream::handle_async(
+        void SingleBuffer::handle_async(
             boost::system::error_code const & ec, 
             size_t bytes_transferred)
         {
@@ -132,7 +132,7 @@ namespace ppbox
             resp(ec, 0);
         }
 
-        MemoryLock * SourceStream::fetch(
+        MemoryLock * SingleBuffer::fetch(
             boost::uint32_t track, 
             std::vector<DataBlock> & blocks, 
             std::deque<boost::asio::const_buffer> & data, 
@@ -160,7 +160,7 @@ namespace ppbox
             return NULL;
         }
 
-        void SourceStream::putback(
+        void SingleBuffer::putback(
             MemoryLock * mlock)
         {
             if (Buffer::putback(mlock)) {
@@ -169,7 +169,7 @@ namespace ppbox
             }
         }
 
-        bool SourceStream::read_seek(
+        bool SingleBuffer::read_seek(
             boost::uint64_t pos, 
             boost::system::error_code & ec)
         {
@@ -206,19 +206,19 @@ namespace ppbox
             return !ec;
         }
 
-        void SourceStream::pause_stream()
+        void SingleBuffer::pause_stream()
         {
             if (!last_ec_)
                 last_ec_ = boost::asio::error::would_block;
         }
 
-        void SourceStream::resume_stream()
+        void SingleBuffer::resume_stream()
         {
             if (last_ec_ == boost::asio::error::would_block)
                 last_ec_.clear();
         }
 
-        bool SourceStream::source_seek(
+        bool SingleBuffer::source_seek(
             boost::system::error_code & ec)
         {
             boost::uint64_t size = write_hole_size();
@@ -229,25 +229,25 @@ namespace ppbox
             return !ec;
         }
 
-        void SourceStream::on_event(
+        void SingleBuffer::on_event(
             util::event::Event const & ec)
         {
         }
 
-        boost::uint64_t SourceStream::position()
+        boost::uint64_t SingleBuffer::position()
         {
             pos_type pos = stream_pos_ + off_type(gptr() - eback());
             return pos;
         }
 
-        void SourceStream::update()
+        void SingleBuffer::update()
         {
             boost::system::error_code ec;
             read_seek(position(), ec);
             assert(!ec);
         }
 
-        SourceStream::int_type SourceStream::underflow()
+        SingleBuffer::int_type SingleBuffer::underflow()
         {
             update();
             if (gptr() < egptr()) {
@@ -257,7 +257,7 @@ namespace ppbox
             }
         }
 
-        SourceStream::pos_type SourceStream::seekoff(
+        SingleBuffer::pos_type SingleBuffer::seekoff(
             off_type off, 
             std::ios_base::seekdir dir,
             std::ios_base::openmode mode)
@@ -279,7 +279,7 @@ namespace ppbox
             }
         }
 
-        SourceStream::pos_type SourceStream::seekpos(
+        SingleBuffer::pos_type SingleBuffer::seekpos(
             pos_type position, 
             std::ios_base::openmode mode)
         {

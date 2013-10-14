@@ -1,7 +1,7 @@
-// SourceStream.h
+// SingleBuffer.h
 
-#ifndef _PPBOX_DATA_BASE_SOURCE_STREAM_H_
-#define _PPBOX_DATA_BASE_SOURCE_STREAM_H_
+#ifndef _PPBOX_DATA_SINGLE_SINGLE_BUFFER_H_
+#define _PPBOX_DATA_SINGLE_SINGLE_BUFFER_H_
 
 #include "ppbox/data/base/DataBase.h"
 #include "ppbox/data/base/Buffer.h"
@@ -18,7 +18,7 @@ namespace ppbox
 
         class SingleSource;
 
-        class SourceStream
+        class SingleBuffer
             : public Buffer
             , public std::basic_streambuf<boost::uint8_t>
         {
@@ -29,12 +29,12 @@ namespace ppbox
             > prepare_response_type;
 
         public:
-            SourceStream(
+            SingleBuffer(
                 ppbox::data::SingleSource & source, 
                 boost::uint32_t buffer_size, 
                 boost::uint32_t prepare_size);
 
-            ~SourceStream();
+            ~SingleBuffer();
 
         public:
             bool seek(
@@ -149,4 +149,4 @@ namespace ppbox
     } // namespace data
 } // namespace ppbox
 
-#endif // _PPBOX_DATA_BASE_SOURCE_STREAM_H_
+#endif // _PPBOX_DATA_SINGLE_SINGLE_BUFFER_H_

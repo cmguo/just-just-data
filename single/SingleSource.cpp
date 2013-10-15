@@ -248,7 +248,7 @@ namespace ppbox
                 bool is_error = handle_error(ec);
                 if (is_error) {
                     reset_zero_interval();
-                        async_open_segment(boost::bind(&SingleSource::handle_async, this, buffers, handler, _1, (size_t)-1));
+                        async_open_source(boost::bind(&SingleSource::handle_async, this, buffers, handler, _1, (size_t)-1));
                 } else {
                     boost::system::error_code ec1;
                     close_source(ec1);
@@ -260,7 +260,7 @@ namespace ppbox
                 ec = boost::asio::error::eof;
                 handle_async(buffers, handler, ec, 0);
             } else if (!source_open_) {
-                async_open_segment(boost::bind(&SingleSource::handle_async, this, buffers, handler, _1, (size_t)-1));
+                async_open_source(boost::bind(&SingleSource::handle_async, this, buffers, handler, _1, (size_t)-1));
             } else {
                 update_size(ec);
                 source_.async_read_some(buffers, boost::bind(&SingleSource::handle_async, this, buffers, handler, _1, _2));
@@ -322,7 +322,7 @@ namespace ppbox
             return true;
         }
 
-        void SingleSource::async_open_segment(
+        void SingleSource::async_open_source(
             response_t const & resp)
         {
             boost::system::error_code ec;
@@ -342,6 +342,8 @@ namespace ppbox
                 write_range_.pos, 
                 write_range_.end == write_range_.big_offset ? invalid_size : write_range_.end, 
                 resp);
+
+            LOG_DEBUG("[async_open_source] range: " << write_range_.pos << " - " << write_range_.end);
         }
 
         bool SingleSource::source_is_open(

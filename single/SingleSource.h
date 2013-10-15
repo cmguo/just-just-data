@@ -102,7 +102,7 @@ namespace ppbox
                 boost::system::error_code const & ecc, 
                 size_t bytes_transferred);
 
-            void async_open_segment(
+            void async_open_source(
                 response_t const & resp);
 
             void response(

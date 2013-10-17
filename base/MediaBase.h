@@ -79,34 +79,33 @@ namespace ppbox
             framework::string::Url url_;
         };
 
+        struct MediaTraits
+            : util::tools::ClassFactoryTraits
+        {
+            typedef std::string key_type;
+            typedef MediaBase * (create_proto)(
+                boost::asio::io_service &, 
+                framework::string::Url const &);
+
+            static boost::system::error_code error_not_found();
+        };
+
         class MediaProtocolFactory
-            : public util::tools::ClassFactory<
-                MediaBase, 
-                std::string, 
-                MediaBase * (
-                    boost::asio::io_service &,
-                    framework::string::Url const &), 
-                MediaProtocolFactory
-            >
+            : public util::tools::ClassFactory<MediaTraits>
         {
         };
 
         class MediaFormatFactory
-            : public util::tools::ClassFactory<
-                MediaBase, 
-                std::string, 
-                MediaBase * (
-                    boost::asio::io_service &,
-                    framework::string::Url const &), 
-                MediaFormatFactory
-            >
+            : public util::tools::ClassFactory<MediaTraits>
         {
         };
 
     } // namespace data
 } // namespace ppbox
 
-#define PPBOX_REGISTER_MEDIA_BY_PROTOCOL(k, c) UTIL_REGISTER_CLASS_FACTORY(k, ppbox::data::MediaProtocolFactory, c)
-#define PPBOX_REGISTER_MEDIA_BY_FORMAT(k, c) UTIL_REGISTER_CLASS_FACTORY(k, ppbox::data::MediaFormatFactory, c)
+#define PPBOX_REGISTER_MEDIA_BY_PROTOCOL(k, c) \
+    UTIL_REGISTER_CLASS(ppbox::data::MediaProtocolFactory, k, c)
+#define PPBOX_REGISTER_MEDIA_BY_FORMAT(k, c) \
+    UTIL_REGISTER_CLASS(ppbox::data::MediaFormatFactory, k, c)
 
 #endif//_PPBOX_DATA_BASE_MEDIA_BASE_H_

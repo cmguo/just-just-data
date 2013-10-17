@@ -16,11 +16,6 @@ namespace ppbox
     namespace data
     {
 
-        boost::system::error_code MediaBase::error_not_found()
-        {
-            return error::bad_media_type;
-        }
-
         MediaBase * MediaBase::create(
             boost::asio::io_service & io_svc,
             framework::string::Url const & url, 
@@ -65,6 +60,11 @@ namespace ppbox
             url = url_;
             ec.clear();
             return true;
+        }
+
+        boost::system::error_code MediaTraits::error_not_found()
+        {
+            return error::bad_media_type;
         }
 
     } // data

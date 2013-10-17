@@ -55,7 +55,7 @@ namespace ppbox
         {
             closed_ = false;
             boost::system::error_code ec;
-            source_ = util::stream::UrlSource::create(timer_.get_io_service(), url_.protocol(), ec);
+            source_ = util::stream::UrlSourceFactory::create(timer_.get_io_service(), url_.protocol(), ec);
             if (source_ == NULL) {
                 timer_.get_io_service().post(
                     boost::bind(resp, ec));

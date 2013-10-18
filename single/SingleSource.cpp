@@ -248,7 +248,7 @@ namespace ppbox
                 bool is_error = handle_error(ec);
                 if (is_error) {
                     reset_zero_interval();
-                        async_open_source(boost::bind(&SingleSource::handle_async, this, buffers, handler, _1, (size_t)-1));
+                    async_open_source(boost::bind(&SingleSource::handle_async, this, buffers, handler, _1, (size_t)-1));
                 } else {
                     boost::system::error_code ec1;
                     close_source(ec1);

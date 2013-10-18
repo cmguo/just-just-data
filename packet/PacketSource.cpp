@@ -32,6 +32,10 @@ namespace ppbox
         size_t PacketSource::prepare(
             boost::system::error_code & ec)
         {
+            if (last_ec_ && last_ec_ != boost::asio::error::would_block) {
+                ec = last_ec_;
+                return 0;
+            }
             if (!PacketBuffer::prepare(ec)) {
                 last_ec_ = ec;
                 return false;
@@ -41,6 +45,12 @@ namespace ppbox
             if (size) {
                 commit(size);
             } else {
+                if (ec && ec != boost::asio::error::would_block) {
+                    LOG_WARN("[prepare] read_some: " << ec.message());
+                    if (ec == boost::asio::error::eof) {
+                        LOG_DEBUG("[prepare] read eof");
+                    }
+                }
                 last_ec_ = ec;
             }
             increase_bytes(size);
@@ -78,7 +88,14 @@ namespace ppbox
             if (bytes_transferred) {
                 commit(bytes_transferred);
             }
+            if (ec && ec != boost::asio::error::would_block) {
+                LOG_WARN("[prepare] read_some: " << ec.message());
+                if (ec == boost::asio::error::eof) {
+                    LOG_DEBUG("[prepare] read eof");
+                }
+            }
             last_ec_ = ec;
+            increase_bytes(bytes_transferred);
             prepare_response_type resp;
             resp.swap(resp_);
             resp(ec, bytes_transferred);

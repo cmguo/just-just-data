@@ -37,7 +37,7 @@ namespace ppbox
                 return 0;
             }
             if (!PacketBuffer::prepare(ec)) {
-                last_ec_ = ec;
+                //last_ec_ = ec;
                 return false;
             }
             size_t size = source_.read_some(

@@ -26,14 +26,38 @@ namespace ppbox
 
         struct StreamStatus
         {
+            enum StatusEnum
+            {
+                closed, 
+                media_opening, 
+                stream_opening, 
+                opened, 
+                paused,
+                playing, 
+                seeking, 
+            };
+
             StreamStatus()
-                : video_index(size_t(-1))
-                , audio_index(size_t(-1))
+                : status_ex(closed)
             {
             }
 
-            size_t video_index;
-            size_t audio_index;
+            StatusEnum status() const
+            {
+                return StatusEnum(status_ex & 0x007f);
+            }
+
+            bool blocked() const
+            {
+                return (status_ex & 0x80) != 0;
+            }
+
+            boost::uint64_t buf_time() const
+            {
+                return time_range.buf - time_range.pos;
+            }
+
+            boost::uint32_t status_ex;
             StreamRange byte_range;
             StreamRange time_range;
             boost::system::error_code buf_ec;

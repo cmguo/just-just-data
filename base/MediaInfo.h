@@ -46,6 +46,7 @@ namespace ppbox
             MediaInfo()
                 : file_size(invalid_size)
                 , duration(invalid_size)
+                , head_size(0)
                 , bitrate(0)
                 , start_time(0)
                 , delay(0)
@@ -56,13 +57,14 @@ namespace ppbox
 
             boost::uint64_t file_size;
             boost::uint64_t duration;
+            boost::uint32_t head_size;  // 头部大小，仅用于判断打开成功需要的数据量
             boost::uint32_t bitrate;    // 平均码流率
 
             // live only
-            time_t start_time;
-            boost::uint32_t delay;
-            boost::uint64_t current;    // 当前时刻，描述有效数据量，播放现场还要根据delay计算
-            boost::uint64_t shift;      // 能够时移的长度
+            time_t start_time;          // 打开时服务端的时间点
+            boost::uint32_t delay;      // 播放延后长度，相对于current
+            boost::uint64_t current;    // 当前时刻，描述服务端有效数据量，播放现场还要根据delay计算
+            boost::uint64_t shift;      // 能够时移的长度，相对于current
 
             // description
             std::string name;

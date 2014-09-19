@@ -221,7 +221,8 @@ namespace ppbox
         private:
             void reset(
                 SegmentPosition const & base, 
-                SegmentPosition const & pos);
+                SegmentPosition const & pos, 
+                boost::system::error_code & ec);
 
             void clear_segments();
 

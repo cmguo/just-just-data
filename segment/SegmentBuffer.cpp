@@ -33,12 +33,14 @@ namespace ppbox
         {
             //base_.index = 1; //
             source_.segment_open.on(boost::bind(&SegmentBuffer::on_event, this, _1, _2));
+            source_.segment_opened.on(boost::bind(&SegmentBuffer::on_event, this, _1, _2));
             source_.segment_close.on(boost::bind(&SegmentBuffer::on_event, this, _1, _2));
         }
 
         SegmentBuffer::~SegmentBuffer()
         {
             source_.segment_close.un(boost::bind(&SegmentBuffer::on_event, this, _1, _2));
+            source_.segment_opened.un(boost::bind(&SegmentBuffer::on_event, this, _1, _2));
             source_.segment_open.un(boost::bind(&SegmentBuffer::on_event, this, _1, _2));
         }
 
@@ -52,9 +54,7 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             if (!base.is_same_segment(base_)) {
-                boost::system::error_code ec1;
-                source_.seek(pos, size, ec);
-                reset(base, pos);
+                reset(base, pos, ec);
                 return !ec;
             }
 
@@ -74,8 +74,10 @@ namespace ppbox
                 read_stream_->seek(read_.byte_range.pos);
             }
 
-            if (last_ec_ != boost::asio::error::would_block)
+            if (last_ec_ != boost::asio::error::would_block) {
+                LOG_DEBUG("[seek] clear error, last_ec_: " << last_ec_ << " ec: " << ec);
                 last_ec_ = ec;
+            }
 
             return !ec;
         }
@@ -486,6 +488,8 @@ namespace ppbox
             if (event == source_.segment_open) {
                 insert_segment(false, source_.segment_open.segment);
                 //find_segment(out_position(), write_);
+            } else if (event == source_.segment_opened) {
+                insert_segment(false, source_.segment_opened.segment);
             } else if (event == source_.segment_close) {
                 insert_segment(false, source_.segment_close.segment);
                 clear_segments();
@@ -496,12 +500,14 @@ namespace ppbox
         {
             SegmentPosition seg = read_;
             seg.byte_range.pos = in_position() - seg.byte_range.big_offset;
-            reset(base_, seg);
+            boost::system::error_code ec;
+            reset(base_, seg, ec);
         }
 
         void SegmentBuffer::reset(
             SegmentPosition const & base, 
-            SegmentPosition const & pos)
+            SegmentPosition const & pos, 
+            boost::system::error_code & ec)
         {
             base_ = base;
             Buffer::reset(pos.byte_range.big_pos());
@@ -512,10 +518,17 @@ namespace ppbox
             read_ = pos;
             write_ = pos;
 
+            source_.seek(pos, ec);
+
             if (read_stream_)
                 read_stream_->seek(pos.byte_range.pos);
             if (write_stream_)
                 write_stream_->seek(pos.byte_range.pos);
+
+            if (last_ec_ != boost::asio::error::would_block) {
+                LOG_DEBUG("[reset] clear error, last_ec_: " << last_ec_ << " ec: " << ec);
+                last_ec_ = ec;
+            }
         }
 
         void SegmentBuffer::clear_segments()
@@ -552,6 +565,9 @@ namespace ppbox
                 if (!is_read && (segment.byte_range.end == invalid_size 
                     || (segment.byte_range.end > seg.byte_range.end && segment.byte_range.big_end() == (++iter)->byte_range.big_beg()))) {
                     segment.byte_range = seg.byte_range;
+                    LOG_DEBUG("[insert_segment] update segment: " << segment.index 
+                        << " time_range: " << segment.time_range.big_beg() << "-" << segment.time_range.big_end()
+                        << " byte_range: " << segment.byte_range.big_beg() << "-" << segment.byte_range.big_end());
                     if (read_ == seg) {
                         read_.byte_range.end = seg.byte_range.end;
                     }
@@ -560,6 +576,9 @@ namespace ppbox
                     }
                 } else if (is_read && segment.time_range.end == invalid_size) {
                     segment.time_range = seg.time_range;
+                    LOG_DEBUG("[insert_segment] update segment: " << segment.index 
+                        << " time_range: " << segment.time_range.big_beg() << "-" << segment.time_range.big_end()
+                        << " byte_range: " << segment.byte_range.big_beg() << "-" << segment.byte_range.big_end());
                     seg.byte_range = segment.byte_range;
                     if (read_ == seg) {
                         read_.time_range.end = seg.time_range.end;
@@ -574,29 +593,48 @@ namespace ppbox
                         if (!byte_range.followed_by(segment.byte_range))
                             break;
                         segment.time_range.follow(time_range);
+                        LOG_DEBUG("[insert_segment] update segment: " << segment.index
+                            << " time_range: " << segment.time_range.big_beg() << "-" << segment.time_range.big_end()
+                            << " byte_range: " << segment.byte_range.big_beg() << "-" << segment.byte_range.big_end());
                         if (write_ == segment) {
                             write_.time_range.big_offset = segment.time_range.big_offset;
                         }
-                        byte_range = segment.time_range;
+                        byte_range = segment.byte_range;
                         time_range = segment.time_range;
                         if (segment.time_range.end == invalid_size)
                             break;
                     }
                 }
             } else {
-                if (seg.byte_range.big_end() == invalid_size && iter != segments_.end()) {
-                    // 拖回到前面同一点，已经下载的数据还是有效，但是前面分段信息丢失了
-                    seg.byte_range.end = iter->byte_range.big_beg() - seg.byte_range.big_offset;
-                }
-                assert(iter == segments_.end() || seg.byte_range.big_end() <= iter->byte_range.big_beg());
-                if (iter != segments_.begin()) {
-                    SegmentPosition & segment = *--iter;
-                    if (segment.byte_range.followed_by(seg.byte_range)) {
-                        seg.time_range.follow(segment.time_range);
+                if (is_read) {
+                    if (seg.byte_range.big_end() == invalid_size && iter != segments_.end()) {
+                        // 拖回到前面同一点，已经下载的数据还是有效，但是前面分段信息丢失了
+                        seg.byte_range.end = iter->byte_range.big_beg() - seg.byte_range.big_offset;
                     }
-                    ++iter;
+                    assert(iter == segments_.end() || seg.byte_range.big_end() <= iter->byte_range.big_beg());
+                    if (iter != segments_.begin()) {
+                        SegmentPosition & segment = *--iter;
+                        if (segment.byte_range.followed_by(seg.byte_range)) {
+                            segment.time_range.end = seg.time_range.big_beg() - segment.time_range.big_offset;
+                            LOG_DEBUG("[insert_segment] update segment: " << segment.index
+                                << " time_range: " << segment.time_range.big_beg() << "-" << segment.time_range.big_end()
+                                << " byte_range: " << segment.byte_range.big_beg() << "-" << segment.byte_range.big_end());
+                        }
+                        ++iter;
+                    }
+                } else {
+                    if (iter != segments_.begin()) {
+                        SegmentPosition & segment = *--iter;
+                        if (segment.byte_range.followed_by(seg.byte_range)) {
+                            seg.time_range.follow(segment.time_range);
+                        }
+                        ++iter;
+                    }
                 }
                 segments_.insert(iter, seg);
+                LOG_DEBUG("[insert_segment] insert segment: " << seg.index 
+                    << " time_range: " << seg.time_range.big_beg() << "-" << seg.time_range.big_end()
+                    << " byte_range: " << seg.byte_range.big_beg() << "-" << seg.byte_range.big_end());
             }
         }
 

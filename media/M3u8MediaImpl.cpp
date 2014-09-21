@@ -359,12 +359,12 @@ namespace ppbox
                 return;
             }
 
-            if (info_.format.empty()) {
+            if (info_.format_type.empty()) {
                 std::string::size_type pos = segment_urls_.front().find('.');
                 if (pos != std::string::npos) {
-                    info_.format = segment_urls_.front().substr(pos + 1);
+                    info_.format_type = segment_urls_.front().substr(pos + 1);
                 }
-                if (info_.format == "ts") {
+                if (info_.format_type == "ts") {
                     info_.flags |= SegmentMediaFlags::f_smoth;
                     info_.flags |= SegmentMediaFlags::f_time_smoth;
                 }

@@ -28,7 +28,7 @@ namespace ppbox
             MediaBasicInfo & info,
             boost::system::error_code & ec) const
         {
-            info.format = url_.param("format");
+            info.format_type = url_.param("format");
             info.flags = MediaBasicInfo::f_segment;
             ec.clear();
             return true;

@@ -44,11 +44,11 @@ namespace ppbox
             MediaBasicInfo & info, 
             boost::system::error_code & ec) const
         {
-            info.format = url_.param("format");
-            if (info.format.empty()) {
+            info.format_type = url_.param("format");
+            if (info.format_type.empty()) {
                 std::string::size_type pos = url_.path().rfind(".");
                 if (pos != std::string::npos) {
-                    info.format = url_.path().substr(pos + 1);
+                    info.format_type = url_.path().substr(pos + 1);
                 }
             }
             ec.clear();

@@ -3,6 +3,8 @@
 #ifndef _PPBOX_DATA_BASE_DATA_BASE_H_
 #define _PPBOX_DATA_BASE_DATA_BASE_H_
 
+#include <ppbox/avbase/MediaInfo.h>
+
 #include <framework/string/Url.h>
 
 namespace ppbox 
@@ -10,16 +12,17 @@ namespace ppbox
     namespace data 
     {
 
-        static boost::uint64_t const invalid_size = boost::uint64_t(-1);
+        using ppbox::avbase::MediaBasicInfo;
+        using ppbox::avbase::MediaInfo;
 
-        struct MediaInfo;
-        class MediaBase;
-
-        struct StreamStatus;
+        using ppbox::avbase::invalid_size;
 
         struct DataStat;
 
+        class MediaBase;
+        class SingleMedia;
         class SegmentMedia;
+        class PacketMedia;
 
     } // namespace data
 } // namespace ppbox

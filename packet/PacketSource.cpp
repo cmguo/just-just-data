@@ -38,6 +38,7 @@ namespace ppbox
             }
             if (!PacketBuffer::prepare(ec)) {
                 //last_ec_ = ec;
+                LOG_WARN("[prepare] prepare: " << ec.message());
                 return false;
             }
             size_t size = source_.read_some(
@@ -51,8 +52,8 @@ namespace ppbox
                         LOG_DEBUG("[prepare] read eof");
                     }
                 }
-                last_ec_ = ec;
             }
+            last_ec_ = ec;
             increase_bytes(size);
             return size;
         }

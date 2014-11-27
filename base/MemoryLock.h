@@ -1,11 +1,11 @@
 // MemoryLock.h
 
-#ifndef _PPBOX_DATA_BASE_MEMORY_LOCK_H_
-#define _PPBOX_DATA_BASE_MEMORY_LOCK_H_
+#ifndef _JUST_DATA_BASE_MEMORY_LOCK_H_
+#define _JUST_DATA_BASE_MEMORY_LOCK_H_
 
 #include <framework/container/List.h>
 
-namespace ppbox 
+namespace just 
 {
     namespace data 
     {
@@ -27,6 +27,6 @@ namespace ppbox
         };
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif//_PPBOX_DATA_BASE_MEMORY_LOCK_H_
+#endif//_JUST_DATA_BASE_MEMORY_LOCK_H_

@@ -1,11 +1,11 @@
 // SegmentEvent.h
 
-#ifndef _PPBOX_DATA_SEGMENT_SOURCE_EVENT_H_
-#define _PPBOX_DATA_SEGMENT_SOURCE_EVENT_H_
+#ifndef _JUST_DATA_SEGMENT_SOURCE_EVENT_H_
+#define _JUST_DATA_SEGMENT_SOURCE_EVENT_H_
 
 #include <util/event/Event.h>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -26,6 +26,6 @@ namespace ppbox
         };
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif // _PPBOX_DATA_SEGMENT_SOURCE_EVENT_H_
+#endif // _JUST_DATA_SEGMENT_SOURCE_EVENT_H_

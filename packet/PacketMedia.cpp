@@ -1,14 +1,14 @@
 // PacketMedia.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/packet/PacketMedia.h"
+#include "just/data/Common.h"
+#include "just/data/packet/PacketMedia.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.PacketMedia", framework::logger::Debug);
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.data.PacketMedia", framework::logger::Debug);
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -54,4 +54,4 @@ namespace ppbox
         }
 
     } // data
-} // ppbox
+} // just

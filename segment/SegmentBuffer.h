@@ -1,15 +1,15 @@
 // SegmentBuffer.h
 
-#ifndef _PPBOX_DATA_SEGMENT_SEGMENT_BUFFER_H_
-#define _PPBOX_DATA_SEGMENT_SEGMENT_BUFFER_H_
+#ifndef _JUST_DATA_SEGMENT_SEGMENT_BUFFER_H_
+#define _JUST_DATA_SEGMENT_SEGMENT_BUFFER_H_
 
-#include "ppbox/data/segment/SegmentStrategy.h"
-#include "ppbox/data/base/Buffer.h"
+#include "just/data/segment/SegmentStrategy.h"
+#include "just/data/base/Buffer.h"
 
 #include <util/event/Event.h>
 #include <util/stream/StreamBuffers.h>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -32,7 +32,7 @@ namespace ppbox
 
         public:
             SegmentBuffer(
-                ppbox::data::SegmentSource & source, 
+                just::data::SegmentSource & source, 
                 boost::uint32_t buffer_size, 
                 boost::uint32_t prepare_size);
 
@@ -136,7 +136,7 @@ namespace ppbox
             void clear();
 
         public:
-            ppbox::data::SegmentSource const & source() const
+            just::data::SegmentSource const & source() const
             {
                 return source_;
             }
@@ -241,7 +241,7 @@ namespace ppbox
             void dump();
 
         private:
-            ppbox::data::SegmentSource & source_;
+            just::data::SegmentSource & source_;
             boost::uint32_t prepare_size_;  // 下载一次，最大的下载数据大小
             util::stream::StreamMutableBuffers prepare_buffers_;
 
@@ -259,6 +259,6 @@ namespace ppbox
         };
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif // _PPBOX_DATA_SEGMENT_SEGMENT_BUFFER_H_
+#endif // _JUST_DATA_SEGMENT_SEGMENT_BUFFER_H_

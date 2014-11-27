@@ -1,8 +1,8 @@
 // SingleSource.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/single/SingleSource.h"
-#include "ppbox/data/base/Error.h"
+#include "just/data/Common.h"
+#include "just/data/single/SingleSource.h"
+#include "just/data/base/Error.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
@@ -10,12 +10,12 @@
 
 #include <boost/bind.hpp>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
 
-        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.SingleSource", framework::logger::Debug);
+        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.data.SingleSource", framework::logger::Debug);
 
         SingleSource::SingleSource(
             framework::string::Url const & url, 
@@ -372,4 +372,4 @@ namespace ppbox
         }
 
     } // namespace demux
-} // namespace ppbox
+} // namespace just

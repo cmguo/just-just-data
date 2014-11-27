@@ -1,13 +1,13 @@
 // M3u8Media.h
 
-#ifndef _PPBOX_DATA_MEDIA_M3U8_MEDIA_H_
-#define _PPBOX_DATA_MEDIA_M3U8_MEDIA_H_
+#ifndef _JUST_DATA_MEDIA_M3U8_MEDIA_H_
+#define _JUST_DATA_MEDIA_M3U8_MEDIA_H_
 
-#include "ppbox/data/segment/SegmentMedia.h"
+#include "just/data/segment/SegmentMedia.h"
 
 #include <boost/shared_ptr.hpp>
 
-namespace ppbox 
+namespace just 
 {
     namespace data 
     {
@@ -71,9 +71,9 @@ namespace ppbox
             M3u8MediaImpl * impl_;
         };
 
-        PPBOX_REGISTER_MEDIA_BY_FORMAT("m3u8", M3u8Media);
+        JUST_REGISTER_MEDIA_BY_FORMAT("m3u8", M3u8Media);
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif//_PPBOX_DATA_MEDIA_M3U8_MEDIA_H_
+#endif//_JUST_DATA_MEDIA_M3U8_MEDIA_H_

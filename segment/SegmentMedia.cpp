@@ -1,14 +1,14 @@
 // SegmentMedia.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/segment/SegmentMedia.h"
+#include "just/data/Common.h"
+#include "just/data/segment/SegmentMedia.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.SegmentMedia", framework::logger::Debug);
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.data.SegmentMedia", framework::logger::Debug);
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -35,4 +35,4 @@ namespace ppbox
         }
 
     } // data
-} // ppbox
+} // just

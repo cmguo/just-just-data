@@ -1,17 +1,17 @@
 // DataModule.h
 
-#ifndef _PPBOX_DATA_DATA__MODULE_H_
-#define _PPBOX_DATA_DATA__MODULE_H_
+#ifndef _JUST_DATA_DATA__MODULE_H_
+#define _JUST_DATA_DATA__MODULE_H_
 
-#include "ppbox/common/CommonModuleBase.h"
+#include "just/common/CommonModuleBase.h"
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
 
         class DataModule
-            : public ppbox::common::CommonModuleBase<DataModule>
+            : public just::common::CommonModuleBase<DataModule>
         {
         public:
             DataModule(
@@ -26,6 +26,6 @@ namespace ppbox
         };
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif // _PPBOX_DATA_DATA__MODULE_H_
+#endif // _JUST_DATA_DATA__MODULE_H_

@@ -1,9 +1,9 @@
 
 // M3u8Media.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/media/M3u8MediaImpl.h"
-#include "ppbox/data/base/Error.h"
+#include "just/data/Common.h"
+#include "just/data/media/M3u8MediaImpl.h"
+#include "just/data/base/Error.h"
 
 #include <util/stream/UrlSource.h>
 
@@ -17,9 +17,9 @@
 
 #include <sstream>
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.M3u8Media", framework::logger::Debug);
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.data.M3u8Media", framework::logger::Debug);
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -427,4 +427,4 @@ namespace ppbox
         }
 
     } // data
-} // ppbox
+} // just

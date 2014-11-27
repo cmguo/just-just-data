@@ -1,10 +1,10 @@
 // Buffer.h
 
-#ifndef _PPBOX_DATA_BASE_BUFFER_H_
-#define _PPBOX_DATA_BASE_BUFFER_H_
+#ifndef _JUST_DATA_BASE_BUFFER_H_
+#define _JUST_DATA_BASE_BUFFER_H_
 
-#include "ppbox/data/base/MemoryLock.h"
-#include "ppbox/data/base/DataBlock.h"
+#include "just/data/base/MemoryLock.h"
+#include "just/data/base/DataBlock.h"
 
 #include <util/buffers/Buffers.h>
 
@@ -13,7 +13,7 @@
 
 #include <boost/asio/buffer.hpp>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -534,6 +534,6 @@ namespace ppbox
         };
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif // _PPBOX_DATA_BASE_BUFFER_H_
+#endif // _JUST_DATA_BASE_BUFFER_H_

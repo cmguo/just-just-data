@@ -1,10 +1,10 @@
 // M3u8MediaImpl.h
 
-#ifndef _PPBOX_DATA_MEDIA_M3U8_MEDIA_IMPL_H_
-#define _PPBOX_DATA_MEDIA_M3U8_MEDIA_IMPL_H_
+#ifndef _JUST_DATA_MEDIA_M3U8_MEDIA_IMPL_H_
+#define _JUST_DATA_MEDIA_M3U8_MEDIA_IMPL_H_
 
-#include "ppbox/data/base/MediaBase.h"
-#include "ppbox/data/segment/SegmentInfo.h"
+#include "just/data/base/MediaBase.h"
+#include "just/data/segment/SegmentInfo.h"
 
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/asio/streambuf.hpp>
@@ -14,7 +14,7 @@ namespace util { namespace stream {
     class UrlSource;
 }}
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -112,6 +112,6 @@ namespace ppbox
         };
 
     } // data
-} // ppbox
+} // just
 
-#endif // _PPBOX_DATA_MEDIA_M3U8_MEDIA_IMPL_H_
+#endif // _JUST_DATA_MEDIA_M3U8_MEDIA_IMPL_H_

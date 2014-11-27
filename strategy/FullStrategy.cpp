@@ -1,9 +1,9 @@
 // FullStrategy.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/strategy/FullStrategy.h"
+#include "just/data/Common.h"
+#include "just/data/strategy/FullStrategy.h"
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -19,4 +19,4 @@ namespace ppbox
         }
 
     } // namespace data
-} // namespace ppbox
+} // namespace just

@@ -1,16 +1,16 @@
 // SegmentSource.h
 
-#ifndef _PPBOX_DATA_SEGMENT_SEGMENT_SOURCE_H_
-#define _PPBOX_DATA_SEGMENT_SEGMENT_SOURCE_H_
+#ifndef _JUST_DATA_SEGMENT_SEGMENT_SOURCE_H_
+#define _JUST_DATA_SEGMENT_SEGMENT_SOURCE_H_
 
-#include "ppbox/data/segment/SegmentStrategy.h"
-#include "ppbox/data/segment/SegmentEvent.h"
-#include "ppbox/data/base/DataStat.h"
+#include "just/data/segment/SegmentStrategy.h"
+#include "just/data/segment/SegmentEvent.h"
+#include "just/data/base/DataStat.h"
 
 #include <util/stream/Source.h>
 #include <util/stream/UrlSource.h>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -202,6 +202,6 @@ namespace ppbox
         };
 
     } // namespace demux
-} // namespace ppbox
+} // namespace just
 
-#endif // _PPBOX_DATA_SEGMENT_SEGMENT_SOURCE_H_
+#endif // _JUST_DATA_SEGMENT_SEGMENT_SOURCE_H_

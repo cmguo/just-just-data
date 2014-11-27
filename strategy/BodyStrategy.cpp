@@ -1,9 +1,9 @@
 // BodyStrategy.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/strategy/BodyStrategy.h"
+#include "just/data/Common.h"
+#include "just/data/strategy/BodyStrategy.h"
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -35,4 +35,4 @@ namespace ppbox
         }
 
     } // namespace data
-} // namespace ppbox
+} // namespace just

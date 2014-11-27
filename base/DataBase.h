@@ -1,21 +1,21 @@
 // DataBase.h
 
-#ifndef _PPBOX_DATA_BASE_DATA_BASE_H_
-#define _PPBOX_DATA_BASE_DATA_BASE_H_
+#ifndef _JUST_DATA_BASE_DATA_BASE_H_
+#define _JUST_DATA_BASE_DATA_BASE_H_
 
-#include <ppbox/avbase/MediaInfo.h>
+#include <just/avbase/MediaInfo.h>
 
 #include <framework/string/Url.h>
 
-namespace ppbox 
+namespace just 
 {
     namespace data 
     {
 
-        using ppbox::avbase::MediaBasicInfo;
-        using ppbox::avbase::MediaInfo;
+        using just::avbase::MediaBasicInfo;
+        using just::avbase::MediaInfo;
 
-        using ppbox::avbase::invalid_size;
+        using just::avbase::invalid_size;
 
         struct DataStat;
 
@@ -25,6 +25,6 @@ namespace ppbox
         class PacketMedia;
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif//_PPBOX_DATA_BASE_DATA_BASE_H_
+#endif//_JUST_DATA_BASE_DATA_BASE_H_

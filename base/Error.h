@@ -1,9 +1,9 @@
 // Error.h
 
-#ifndef _PPBOX_DATA_BASE_ERROR_H_
-#define _PPBOX_DATA_BASE_ERROR_H_
+#ifndef _JUST_DATA_BASE_ERROR_H_
+#define _JUST_DATA_BASE_ERROR_H_
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -66,7 +66,7 @@ namespace ppbox
         } // namespace data_error
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
 namespace boost
 {
@@ -74,16 +74,16 @@ namespace boost
     {
 
         template<>
-        struct is_error_code_enum<ppbox::data::error::errors>
+        struct is_error_code_enum<just::data::error::errors>
         {
             BOOST_STATIC_CONSTANT(bool, value = true);
         };
 
 #ifdef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
-        using ppbox::data::data_error::make_error_code;
+        using just::data::data_error::make_error_code;
 #endif
 
     }
 }
 
-#endif // _PPBOX_DATA_BASE_ERROR_H_
+#endif // _JUST_DATA_BASE_ERROR_H_

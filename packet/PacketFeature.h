@@ -1,11 +1,11 @@
 // PacketFeature.h
 
-#ifndef _PPBOX_DATA_PACKET_PACKET_FEATURE_H_
-#define _PPBOX_DATA_PACKET_PACKET_FEATURE_H_
+#ifndef _JUST_DATA_PACKET_PACKET_FEATURE_H_
+#define _JUST_DATA_PACKET_PACKET_FEATURE_H_
 
-#include "ppbox/data/base/MediaBase.h"
+#include "just/data/base/MediaBase.h"
 
-namespace ppbox 
+namespace just 
 {
     namespace data 
     {
@@ -39,6 +39,6 @@ namespace ppbox
         };
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif//_PPBOX_DATA_PACKET_PACKET_FEATURE_H_
+#endif//_JUST_DATA_PACKET_PACKET_FEATURE_H_

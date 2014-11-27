@@ -1,16 +1,16 @@
 // SegmentStream.h
 
-#ifndef _PPBOX_DATA_SEGMENT_SEGMENT_STREAM_H_
-#define _PPBOX_DATA_SEGMENT_SEGMENT_STREAM_H_
+#ifndef _JUST_DATA_SEGMENT_SEGMENT_STREAM_H_
+#define _JUST_DATA_SEGMENT_SEGMENT_STREAM_H_
 
-#include "ppbox/data/segment/SegmentBuffer.h"
+#include "just/data/segment/SegmentBuffer.h"
 
 #include <util/buffers/BufferSize.h>
 #include <util/buffers/StlBuffer.h>
 
 #include <boost/asio/buffer.hpp>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -162,6 +162,6 @@ namespace ppbox
         };
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif // _PPBOX_DATA_SEGMENT_SEGMENT_STREAM_H_
+#endif // _JUST_DATA_SEGMENT_SEGMENT_STREAM_H_

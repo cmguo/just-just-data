@@ -1,17 +1,17 @@
 // MediaBase.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/base/MediaBase.h"
-#include "ppbox/data/base/Error.h"
+#include "just/data/Common.h"
+#include "just/data/base/MediaBase.h"
+#include "just/data/base/Error.h"
 
-#include "ppbox/data/single/SingleMedia.h"
+#include "just/data/single/SingleMedia.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.MediaBase", framework::logger::Debug);
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.data.MediaBase", framework::logger::Debug);
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -68,4 +68,4 @@ namespace ppbox
         }
 
     } // data
-} // ppbox
+} // just

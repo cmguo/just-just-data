@@ -1,13 +1,13 @@
 // MediaBase.h
 
-#ifndef _PPBOX_DATA_BASE_MEDIA_BASE_H_
-#define _PPBOX_DATA_BASE_MEDIA_BASE_H_
+#ifndef _JUST_DATA_BASE_MEDIA_BASE_H_
+#define _JUST_DATA_BASE_MEDIA_BASE_H_
 
-#include "ppbox/data/base/DataBase.h"
+#include "just/data/base/DataBase.h"
 
 #include <util/tools/ClassFactory.h>
 
-namespace ppbox 
+namespace just 
 {
     namespace data 
     {
@@ -101,11 +101,11 @@ namespace ppbox
         };
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#define PPBOX_REGISTER_MEDIA_BY_PROTOCOL(k, c) \
-    UTIL_REGISTER_CLASS(ppbox::data::MediaProtocolFactory, k, c)
-#define PPBOX_REGISTER_MEDIA_BY_FORMAT(k, c) \
-    UTIL_REGISTER_CLASS(ppbox::data::MediaFormatFactory, k, c)
+#define JUST_REGISTER_MEDIA_BY_PROTOCOL(k, c) \
+    UTIL_REGISTER_CLASS(just::data::MediaProtocolFactory, k, c)
+#define JUST_REGISTER_MEDIA_BY_FORMAT(k, c) \
+    UTIL_REGISTER_CLASS(just::data::MediaFormatFactory, k, c)
 
-#endif//_PPBOX_DATA_BASE_MEDIA_BASE_H_
+#endif//_JUST_DATA_BASE_MEDIA_BASE_H_

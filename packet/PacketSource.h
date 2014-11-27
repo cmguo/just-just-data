@@ -1,16 +1,16 @@
 // PacketSource.h
 
-#ifndef _PPBOX_DATA_PACKET_PACKET_SOURCE_H_
-#define _PPBOX_DATA_PACKET_PACKET_SOURCE_H_
+#ifndef _JUST_DATA_PACKET_PACKET_SOURCE_H_
+#define _JUST_DATA_PACKET_PACKET_SOURCE_H_
 
-#include "ppbox/data/packet/PacketBuffer.h"
-#include "ppbox/data/base/DataStat.h"
+#include "just/data/packet/PacketBuffer.h"
+#include "just/data/base/DataStat.h"
 
 namespace util { namespace stream { 
     class Source;
 }}
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -86,6 +86,6 @@ namespace ppbox
         };
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif // _PPBOX_DATA_PACKET_PACKET_SOURCE_H_
+#endif // _JUST_DATA_PACKET_PACKET_SOURCE_H_

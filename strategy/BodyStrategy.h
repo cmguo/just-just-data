@@ -1,11 +1,11 @@
 // BodyStrategy.h
 
-#ifndef _PPBOX_DATA_STRATEGY_BODY_STRATEGY_H_
-#define _PPBOX_DATA_STRATEGY_BODY_STRATEGY_H_
+#ifndef _JUST_DATA_STRATEGY_BODY_STRATEGY_H_
+#define _JUST_DATA_STRATEGY_BODY_STRATEGY_H_
 
-#include <ppbox/data/segment/SegmentStrategy.h>
+#include <just/data/segment/SegmentStrategy.h>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -30,6 +30,6 @@ namespace ppbox
         };
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif // _PPBOX_DATA_STRATEGY_BODY_STRATEGY_H_
+#endif // _JUST_DATA_STRATEGY_BODY_STRATEGY_H_

@@ -1,11 +1,11 @@
 // SegmentInfo.h
 
-#ifndef _PPBOX_DATA_SEGMENT_SEGMENT_INFO_H_
-#define _PPBOX_DATA_SEGMENT_SEGMENT_INFO_H_
+#ifndef _JUST_DATA_SEGMENT_SEGMENT_INFO_H_
+#define _JUST_DATA_SEGMENT_SEGMENT_INFO_H_
 
-#include "ppbox/data/base/DataBase.h"
+#include "just/data/base/DataBase.h"
 
-namespace ppbox 
+namespace just 
 {
     namespace data 
     {
@@ -39,6 +39,6 @@ namespace ppbox
         };
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif//_PPBOX_DATA_SEGMENT_SEGMENT_INFO_H_
+#endif//_JUST_DATA_SEGMENT_SEGMENT_INFO_H_

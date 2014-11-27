@@ -1,17 +1,17 @@
 // PacketBuffer.h
 
-#ifndef _PPBOX_DATA_PACKET_PACKET_BUFFER_H_
-#define _PPBOX_DATA_PACKET_PACKET_BUFFER_H_
+#ifndef _JUST_DATA_PACKET_PACKET_BUFFER_H_
+#define _JUST_DATA_PACKET_PACKET_BUFFER_H_
 
-#include "ppbox/data/packet/PacketFeature.h"
-#include "ppbox/data/base/MemoryLock.h"
+#include "just/data/packet/PacketFeature.h"
+#include "just/data/base/MemoryLock.h"
 
 #include <util/stream/StreamBuffers.h>
 
 #include <framework/memory/PrivateMemory.h>
 #include <framework/container/List.h>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -187,6 +187,6 @@ namespace ppbox
         };
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif // _PPBOX_DATA_PACKET_PACKET_BUFFER_H_
+#endif // _JUST_DATA_PACKET_PACKET_BUFFER_H_

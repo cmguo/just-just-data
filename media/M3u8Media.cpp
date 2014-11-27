@@ -1,11 +1,11 @@
 
 // M3u8Media.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/media/M3u8Media.h"
-#include "ppbox/data/media/M3u8MediaImpl.h"
+#include "just/data/Common.h"
+#include "just/data/media/M3u8Media.h"
+#include "just/data/media/M3u8MediaImpl.h"
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -88,4 +88,4 @@ namespace ppbox
         }
 
     } // data
-} // ppbox
+} // just

@@ -1,12 +1,12 @@
 // SegmentMedia.h
 
-#ifndef _PPBOX_DATA_SEGMENT_SEGMENT_MEDIA_H_
-#define _PPBOX_DATA_SEGMENT_SEGMENT_MEDIA_H_
+#ifndef _JUST_DATA_SEGMENT_SEGMENT_MEDIA_H_
+#define _JUST_DATA_SEGMENT_SEGMENT_MEDIA_H_
 
-#include "ppbox/data/base/MediaBase.h"
-#include "ppbox/data/segment/SegmentInfo.h"
+#include "just/data/base/MediaBase.h"
+#include "just/data/segment/SegmentInfo.h"
 
-namespace ppbox 
+namespace just 
 {
     namespace data 
     {
@@ -51,6 +51,6 @@ namespace ppbox
         };
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif//_PPBOX_DATA_SEGMENT_SEGMENT_MEDIA_H_
+#endif//_JUST_DATA_SEGMENT_SEGMENT_MEDIA_H_

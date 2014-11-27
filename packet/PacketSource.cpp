@@ -1,7 +1,7 @@
 // PacketSource.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/packet/PacketSource.h"
+#include "just/data/Common.h"
+#include "just/data/packet/PacketSource.h"
 
 #include <util/stream/Source.h>
 
@@ -10,12 +10,12 @@
 
 #include <boost/bind.hpp>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
 
-        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.PacketSource", framework::logger::Debug);
+        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.data.PacketSource", framework::logger::Debug);
 
         PacketSource::PacketSource(
             PacketFeature const & feature, 
@@ -165,4 +165,4 @@ namespace ppbox
         }
 
     } // namespace data
-} // namespace ppbox
+} // namespace just

@@ -1,17 +1,17 @@
 // DataModule.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/DataModule.h"
-#include "ppbox/data/media/MediaTypes.h"
+#include "just/data/Common.h"
+#include "just/data/DataModule.h"
+#include "just/data/media/MediaTypes.h"
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
 
         DataModule::DataModule(
             util::daemon::Daemon & daemon)
-            : ppbox::common::CommonModuleBase<DataModule>(daemon, "DataModule")
+            : just::common::CommonModuleBase<DataModule>(daemon, "DataModule")
         {
         }
 
@@ -30,4 +30,4 @@ namespace ppbox
         }
 
     } // namespace data
-} // namespace ppbox
+} // namespace just

@@ -1,11 +1,11 @@
 // SingleMedia.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/single/SingleMedia.h"
+#include "just/data/Common.h"
+#include "just/data/single/SingleMedia.h"
 
 #include <boost/bind.hpp>
 
-namespace ppbox 
+namespace just 
 {
     namespace data 
     {
@@ -64,4 +64,4 @@ namespace ppbox
         }
 
     } // namespace data
-} // namespace ppbox
+} // namespace just

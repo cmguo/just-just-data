@@ -1,9 +1,9 @@
 // SingleBuffer.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/single/SingleBuffer.h"
-#include <ppbox/data/single/SingleSource.h>
-#include <ppbox/data/base/Error.h>
+#include "just/data/Common.h"
+#include "just/data/single/SingleBuffer.h"
+#include <just/data/single/SingleSource.h>
+#include <just/data/base/Error.h>
 
 #include <framework/system/LogicError.h>
 #include <framework/logger/Logger.h>
@@ -12,15 +12,15 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
 
-        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.SingleBuffer", framework::logger::Debug);
+        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.data.SingleBuffer", framework::logger::Debug);
 
         SingleBuffer::SingleBuffer(
-            ppbox::data::SingleSource & source, 
+            just::data::SingleSource & source, 
             boost::uint32_t buffer_size, 
             boost::uint32_t prepare_size)
             : Buffer(buffer_size)
@@ -302,4 +302,4 @@ namespace ppbox
         }
 
     } // namespace data
-} // namespace ppbox
+} // namespace just

@@ -1,17 +1,17 @@
 // Buffer.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/base/Buffer.h"
+#include "just/data/Common.h"
+#include "just/data/base/Buffer.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
 
-        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.Buffer", framework::logger::Debug);
+        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.data.Buffer", framework::logger::Debug);
 
         static boost::uint64_t const invalid_size = boost::uint64_t(-1);
 
@@ -511,4 +511,4 @@ namespace ppbox
         }
 
     } // namespace data
-} // namespace ppbox
+} // namespace just

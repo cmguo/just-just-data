@@ -1,17 +1,17 @@
 // SingleBuffer.h
 
-#ifndef _PPBOX_DATA_SINGLE_SINGLE_BUFFER_H_
-#define _PPBOX_DATA_SINGLE_SINGLE_BUFFER_H_
+#ifndef _JUST_DATA_SINGLE_SINGLE_BUFFER_H_
+#define _JUST_DATA_SINGLE_SINGLE_BUFFER_H_
 
-#include "ppbox/data/base/DataBase.h"
-#include "ppbox/data/base/Buffer.h"
+#include "just/data/base/DataBase.h"
+#include "just/data/base/Buffer.h"
 
 #include <util/event/Event.h>
 #include <util/stream/StreamBuffers.h>
 
 #include <streambuf>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -30,7 +30,7 @@ namespace ppbox
 
         public:
             SingleBuffer(
-                ppbox::data::SingleSource & source, 
+                just::data::SingleSource & source, 
                 boost::uint32_t buffer_size, 
                 boost::uint32_t prepare_size);
 
@@ -88,7 +88,7 @@ namespace ppbox
                 MemoryLock * mlock);
 
         public:
-            ppbox::data::SingleSource const & source() const
+            just::data::SingleSource const & source() const
             {
                 return source_;
             }
@@ -137,7 +137,7 @@ namespace ppbox
                 std::ios_base::openmode mode);
 
         private:
-            ppbox::data::SingleSource & source_;
+            just::data::SingleSource & source_;
             boost::uint32_t prepare_size_;  // 下载一次，最大的下载数据大小
             util::stream::StreamMutableBuffers prepare_buffers_;
             prepare_response_type resp_;
@@ -147,6 +147,6 @@ namespace ppbox
         };
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif // _PPBOX_DATA_SINGLE_SINGLE_BUFFER_H_
+#endif // _JUST_DATA_SINGLE_SINGLE_BUFFER_H_

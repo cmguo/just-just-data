@@ -1,11 +1,11 @@
 // HeadStrategy.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/strategy/HeadStrategy.h"
+#include "just/data/Common.h"
+#include "just/data/strategy/HeadStrategy.h"
 
 using namespace boost::system;
 
-namespace ppbox
+namespace just
 {
     namespace data
     {

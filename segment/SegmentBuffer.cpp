@@ -1,11 +1,11 @@
 // SegmentBuffer.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/segment/SegmentBuffer.h"
-#include "ppbox/data/segment/SegmentStream.h"
-#include "ppbox/data/segment/SegmentSource.h"
-#include "ppbox/data/segment/SegmentEvent.h"
-#include "ppbox/data/base/Error.h"
+#include "just/data/Common.h"
+#include "just/data/segment/SegmentBuffer.h"
+#include "just/data/segment/SegmentStream.h"
+#include "just/data/segment/SegmentSource.h"
+#include "just/data/segment/SegmentEvent.h"
+#include "just/data/base/Error.h"
 
 #include <framework/system/LogicError.h>
 #include <framework/logger/Logger.h>
@@ -14,15 +14,15 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
 
-        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.SegmentBuffer", framework::logger::Debug);
+        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.data.SegmentBuffer", framework::logger::Debug);
 
         SegmentBuffer::SegmentBuffer(
-            ppbox::data::SegmentSource & source, 
+            just::data::SegmentSource & source, 
             boost::uint32_t buffer_size, 
             boost::uint32_t prepare_size)
             : Buffer(buffer_size)
@@ -107,7 +107,7 @@ namespace ppbox
 
         //************************************
         // Method:    prepare
-        // FullName:  ppbox::data::SegmentBuffer::prepare
+        // FullName:  just::data::SegmentBuffer::prepare
         // Access:    public 
         // Returns:   boost::system::error_code
         // Qualifier:
@@ -125,7 +125,7 @@ namespace ppbox
                     find_segment(out_position(), pos);
                     source_.seek(pos, hole_size, ec);
                     if (hole_size == 0) {
-                        ec = ppbox::data::error::at_end_point;
+                        ec = just::data::error::at_end_point;
                     }
                 }
                 if (ec) {
@@ -586,8 +586,8 @@ namespace ppbox
                     if (write_ == seg) {
                         write_.time_range.end = seg.time_range.end;
                     }
-                    ppbox::data::SegmentRange & byte_range = seg.byte_range; // 借用一下
-                    ppbox::data::SegmentRange & time_range = seg.time_range; // 借用一下
+                    just::data::SegmentRange & byte_range = seg.byte_range; // 借用一下
+                    just::data::SegmentRange & time_range = seg.time_range; // 借用一下
                     while (++iter != segments_.end()) {
                         SegmentPosition & segment = *iter;
                         if (!byte_range.followed_by(segment.byte_range))
@@ -668,4 +668,4 @@ namespace ppbox
         }
 
     } // namespace data
-} // namespace ppbox
+} // namespace just

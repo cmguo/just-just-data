@@ -1,12 +1,12 @@
 // SegmentStrategy.h
 
-#ifndef _PPBOX_DATA_SEGMENT_SEGMENT_STRATEGY_H_
-#define _PPBOX_DATA_SEGMENT_SEGMENT_STRATEGY_H_
+#ifndef _JUST_DATA_SEGMENT_SEGMENT_STRATEGY_H_
+#define _JUST_DATA_SEGMENT_SEGMENT_STRATEGY_H_
 
-#include <ppbox/data/segment/SegmentPosition.h>
-#include <ppbox/data/segment/SegmentMedia.h>
+#include <just/data/segment/SegmentPosition.h>
+#include <just/data/segment/SegmentMedia.h>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -61,6 +61,6 @@ namespace ppbox
         };
 
     } // namespace data
-} // namespace ppbox
+} // namespace just
 
-#endif // _PPBOX_DATA_SEGMENT_SEGMENT_STRATEGY_H_
+#endif // _JUST_DATA_SEGMENT_SEGMENT_STRATEGY_H_

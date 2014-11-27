@@ -1,8 +1,8 @@
 // SegmentSource.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/segment/SegmentSource.h"
-#include "ppbox/data/base/Error.h"
+#include "just/data/Common.h"
+#include "just/data/segment/SegmentSource.h"
+#include "just/data/base/Error.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
@@ -10,12 +10,12 @@
 
 #include <boost/bind.hpp>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
 
-        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.SegmentSource", framework::logger::Debug);
+        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.data.SegmentSource", framework::logger::Debug);
 
         SegmentSource::SegmentSource(
             SegmentStrategy & strategy, 
@@ -543,4 +543,4 @@ namespace ppbox
         }
 
     } // namespace demux
-} // namespace ppbox
+} // namespace just

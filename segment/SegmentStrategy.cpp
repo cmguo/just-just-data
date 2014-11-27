@@ -1,10 +1,10 @@
 // SegmentStrategy.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/segment/SegmentStrategy.h"
-#include "ppbox/data/base/Error.h"
+#include "just/data/Common.h"
+#include "just/data/segment/SegmentStrategy.h"
+#include "just/data/base/Error.h"
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -146,4 +146,4 @@ namespace ppbox
         }
 
     } // namespace data
-} // namespace ppbox
+} // namespace just

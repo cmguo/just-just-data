@@ -1,12 +1,12 @@
 // DataStat.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/base/DataStat.h"
+#include "just/data/Common.h"
+#include "just/data/base/DataStat.h"
 
 #include <framework/timer/Ticker.h>
 #include <framework/container/SafeCycle.h>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
@@ -134,4 +134,4 @@ namespace ppbox
         }
      
     } // namespace data
-} // namespace ppbox
+} // namespace just

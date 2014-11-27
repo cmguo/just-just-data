@@ -1,19 +1,19 @@
 // PacketBuffer.cpp
 
-#include "ppbox/data/Common.h"
-#include "ppbox/data/packet/PacketBuffer.h"
+#include "just/data/Common.h"
+#include "just/data/packet/PacketBuffer.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
 
 #include <boost/bind.hpp>
 
-namespace ppbox
+namespace just
 {
     namespace data
     {
 
-        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.data.PacketBuffer", framework::logger::Debug);
+        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.data.PacketBuffer", framework::logger::Debug);
 
         PacketBuffer::PacketBuffer(
             PacketFeature const & feature)
@@ -180,4 +180,4 @@ namespace ppbox
         }
 
     } // namespace data
-} // namespace ppbox
+} // namespace just

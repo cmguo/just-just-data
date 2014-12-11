@@ -15,6 +15,7 @@ namespace just
             enum Enum
             {
                 f_non_ordered   = 0x1000, 
+                f_has_time      = 0x2000,
             };
         };
 

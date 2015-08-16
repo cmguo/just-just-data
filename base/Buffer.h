@@ -412,7 +412,7 @@ namespace just
                 boost::uint64_t offset) const
             {
                 buffer += offset;
-                if ((intptr_t)buffer >= (intptr_t)buffer_end()) {
+                if ((intptr_t)(buffer - buffer_end()) >= 0) {
                     buffer -= buffer_size_;
                 }
                 assert(buffer >= buffer_beg() && buffer < buffer_end());
@@ -425,7 +425,7 @@ namespace just
                 boost::uint64_t offset) const
             {
                 buffer -= offset;
-                if ((intptr_t)buffer < (intptr_t)buffer_beg()) {
+                if ((intptr_t)(buffer - buffer_beg()) < 0) {
                     buffer += buffer_size_;
                 }
                 assert(buffer >= buffer_beg() && buffer < buffer_end());

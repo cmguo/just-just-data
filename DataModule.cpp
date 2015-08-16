@@ -19,14 +19,16 @@ namespace just
         {
         }
 
-        boost::system::error_code DataModule::startup()
+        bool DataModule::startup(
+            boost::system::error_code & ec)
         {
-            boost::system::error_code ec;
-            return ec;
+            return true;
         }
 
-        void DataModule::shutdown()
+        bool DataModule::shutdown(
+            boost::system::error_code & ec)
         {
+            return true;
         }
 
     } // namespace data

@@ -83,7 +83,7 @@ namespace just
         }
 
         void PacketSource::handle_async(
-            boost::system::error_code & ec, 
+            boost::system::error_code const & ec, 
             size_t bytes_transferred)
         {
             if (bytes_transferred) {

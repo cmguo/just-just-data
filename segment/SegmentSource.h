@@ -198,7 +198,7 @@ namespace just
 
             boost::uint64_t seek_end_;      // 一般在seek操作时，如果获取头部数据，值为当前分段之前的分段总长+当前分段的head_size_；否则为-1
 
-            Time expire_pause_time_;
+            framework::timer::Time expire_pause_time_;
         };
 
     } // namespace demux
